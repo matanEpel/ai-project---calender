@@ -100,11 +100,11 @@ class Assignment:
         if self.get_week() != other.get_week() or self.get_day() != other.get_day():
             return False
 
-        x1 = self.get_hour()
-        x2 = x1 + self.get_time()
-        y1 = other.get_hour()
-        y2 = y1 + other.get_time()
+        t1 = self.get_time()
+        t2 = t1 + self.get_duration()
+        t3 = other.get_time()
+        t4 = t3 + other.get_duration()
 
-        return
+        return Time.is_overlap(t1, t2, t3, t4)
 
 

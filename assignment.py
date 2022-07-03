@@ -1,10 +1,11 @@
 from consts import *
-from user import User
 
-from time import Time
 
 
 # TODO: implement language processing model
+from time import *
+
+
 def generate_kind(name, time):
     """
     Generates a kind based on language processing model.
@@ -59,7 +60,7 @@ class Assignment:
     def get_participants(self):
         return self.__participants
 
-    def add_participant(self, user: User):
+    def add_participant(self, user):
         self.__participants.append(user)
 
         # changes the kind to meeting because there are participants now:
@@ -86,7 +87,7 @@ class Assignment:
     def set_day(self, day: int):
         self.__day = day
 
-    def set_time(self, time: Time):
+    def set_time(self, time):
         self.__time = time
 
     def is_overlap(self, other):

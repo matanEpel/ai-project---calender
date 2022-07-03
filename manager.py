@@ -1,18 +1,33 @@
 from consts import kinds, QUARTERS, HOURS
 from user import User
 from time_slots import TimeSlots
+from gradient_decent import *
+from genetic_algorithm import *
+from search import *
 
 
-def genetic_solution(meetings, free_times, kind):
-    return [(1, 1, 1, 1)]
+def get_users(meetings):
+    users = []
+    for m in meetings:
+        for u in m.get_participants():
+            if u not in users:
+                users.append(u)
+    return users
 
 
-def gradient_solution(meetings, free_times, kind):
-    return [(1, 1, 1, 1)]
+def genetic_solution(week, meetings, free_times, kind):
+    solver = GeneticAlgorithm(week, meetings, free_times, kind, get_users(meetings))
+    return solver.solve()
 
 
-def search_solution(meetings, free_times, kind):
-    return [(1, 1, 1, 1)]
+def gradient_solution(week, meetings, free_times, kind):
+    solver = GradientDecent(week, meetings, free_times, kind, get_users(meetings))
+    return solver.solve()
+
+
+def search_solution(week, meetings, free_times, kind):
+    solver = Search(week, meetings, free_times, kind, get_users(meetings))
+    return solver.solve()
 
 
 class Manager:
@@ -89,4 +104,4 @@ class Manager:
                                                    hour + (quarter + i) // HOURS, (quarter + i) % HOURS)
             free_times.append((user, free_slots))
 
-        return meetings, free_times, kind
+        return week, meetings, free_times, kind

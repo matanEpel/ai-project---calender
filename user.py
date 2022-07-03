@@ -65,3 +65,7 @@ class User:
 
     def get_constraints(self):
         return self.__constraints
+
+
+    def schedule_week(self, week: int):
+        pass

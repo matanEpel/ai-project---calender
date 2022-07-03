@@ -3,12 +3,13 @@ from user import User
 
 
 # TODO: implement language processing model
-def generate_kind(name):
+def generate_kind(name, time):
     """
     Generates a kind based on language processing model.
     Sets the kind to the output of the model.
     :return: none
     """
+
     return kinds["TASK"]
 
 
@@ -21,18 +22,25 @@ class Assignment:
     function which is the "AI" part of this class
     """
 
-    def __init__(self, week, name, participants=None, kind=None, day=None, hour=None):
+    def __init__(self, week, name, time, participants=None, kind=None, day=None, hour=None):
         if participants is None:
             participants = []
         if not kind:
             # if kind was not given - we generate it based on the assignment name
-            kind = generate_kind(name)
+            kind = generate_kind(name, time)
         self.__week = week
         self.__name = name
         self.__kind = kind
         self.__day = day
         self.__hour = hour
+        self.__time = time
         self.__participants = participants
+
+    def get_time(self):
+        return self.__time
+
+    def set_time(self, time):
+        self.__time = time
 
     def get_week(self):
         return self.__week

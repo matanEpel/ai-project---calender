@@ -1,4 +1,5 @@
 from assignment import *
+from constraint import *
 
 
 class User:
@@ -7,12 +8,15 @@ class User:
     every week. Additionally, it includes the schedule for all the tasks
     of of each week.
     """
-    def __init__(self, name: str):
+
+    def __init__(self, name: str, constraints: Constraints):
         self.__name = name
         self.__assignments = dict()
 
         # schedule is a dict of assignments for every week that must include an hour attached to them
         self.__schedule = dict()
+
+        self.__constraints = constraints
 
     def set_name(self, name: str):
         self.__name = name
@@ -52,4 +56,12 @@ class User:
         :param week: the week that was scheduled
         :return: none
         """
-        self.__schedule[week] = self.__assignments[week]
+        self.__schedule[week] = {1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: []}
+        for ass in self.__assignments[week]:
+            self.__schedule[week][ass.get_day()].append(ass)
+
+    def set_constrains(self, constraints):
+        self.__constraints = constraints
+
+    def get_constraints(self):
+        return self.__constraints

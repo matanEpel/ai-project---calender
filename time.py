@@ -1,9 +1,7 @@
-
-
 class Time:
 
     def __init__(self, h=0, m=0):
-        if (h < 0 or h > 24 or m < 0 or m >= 59):
+        if h < 0 or h > 24 or m < 0 or m >= 59:
             raise ValueError("hours or minutes are not in range")
         self.hours = h
         self.minutes = m

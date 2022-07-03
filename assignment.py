@@ -86,3 +86,23 @@ class Assignment:
 
     def set_hour(self, hour: int):
         self.__hour = hour
+
+    def is_overlap(self, other):
+        """
+            checks if 2 assignments are overlap
+        """
+
+        if self.get_day() is None or self.get_hour() is None or other.get_day() is None or other.get_hour() is None:
+            raise ValueError("day or hour have not been initialized in Assignment.is_overlap")
+
+        if self.get_week() != other.get_week() or self.get_day() != other.get_day():
+            return False
+
+        x1 = self.get_hour()
+        x2 = x1 + self.get_time()
+        y1 = other.get_hour()
+        y2 = y1 + other.get_time()
+
+        return 
+
+

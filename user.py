@@ -11,7 +11,7 @@ class User:
 
     def __init__(self, name: str, constraints: Constraints):
         self.__name = name
-        self.__assignments = dict()
+        self.__assignments = dict()  # tasks
 
         # schedule is a dict of assignments for every week that must include an hour attached to them
         self.__schedule = dict()
@@ -68,4 +68,13 @@ class User:
 
 
     def schedule_week(self, week: int):
-        pass
+        """
+            schedule the tasks of a specific user in specific week
+            takes all of the assignments in user and sets for them a day and an houer
+
+            return constraints.get_score()
+        """
+
+        """
+            kinds = {"TASK": 0, "MEETING": 1, "MUST_BE_IN": 2}, every MEETING and MUST_BE_IN comes immediatly with time.
+        """

@@ -1,5 +1,7 @@
+import consts
 from assignment import *
 from constraint import *
+from time_ import Time
 
 
 class User:
@@ -25,7 +27,10 @@ class User:
         return self.__name
 
     def add_assignment(self, assignment: Assignment):
-        self.__assignments[assignment.get_week()].append(assignment)
+        if assignment.get_week() in self.__assignments.keys():
+            self.__assignments[assignment.get_week()].append(assignment)
+        else:
+            self.__assignments[assignment.get_week()] = [assignment]  # creates a list
 
     def remove_assignment(self, assignment: Assignment):
         """
@@ -66,6 +71,21 @@ class User:
     def get_constraints(self):
         return self.__constraints
 
+    def __str__(self):
+        # TODO currently for debuging prints only week §
+        output = "[User] {}\nassignments:\n".format(self.__name)
+        for a in self.__assignments[1]:
+            output += str(a)
+            output += "\n"
+
+        output += "\nschedule:\n"
+        for a in self.__schedule[1]:
+            output += str(a)
+            output += "\n"
+
+        return output
+
+
 
     def schedule_week(self, week: int):
         """
@@ -75,6 +95,34 @@ class User:
             return constraints.get_score()
         """
 
+        #  only for now, not csp yet
+        self.__schedule[week] = list()
+        for a in self.get_assignments(week):
+            if a.get_kind() == consts.kinds["MEETING"] or a.get_kind() == consts.kinds["MUST_BE_IN"]:
+                self.place_assignment(a, week)
+
+        for a in self.get_assignments(week):
+            if a.get_kind() == consts.kinds["TASK"]:
+                self.greedy_schedule_assignment(a, week)
+
         """
             kinds = {"TASK": 0, "MEETING": 1, "MUST_BE_IN": 2}, every MEETING and MUST_BE_IN comes immediatly with time.
         """
+
+    def place_assignment(self, assignment: Assignment, week: int):
+        if assignment.get_time() is None or assignment.get_day() is None:
+            raise ValueError("assignment cannot be placed")
+
+        # TODO need to check if slot is available
+
+        self.__schedule[week].append(assignment)
+
+    def greedy_schedule_assignment(self, assignment: Assignment, week: int):
+        duration = assignment.get_duration()
+        # TODO place at the first available slot
+        assignment.set_day(1)
+        assignment.set_time(Time(h=9))
+        self.__schedule[week].append(assignment)
+
+
+

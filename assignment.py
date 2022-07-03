@@ -3,7 +3,7 @@ from consts import *
 
 
 # TODO: implement language processing model
-from time import *
+from time_ import *
 
 
 def generate_kind(name, time):
@@ -89,6 +89,10 @@ class Assignment:
 
     def set_time(self, time):
         self.__time = time
+
+    def __str__(self):
+        return "name: {}, starting at {}, for {} at week {}".format(
+            self.__name, str(self.__time), str(self.__duration), self.__week)
 
     def is_overlap(self, other):
         """

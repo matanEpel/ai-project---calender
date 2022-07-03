@@ -67,4 +67,11 @@ class Time:
 
         return self < other
 
+    @staticmethod
+    def is_overlap(x1, x2, y1, y2):
+        """
+            checks if the the 2 intervals [x1, x2] and [y1, y2] are overlapping
+        """
+        return x1 <= y2 and y1 <= x2
+
 

@@ -1,6 +1,8 @@
 from consts import *
 from user import User
 
+from time import Time
+
 
 # TODO: implement language processing model
 def generate_kind(name, time):
@@ -22,25 +24,25 @@ class Assignment:
     function which is the "AI" part of this class
     """
 
-    def __init__(self, week, name, time, participants=None, kind=None, day=None, hour=None):
+    def __init__(self, week, name, duration, participants=None, kind=None, day=None, time=None):
         if participants is None:
             participants = []
         if not kind:
             # if kind was not given - we generate it based on the assignment name
-            kind = generate_kind(name, time)
+            kind = generate_kind(name, duration)
         self.__week = week
         self.__name = name
         self.__kind = kind
         self.__day = day
-        self.__hour = hour
-        self.__time = time
+        self.__time = time  # time of beginning
+        self.__duration = duration  # duration of event
         self.__participants = participants
 
     def get_time(self):
         return self.__time
 
-    def set_time(self, time):
-        self.__time = time
+    def get_duration(self):
+        return self.__duration
 
     def get_week(self):
         return self.__week
@@ -53,9 +55,6 @@ class Assignment:
 
     def get_day(self):
         return self.__day
-
-    def get_hour(self):
-        return self.__hour
 
     def get_participants(self):
         return self.__participants
@@ -75,6 +74,9 @@ class Assignment:
     def set_week(self, week: int):
         self.__week = week
 
+    def set_duration(self, duration):
+        self.__duration = duration
+
     def set_name(self, name: int):
         self.__name = name
 
@@ -84,8 +86,8 @@ class Assignment:
     def set_day(self, day: int):
         self.__day = day
 
-    def set_hour(self, hour: int):
-        self.__hour = hour
+    def set_time(self, time: Time):
+        self.__time = time
 
     def is_overlap(self, other):
         """
@@ -103,6 +105,6 @@ class Assignment:
         y1 = other.get_hour()
         y2 = y1 + other.get_time()
 
-        return 
+        return
 
 

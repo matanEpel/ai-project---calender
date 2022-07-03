@@ -41,6 +41,9 @@ class Constraints:
     def set_hard_constraint(self, name, value):
         self.__hard_constraints[name] = value
 
+    def set_soft_constraint(self, name, value):
+        self.__soft_constraints[name] = value
+
     def calculate_score(self, week_schedule):
         start_late = 0
         finish_early = 0

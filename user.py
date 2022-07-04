@@ -3,6 +3,8 @@ import random
 from copy import deepcopy
 from typing import Dict, Tuple
 
+import numpy as np
+
 import consts
 from assignment import *
 from constraint import *
@@ -117,6 +119,9 @@ class User:
         self.assignments_map = list(enumerate(duration_array))  # map between assignments
 
         schedule = self.csp_schedule_assignment(week=week, SHUFFLE=SHUFFLE)
+        if not schedule:
+            print("solution not found")
+            return -np.inf
         for s in schedule.items():
             assignments_array[s[0][0]].set_time(s[1][0])
             assignments_array[s[0][0]].set_day(s[1][1])

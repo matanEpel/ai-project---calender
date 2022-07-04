@@ -86,12 +86,18 @@ class User:
 
     def __str__(self):
         # TODO currently for debuging prints only week §
-        output = "[User] {}\nassignments:\n".format(self.__name)
-        for a in self.__assignments[1]:
+        output = "[User] {}\nschedule:\n".format(self.__name)
+
+        for a in self.__schedule[1]:
             output += str(a)
             output += "\n"
 
-        output += "\nschedule:\n"
+        return output
+
+    def __repr__(self):
+        # TODO currently for debuging prints only week §
+        output = "[User] {}\nschedule:\n".format(self.__name)
+
         for a in self.__schedule[1]:
             output += str(a)
             output += "\n"

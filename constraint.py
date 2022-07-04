@@ -86,4 +86,5 @@ class Constraints:
         score += close_tasks*self.__soft_constraints["tasks are close together"]
         score += continuous_breaks*self.__soft_constraints["breaks are continuous"]
         score /= (sum([self.__soft_constraints[c] for c in self.__soft_constraints]))
+        # print(" | ".join([", ".join([str(a) for a in week_schedule[i]]) for i in week_schedule]), score)
         return score

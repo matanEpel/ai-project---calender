@@ -3,3 +3,4 @@ topics = {"CN":"Course Name", "SP": "Sports", "CO": "Country Names", "TO": "Gene
 DAYS = 7
 HOURS = 24
 QUARTERS = 4
+EPOCHS=100

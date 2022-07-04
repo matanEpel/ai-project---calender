@@ -2,6 +2,8 @@ import random
 
 import numpy as np
 
+from copy import deepcopy
+from consts import EPOCHS
 from time_ import Time
 from time_slots import find_possible_slots
 
@@ -33,41 +35,49 @@ class GradientDecent:
         final_time_for_each_meeting = []
         final_score = -np.inf
 
+        final_users = deepcopy(self.__users)
         # trying X different starting points:
-        for _ in range(100):
-            print(_)
+        for _ in range(EPOCHS):
             # get random starting point:
             time_for_each_meeting = self.get_random_start_point(optional_slots) # [(day, time) - list of times for the meetings]
-            for i in range(len(self.__meetings)):
-                self.__meetings[i]["object"].set_day(time_for_each_meeting[i][0])
-                self.__meetings[i]["object"].set_time(time_for_each_meeting[i][1])
             scores = [user.schedule_week(self.__week) for user in self.__users]
             prev_score = -np.inf
-            new_score = self.score(scores)
+            new_score = -np.inf
             # doing the gradient decent part
-            while new_score > prev_score:
-                max = -np.inf
+            curr_final_users = deepcopy(self.__users)
+            while new_score > prev_score or new_score == -np.inf:
+                for i in range(len(self.__meetings)):
+                    self.__meetings[i]["object"].set_day(time_for_each_meeting[i][0])
+                    self.__meetings[i]["object"].set_time(time_for_each_meeting[i][1])
+                scores = [user.schedule_week(self.__week) for user in self.__users]
+                max = self.score(scores)
                 new_times = []
+                for_final_users = deepcopy(self.__users)
                 for new_times_for_each_meeting in self.get_neighbor_times(optional_slots, time_for_each_meeting):
+                    print(111)
                     for i in range(len(self.__meetings)):
                         self.__meetings[i]["object"].set_day(time_for_each_meeting[i][0])
                         self.__meetings[i]["object"].set_time(time_for_each_meeting[i][1])
                     scores = [user.schedule_week(self.__week) for user in self.__users]
                     if self.score(scores) > max:
+                        for_final_users = deepcopy(self.__users)
                         max = self.score(scores)
                         new_times = new_times_for_each_meeting
+
                 prev_score = new_score
                 new_score = max
                 if new_score > prev_score:
+                    curr_final_users = for_final_users
                     time_for_each_meeting = new_times
-            if prev_score > final_score:
-                final_score = prev_score
-                final_time_for_each_meeting = time_for_each_meeting
-                print(final_score)
 
-        for i in range(len(self.__meetings)):
-            self.__meetings[i]["object"].set_day(final_time_for_each_meeting[i][0])
-            self.__meetings[i]["object"].set_time(final_time_for_each_meeting[i][1])
+            if np.max([new_score, prev_score]) > final_score:
+                final_users = curr_final_users
+                final_score = np.max([new_score, prev_score])
+                print(final_score)
+        self.__users = final_users
+        print("score", final_score)
+        return self.__users
+
 
     def get_random_start_point(self, optional_slots):
         slots = []

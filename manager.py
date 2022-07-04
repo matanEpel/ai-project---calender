@@ -64,11 +64,11 @@ class Manager:
         """
         print("sdkfjsdkfjdskf")
         if type == "genetic":
-            genetic_solution(*self.get_data(week, kind, self.__users))
+            self.__users = genetic_solution(*self.get_data(week, kind, self.__users))
         elif type == "gradient":
-            gradient_solution(*self.get_data(week, kind, self.__users))
+            self.__users = gradient_solution(*self.get_data(week, kind, self.__users))
         elif type == "search":
-            search_solution(*self.get_data(week, kind, self.__users))
+            self.__users = search_solution(*self.get_data(week, kind, self.__users))
 
     def schedule_week_user(self, week: int, user: User):
         """

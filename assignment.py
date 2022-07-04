@@ -3,7 +3,7 @@ from consts import *
 
 
 # TODO: implement language processing model
-from time import *
+from time_ import *
 
 
 def generate_kind(name, time):
@@ -90,6 +90,10 @@ class Assignment:
     def set_time(self, time):
         self.__time = time
 
+    def __str__(self):
+        return "name: {}, starting at {}, for {} at week {}".format(
+            self.__name, str(self.__time), str(self.__duration), self.__week)
+
     def is_overlap(self, other):
         """
             checks if 2 assignments are overlap
@@ -101,11 +105,11 @@ class Assignment:
         if self.get_week() != other.get_week() or self.get_day() != other.get_day():
             return False
 
-        x1 = self.get_hour()
-        x2 = x1 + self.get_time()
-        y1 = other.get_hour()
-        y2 = y1 + other.get_time()
+        t1 = self.get_time()
+        t2 = t1 + self.get_duration()
+        t3 = other.get_time()
+        t4 = t3 + other.get_duration()
 
-        return
+        return Time.is_overlap(t1, t2, t3, t4)
 
 

@@ -1,3 +1,4 @@
+from time_ import Time
 from consts import kinds
 
 
@@ -12,14 +13,14 @@ class Constraints:
         self.__hard_constraints["overlap meeting must be"] = False
         self.__hard_constraints["overlap must be task"] = False
         self.__hard_constraints["must be is must be"] = True
-        self.__hard_constraints["break before meeting"] = 0
-        self.__hard_constraints["break before task"] = 0
-        self.__hard_constraints["break before must be"] = 0
-        self.__hard_constraints["break after meeting"] = 0
-        self.__hard_constraints["break after task"] = 0
-        self.__hard_constraints["break after must be"] = 0
-        self.__hard_constraints["start of the day"] = 8
-        self.__hard_constraints["end of the day"] = 22
+        self.__hard_constraints["break before meeting"] = Time()
+        self.__hard_constraints["break before task"] = Time()
+        self.__hard_constraints["break before must be"] = Time()
+        self.__hard_constraints["break after meeting"] = Time()
+        self.__hard_constraints["break after task"] = Time()
+        self.__hard_constraints["break after must be"] = Time()
+        self.__hard_constraints["start of the day"] = Time(h=8)
+        self.__hard_constraints["end of the day"] = Time(h=22)
         self.__hard_constraints["working days"] = [1, 2, 3, 4, 5]
 
         # defining all the soft constraints weight (each constraint has a weight which defines it's importance)

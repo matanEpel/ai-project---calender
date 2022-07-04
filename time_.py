@@ -1,3 +1,4 @@
+
 class Time:
 
     def __init__(self, h=0, m=0):
@@ -64,6 +65,9 @@ class Time:
             return True
 
         return self < other
+
+    def __str__(self):
+        return "{}:{}".format(self.hours, self.minutes)
 
     @staticmethod
     def is_overlap(x1, x2, y1, y2):

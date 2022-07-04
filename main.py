@@ -76,7 +76,7 @@ def main_amit():
     ofir.add_assignment(b1)
     ofir.add_assignment(b2)
 
-    print(ofir.schedule_week(1))
+    print(ofir.schedule_week(1, SHUFFLE=False))
 
     print(ofir)
     #print(ofir.get_schedule(1))

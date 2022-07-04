@@ -237,40 +237,35 @@ class App:
             panel.place(x=0, y=0, width=600)
             print(name)
 
-            olm = tk.IntVar()
-            c1 = tk.Checkbutton(root, text='overlapping meetings', variable=olm, onvalue=1, offvalue=0,
-                                font=('calibre', 18))
-            c1.place(x=0, y=200)
-
-            olt = tk.IntVar()
-            c1 = tk.Checkbutton(root, text='overlapping tasks', variable=olt, onvalue=1, offvalue=0,
-                                font=('calibre', 18))
-            c1.place(x=0, y=225)
-
-            olmb = tk.IntVar()
-            c1 = tk.Checkbutton(root, text='overlapping must be', variable=olmb, onvalue=1, offvalue=0,
-                                font=('calibre', 18))
-            c1.place(x=0, y=250)
 
             olmt = tk.IntVar()
             c1 = tk.Checkbutton(root, text='overlap meeting task', variable=olmt, onvalue=1, offvalue=0,
                                 font=('calibre', 18))
             c1.place(x=0, y=275)
 
-            olmmb = tk.IntVar()
-            c1 = tk.Checkbutton(root, text='overlap meeting must be', variable=olmmb, onvalue=1, offvalue=0,
-                                font=('calibre', 18))
-            c1.place(x=0, y=300)
 
             olmbt = tk.IntVar()
             c1 = tk.Checkbutton(root, text='overlap must be task', variable=olmbt, onvalue=1, offvalue=0,
                                 font=('calibre', 18))
             c1.place(x=0, y=325)
 
-            mbimb = tk.IntVar()
-            c1 = tk.Checkbutton(root, text='must be is must be', variable=mbimb, onvalue=1, offvalue=0,
-                                font=('calibre', 18))
-            c1.place(x=0, y=350)
+            panel = Label(root, text="lunch start hour", font=('calibre', 10), justify='center')
+            panel.place(x=0, y=200)
+            lst = IntVar(root)
+            w = OptionMenu(root, lst, 10, 11, 12, 13, 14, 15)
+            w.place(x=0, y=225)
+
+            panel = Label(root, text="lunch finish hour", font=('calibre', 10), justify='center')
+            panel.place(x=100, y=200)
+            lft = IntVar(root)
+            w = OptionMenu(root, lft, 10, 11, 12, 13, 14, 15)
+            w.place(x=100, y=225)
+
+            panel = Label(root, text="lunch duration", font=('calibre', 10), justify='center')
+            panel.place(x=200, y=200)
+            ld = IntVar(root)
+            w = OptionMenu(root, ld, 10, 15, 20, 30, 45, 60)
+            w.place(x=200, y=225)
 
             bbm = StringVar(root)
             bbm.set("break before meeting")  # default value
@@ -367,13 +362,8 @@ class App:
             w.place(x=300, y=350)
 
             def default():
-                olm.set(0)
-                olt.set(0)
-                olmb.set(0)
                 olmt.set(0)
-                olmmb.set(0)
                 olmbt.set(0)
-                mbimb.set(1)
                 bbm.set(10)
                 bbt.set(10)
                 bbmb.set(10)
@@ -389,18 +379,16 @@ class App:
                 thd.set(1)
                 mact.set(1)
                 tact.set(1)
+                ld.set(30)
+                lft.set(12)
+                lst.set(14)
                 bac.set(1)
                 fde.set(1)
                 stdl.set(1)
             def submit_user():
                 constraints = Constraints()
-                constraints.set_hard_constraint("overlapping meetings", olm.get())
-                constraints.set_hard_constraint("overlapping tasks", olt.get())
-                constraints.set_hard_constraint("overlapping must be", olmb.get())
                 constraints.set_hard_constraint("overlap meeting task", olmt.get())
-                constraints.set_hard_constraint("overlap meeting must be", olmmb.get())
                 constraints.set_hard_constraint("overlap must be task", olmbt.get())
-                constraints.set_hard_constraint("must be is must be", mbimb.get())
                 constraints.set_hard_constraint("break before meeting", Time(m=int(bbm.get())))
                 constraints.set_hard_constraint("break before task", Time(m=int(bbt.get())))
                 constraints.set_hard_constraint("break before must be", Time(m=int(bbmb.get())))
@@ -409,6 +397,7 @@ class App:
                 constraints.set_hard_constraint("break after must be", Time(m=int(bamb.get())))
                 constraints.set_hard_constraint("start of the day", Time(h=int(sotd.get())))
                 constraints.set_hard_constraint("end of the day", Time(h=int(eotd.get())))
+                constraints.set_hard_constraint("lunch time", (Time(h=lst.get()), Time(h=lft.get()), Time(m=ld.get())))
                 days = []
                 if int(sd.get()):
                     days.append(1)

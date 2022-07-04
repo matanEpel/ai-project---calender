@@ -1,4 +1,8 @@
+from __future__ import annotations
+
 from copy import deepcopy
+from typing import Tuple
+
 
 class Time:
 
@@ -41,6 +45,9 @@ class Time:
             define the operator ==
         """
         return self.get_hours() == other.get_hours() and self.get_minutes() == other.get_minutes()
+
+    def __hash__(self):
+        return hash(self.get_hours() * self.get_minutes())
 
     def __lt__(self, other):
         """
@@ -100,7 +107,27 @@ class Time:
         """
             checks if the the 2 intervals [x1, x2] and [y1, y2] are overlapping
         """
-        return x1 <= y2 and y1 <= x2
+        return x1 < y2 and y1 < x2
+
+    @staticmethod
+    def is_list_overlap(intervals: list[Tuple[Time, Time]]) -> bool:
+        """
+            intervals - list of tuples that stands for init time and duration
+        """
+        #TODO i think this algorithm can be improved using a data structure like tims_slots
+        for i in range(len(intervals)):
+            for j in range(len(intervals)):
+                if i == j:
+                    continue
+                l1 = intervals[i]
+                l2 = intervals[j]
+                if Time.is_overlap(l1[0], l1[1], l2[0], l2[1]):
+                    return True
+
+        return False
+
+
+
 
 
 if __name__ == "__main__":

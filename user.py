@@ -1,6 +1,6 @@
 import itertools
 from copy import deepcopy
-from typing import Dict, Tuple, Int
+from typing import Dict, Tuple
 
 import consts
 from assignment import *
@@ -110,7 +110,10 @@ class User:
 
         self.assignments_map = list(enumerate(duration_array))  # map between assignments
 
-        self.csp_schedule_assignment()
+        schedule = self.csp_schedule_assignment()
+        for s in schedule.items():
+            assignments_array[s[0][0]].set_time(s[1][0])
+            assignments_array[s[0][0]].set_day(s[1][1])
 
 
         """
@@ -136,18 +139,19 @@ class User:
         starting_times = list() # variables
         available_times = Time.get_range(self.get_constraints().get_hard_constraints()["start of the day"],
                                          self.get_constraints().get_hard_constraints()["end of the day"])
-        self.times_domain = itertools.product(available_times,
-                                                 self.get_constraints().get_hard_constraints()["working days"])  # domain
+        self.times_domain = list(itertools.product(available_times,
+                                                 self.get_constraints().get_hard_constraints()["working days"]))  # domain
 
         for t in self.assignments_map:
             print(t)
         for t in self.times_domain:  # DEBUG
             print("time {}, d {}".format(str(t[0]), t[1]))
 
-        print(self.backtrack_search())
+        return self.backtrack_search()
 
 
-    def backtrack_search(self, assigned_variables_dict: Dict[Tuple[Int, Time], Time] = {}):
+
+    def backtrack_search(self, assigned_variables_dict: Dict[Tuple[int, Time], Time] = {}):
         """
             times_dict -
         """
@@ -155,15 +159,17 @@ class User:
             # every assignment has starting_time
             return assigned_variables_dict
 
+        # print("BACKTRACK")
+        # print(self.assignments_map)
+        # print(assigned_variables_dict)
         unassigned_variables = [v for v in self.assignments_map if v not in assigned_variables_dict.keys()]
-        print(unassigned_variables)  # DEBUG
 
-        current_var = unassigned_variables[0]  # Choses the first, can in the future choose a random value
+        current_var = unassigned_variables[0]  # Chooses the first, can in the future choose a random value
 
-        for time in self.times_domain:
+        for time in self.times_domain: # can iterate randomly on the time domain in order to make the back track random
             local_assigned_variables_dict = assigned_variables_dict.copy()
             local_assigned_variables_dict[current_var] = time
-            if self.consistent(current_var, local_assigned_variables_dict):
+            if self.consistent(local_assigned_variables_dict):
                 # NEED TO WRITE self.consistent
                 result = self.backtrack_search(local_assigned_variables_dict)
                 if result is not None:
@@ -171,17 +177,29 @@ class User:
 
         return None
 
-    def consistent(self, var: Tuple[Int, Time], assigned_variables_dict: Dict[Tuple[Int, Time], Time]):
+    def consistent(self, assigned_variables_dict: Dict[Tuple[int, Time], Time]):
         """
-
             need to check if the assignment is legal by all of the constraints
             need to take into considiration:
             1. self.__constraints
             2. the assignements which already been asigned
             3. the MEETINGS and MUST BE events
-
         """
+        for day in self.get_constraints().get_hard_constraints()["working days"]:
+            intervals = [(x[1][0], x[0][1] + x[1][0]) for x in list(assigned_variables_dict.items()) if x[1][1] == day]
+            if Time.is_list_overlap(intervals=intervals):
+                return False
+
+        # preform more many checks ....
+
+        for var in assigned_variables_dict:
+            pass
+
+
+
         return True
+
+
 
 
 

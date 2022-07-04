@@ -91,8 +91,8 @@ class Assignment:
         self.__time = time
 
     def __str__(self):
-        return "name: {}, starting at {}, for {} at week {}".format(
-            self.__name, str(self.__time), str(self.__duration), self.__week)
+        return "name: {}, starting at {}, for {} at day {},week {}".format(
+            self.__name, str(self.__time), str(self.__duration), self.__day, self.__week)
 
     def is_overlap(self, other):
         """

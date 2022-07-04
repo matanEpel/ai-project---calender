@@ -24,3 +24,4 @@ class TimeSlots:
                                         hour + (quarter + i) // QUARTERS, (quarter + i) % QUARTERS):
                 return False
         return True
+

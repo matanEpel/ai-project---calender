@@ -1,6 +1,6 @@
 import itertools
 from copy import deepcopy
-from typing import Dict, Tuple, Int
+from typing import Dict, Tuple
 
 import consts
 from assignment import *
@@ -153,7 +153,7 @@ class User:
         print(self.backtrack_search())
 
 
-    def backtrack_search(self, assigned_variables_dict: Dict[Tuple[Int, Time], Time] = {}):
+    def backtrack_search(self, assigned_variables_dict = {}):
         """
             times_dict -
         """
@@ -177,7 +177,7 @@ class User:
 
         return None
 
-    def consistent(self, var: Tuple[Int, Time], assigned_variables_dict: Dict[Tuple[Int, Time], Time]):
+    def consistent(self, var, assigned_variables_dict, Time):
         """
 
             need to check if the assignment is legal by all of the constraints

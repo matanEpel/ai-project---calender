@@ -124,6 +124,7 @@ class App:
 
         def schedule():
             for week in weeks:
+                print("week " + str(week) + " was scheduled!")
                 self.__manager.schedule_week(week)
         submit = Button(root, text="SCHEDULE!", command=schedule, bd=3, font=('calibre', 25), bg='white')
         submit.place(x=225, y=310, width=150, height=70)

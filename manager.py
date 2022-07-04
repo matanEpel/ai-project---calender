@@ -57,7 +57,7 @@ class Manager:
             ass.set_hour(hour)
             user.move_to_scheduled(week, ass)
 
-    def schedule_week(self, week, type, kind):
+    def schedule_week(self, week, type="gradient", kind="sum"):
         """
         schedules the week of all the users together - uses three different algorithms:
         1. genetic algorithm
@@ -71,6 +71,7 @@ class Manager:
         2. best overall - finding the solution which maximizes on the sum of scores
         :return:
         """
+        print("sdkfjsdkfjdskf")
         if type == "genetic":
             self.set_solution(week, genetic_solution(*self.get_data(week, kind)))
         elif type == "gradient":

@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import *
 from PIL import ImageTk, Image
 
+from assignment import Assignment
 from constraint import Constraints
 from manager import Manager
 from user import User
@@ -70,6 +71,64 @@ class App:
         panel = Label(root, text="All users", font=('calibre', 80), bg='white', justify='center')
         panel.place(x=0, y=0, width=600)
 
+        users = {}
+        for u in self.__manager.get_users():
+            users[u.get_name()] = u
+
+        bamb = StringVar(root)
+        bamb.set("CHOOSE THE USER YOU WANT TO LOOK AT")
+        w = OptionMenu(root, bamb, "none", *(users.keys()))
+        w.place(x=150, y=100)
+
+        week_var = StringVar(root)
+        week_var.set("CHOOSE THE WEEK YOU WANT TO LOOK AT")
+        weeks = set()
+        for u in self.__manager.get_users():
+            for ass in u.all_get_assignments():
+                weeks.add(ass.get_week())
+        w = OptionMenu(root, week_var, 1, *(weeks))
+        w.place(x=150, y=150)
+
+        def submit_func():
+            if bamb.get() == "none" or bamb.get() == "CHOOSE THE USER YOU WANT TO LOOK AT":
+                self.home()
+                return
+            for ele in root.winfo_children():
+                ele.destroy()
+            self.add_menu()
+            panel = Label(root, text=bamb.get() + "'s assignments", font=('calibre', 80), bg='white', justify='center')
+            panel.place(x=0, y=0, width=600)
+
+            user = None
+            name = bamb.get()
+            for u in self.__manager.get_users():
+                if u.get_name() == name:
+                    user = u
+            week = int(week_var.get())
+            i = 0
+            for ass in user.get_assignments(week):
+                if ass.get_time():
+                    hour = str(ass.get_time().get_hours())
+                    minute = str(ass.get_time().get_minutes())
+                    panel = Label(root, text="name: " + ass.get_name() + ", duration: " + str(round(float(ass.get_duration()))) + ", start time: " + hour+":"+minute, font=('calibre', 20), bg='white', justify='center')
+                    panel.place(x=0, y=100+i*50, width=600)
+                else:
+                    panel = Label(root, text="name: " + ass.get_name() + ", duration: " + str(
+                        float(ass.get_duration())) + ", start time hasn't determined yet", font=('calibre', 20),
+                                  bg='white', justify='center')
+                    panel.place(x=0, y=100+i * 50, width=600)
+                i += 1
+
+        submit = Button(root, text="GO!", command=submit_func, bd=3, font=('calibre', 25), bg='white')
+        submit.place(x=225, y=210, width=150, height=70)
+
+        def schedule():
+            for week in weeks:
+                print("week " + str(week) + " was scheduled!")
+                self.__manager.schedule_week(week)
+        submit = Button(root, text="SCHEDULE!", command=schedule, bd=3, font=('calibre', 25), bg='white')
+        submit.place(x=225, y=310, width=150, height=70)
+
     def add_assignment(self):
         for ele in root.winfo_children():
             ele.destroy()
@@ -91,24 +150,51 @@ class App:
                 ele.destroy()
             self.add_menu()
 
-            panel = Label(root, text="add assignment to user", font=('calibre', 60), bg='white', justify='center')
-            panel.place(x=0, y=0, width=600)
-            s
             ass_name_var = tk.StringVar()
             e1 = tk.Entry(root, textvariable=ass_name_var, bd=3, font=('calibre', 25), justify='center')
-            e1.place(x=150, y=250, width=300, height=50)
+            e1.place(x=150, y=50, width=300, height=50)
 
             panel = Label(root, text="enter assignment name:", font=('calibre', 30), bg='white')
-            panel.place(x=150, y=200)
+            panel.place(x=150, y=0)
 
             ass_length_var = tk.StringVar()
             e1 = tk.Entry(root, textvariable=ass_length_var, bd=3, font=('calibre', 25), justify='center')
-            e1.place(x=150, y=350, width=300, height=50)
+            e1.place(x=150, y=150, width=300, height=50)
 
             panel = Label(root, text="enter assignment length:", font=('calibre', 30), bg='white')
-            panel.place(x=150, y=300)
+            panel.place(x=150, y=100)
+
+            ass_week_var = tk.StringVar()
+            e1 = tk.Entry(root, textvariable=ass_week_var, bd=3, font=('calibre', 25), justify='center')
+            e1.place(x=150, y=250, width=300, height=50)
+
+            panel = Label(root, text="enter assignment week:", font=('calibre', 30), bg='white')
+            panel.place(x=150, y=200)
+
+            ass_part_var = tk.StringVar()
+            e1 = tk.Entry(root, textvariable=ass_part_var, bd=3, font=('calibre', 25), justify='center')
+            e1.place(x=150, y=350, width=300, height=50)
+
+            panel = Label(root, text="enter assignment participants:", font=('calibre', 30), bg='white')
+            panel.place(x=110, y=300)
 
             def submit_func_ass():
+                print(1)
+                if name in [u.get_name() for u in self.__manager.get_users()]:
+                    user = None
+                    for u in self.__manager.get_users():
+                        if u.get_name() == name:
+                            user = u
+
+                    partici = []
+                    for part in ass_part_var.get().split(", "):
+                        curr_user = None
+                        for u in self.__manager.get_users():
+                            if u.get_name() == part:
+                                curr_user = u
+                        partici.append(curr_user)
+                    assignment = Assignment(int(ass_week_var.get()), ass_name_var.get(), int(ass_length_var.get()), participants=partici)
+                    user.add_assignment(assignment)
                 self.home()
             submit = Button(root, text="Submit", command=submit_func_ass, bd=3, font=('calibre', 25), bg='white')
             submit.place(x=225, y=410, width=150, height=70)

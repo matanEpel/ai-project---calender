@@ -1,8 +1,7 @@
 import itertools
+import random
 from copy import deepcopy
 from typing import Dict, Tuple
-
-import numpy as np
 
 import consts
 from assignment import *
@@ -97,22 +96,7 @@ class User:
 
         return output
 
-    def __repr__(self):
-        # TODO currently for debuging prints only week §
-        output = "[User] {}\nassignments:\n".format(self.__name)
-        if len(self.__assignments):
-            for a in self.__assignments[1]:
-                output += str(a)
-                output += "\n"
-        if len(self.__schedule):
-            output += "\nschedule:\n"
-            for a in self.__schedule[0]:
-                output += str(a)
-                output += "\n"
-
-        return output
-
-    def schedule_week(self, week: int):
+    def schedule_week(self, week: int, SHUFFLE=True):
         """
             schedule the tasks of a specific user in specific week
             takes all of the assignments in user and sets for them a day and an houer
@@ -132,10 +116,7 @@ class User:
 
         self.assignments_map = list(enumerate(duration_array))  # map between assignments
 
-        schedule = self.csp_schedule_assignment(week=week)
-        if not schedule:
-            print("no solution found")
-            return -np.inf
+        schedule = self.csp_schedule_assignment(week=week, SHUFFLE=SHUFFLE)
         for s in schedule.items():
             assignments_array[s[0][0]].set_time(s[1][0])
             assignments_array[s[0][0]].set_day(s[1][1])
@@ -153,7 +134,7 @@ class User:
 
         self.__schedule[week].append(assignment)
 
-    def csp_schedule_assignment(self, week):
+    def csp_schedule_assignment(self, week, SHUFFLE):
         """
             in order to reduce memory and time, we get only array of durations and match them to the assignments by index.
             VARIABLES - self.assignments_map - [(0, duration), (1, duration), ...]
@@ -166,6 +147,8 @@ class User:
         self.times_domain = list(itertools.product(available_times,
                                                    self.get_constraints().get_hard_constraints()[
                                                        "working days"]))  # domain
+        if SHUFFLE:
+            random.shuffle(self.times_domain)
 
         # for t in self.assignments_map:
         #     print(t)
@@ -174,7 +157,7 @@ class User:
 
         return self.backtrack_search(week=week)
 
-    def backtrack_search(self, week, assigned_variables_dict: Dict[Tuple[int, Time], Time] = {}):
+    def backtrack_search(self, week, assigned_variables_dict: Dict[Tuple[int, Time], Tuple[Time, int]] = {}):
         """
             times_dict -
         """
@@ -187,7 +170,16 @@ class User:
         # print(assigned_variables_dict)
         unassigned_variables = [v for v in self.assignments_map if v not in assigned_variables_dict.keys()]
 
-        current_var = unassigned_variables[0]  # Chooses the first, can in the future choose a random value
+        # chose the variable with the largest duration
+        max_dur = Time()
+        current_var = unassigned_variables[0]
+
+        for var in unassigned_variables:
+            if var[1] > max_dur:
+                max_dur = var[1]
+                current_var = var
+
+        # current_var = unassigned_variables[0]  # Chooses the first, can in the future choose a random value
 
         for time in self.times_domain:  # can iterate randomly on the time domain in order to make the back track random
             local_assigned_variables_dict = assigned_variables_dict.copy()
@@ -200,7 +192,7 @@ class User:
 
         return None
 
-    def consistent(self, assigned_variables_dict: Dict[Tuple[int, Time], Time], week):
+    def consistent(self, assigned_variables_dict: Dict[Tuple[int, Time], Tuple[Time, int]], week):
         """
             need to check if the assignment is legal by all of the constraints
             need to take into considiration:
@@ -215,6 +207,9 @@ class User:
             meetings_intervals = [(m.get_time(), m.get_time() + m.get_duration()) for m in self.__schedule[week] if
                                   m.get_day() == day]
             if Time.is_list_overlap(intervals=intervals + meetings_intervals):
+                return False
+
+            if Time.max_time(intervals) > self.get_constraints().get_hard_constraints()["end of the day"]:
                 return False
 
         # preform more many checks ....

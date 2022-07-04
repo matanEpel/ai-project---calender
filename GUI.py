@@ -2,7 +2,10 @@ import tkinter as tk
 from tkinter import *
 from PIL import ImageTk, Image
 
+from constraint import Constraints
 from manager import Manager
+from user import User
+
 
 class App:
     def __init__(self, root):
@@ -25,7 +28,8 @@ class App:
         filemenu = Menu(menubar, tearoff=0)
         filemenu.add_command(label="home", command=self.home)
         filemenu.add_command(label="see all users", command=self.all_users)
-        filemenu.add_command(label="choose specific user", command=self.specific_user)
+        filemenu.add_command(label="add\edit specific user", command=self.specific_user)
+        filemenu.add_command(label="add assignment to user", command=self.add_assignment)
 
         filemenu.add_separator()
 
@@ -66,6 +70,52 @@ class App:
         panel = Label(root, text="All users", font=('calibre', 80), bg='white', justify='center')
         panel.place(x=0, y=0, width=600)
 
+    def add_assignment(self):
+        for ele in root.winfo_children():
+            ele.destroy()
+        self.add_menu()
+        panel = Label(root, text="add assignment to user", font=('calibre', 60), bg='white', justify='center')
+        panel.place(x=0, y=0, width=600)
+
+        name_var = tk.StringVar()
+
+        e1 = tk.Entry(root, textvariable=name_var, bd=3, font=('calibre', 25), justify='center')
+        e1.place(x=150, y=250, width=300, height=50)
+
+        panel = Label(root, text="enter user name:", font=('calibre', 30), bg='white')
+        panel.place(x=180, y=200)
+
+        def submit_func():
+            name = name_var.get()
+            for ele in root.winfo_children():
+                ele.destroy()
+            self.add_menu()
+
+            panel = Label(root, text="add assignment to user", font=('calibre', 60), bg='white', justify='center')
+            panel.place(x=0, y=0, width=600)
+            s
+            ass_name_var = tk.StringVar()
+            e1 = tk.Entry(root, textvariable=ass_name_var, bd=3, font=('calibre', 25), justify='center')
+            e1.place(x=150, y=250, width=300, height=50)
+
+            panel = Label(root, text="enter assignment name:", font=('calibre', 30), bg='white')
+            panel.place(x=150, y=200)
+
+            ass_length_var = tk.StringVar()
+            e1 = tk.Entry(root, textvariable=ass_length_var, bd=3, font=('calibre', 25), justify='center')
+            e1.place(x=150, y=350, width=300, height=50)
+
+            panel = Label(root, text="enter assignment length:", font=('calibre', 30), bg='white')
+            panel.place(x=150, y=300)
+
+            def submit_func_ass():
+                self.home()
+            submit = Button(root, text="Submit", command=submit_func_ass, bd=3, font=('calibre', 25), bg='white')
+            submit.place(x=225, y=410, width=150, height=70)
+
+        submit = Button(root, text="Submit", command=submit_func, bd=3, font=('calibre', 25), bg='white')
+        submit.place(x=225, y=310, width=150, height=70)
+
     def specific_user(self):
         for ele in root.winfo_children():
             ele.destroy()
@@ -83,76 +133,30 @@ class App:
 
         def submit_func():
             name = name_var.get()
-            hard_constraints = dict()
-            soft_constraints = dict()
             assignments = []
             if name in [u.get_name() for u in self.__manager.get_users()]:
                 user = None
                 for u in self.__manager.get_users():
                     if u.get_name() == name:
                         user = u
-                assignments += user.get_assignments()
-                hard_constraints["overlapping meetings"] = user.get_constraints.get_hard_constraints("overlapping meetings")
-                hard_constraints["overlapping tasks"] = user.get_constraints.get_hard_constraints("overlapping tasks")
-                hard_constraints["overlapping must be"] = user.get_constraints.get_hard_constraints("overlapping must be")
-                hard_constraints["overlap meeting task"] = user.get_constraints.get_hard_constraints("overlap meeting task")
-                hard_constraints["overlap meeting must be"] = user.get_constraints.get_hard_constraints("overlap meeting must be")
-                hard_constraints["overlap must be task"] = user.get_constraints.get_hard_constraints("overlap must be task")
-                hard_constraints["must be is must be"] = user.get_constraints.get_hard_constraints("must be is must be")
-                hard_constraints["break before meeting"] = user.get_constraints.get_hard_constraints("break before meeting")
-                hard_constraints["break before task"] = user.get_constraints.get_hard_constraints("break before task")
-                hard_constraints["break before must be"] = user.get_constraints.get_hard_constraints("break before must be")
-                hard_constraints["break after meeting"] = user.get_constraints.get_hard_constraints("break after meeting")
-                hard_constraints["break after task"] = user.get_constraints.get_hard_constraints("break after task")
-                hard_constraints["break after must be"] = user.get_constraints.get_hard_constraints("break after must be")
-                hard_constraints["start of the day"] = user.get_constraints.get_hard_constraints("start of the day")
-                hard_constraints["end of the day"] = user.get_constraints.get_hard_constraints("end of the day")
-                hard_constraints["working days"] = user.get_constraints.get_hard_constraints("working days")
-                soft_constraints["meetings are close together"] = user.get_constraints.get_soft_constraints("meetings are close together")
-                soft_constraints["tasks are close together"] = user.get_constraints.get_soft_constraints("tasks are close together")
-                soft_constraints["breaks are continuous"] = user.get_constraints.get_soft_constraints("breaks are continuous")
-                soft_constraints["finish the day early"] = user.get_constraints.get_soft_constraints("finish the day early")
-                soft_constraints["start the day late"] = user.get_constraints.get_soft_constraints("start the day late")
                 self.__manager.del_user(user)
-            else:
-                hard_constraints["overlapping meetings"] = False
-                hard_constraints["overlapping tasks"] = False
-                hard_constraints["overlapping must be"] = False
-                hard_constraints["overlap meeting task"] = False
-                hard_constraints["overlap meeting must be"] = False
-                hard_constraints["overlap must be task"] = False
-                hard_constraints["must be is must be"] = True
-                hard_constraints["break before meeting"] = 0
-                hard_constraints["break before task"] = 0
-                hard_constraints["break before must be"] = 0
-                hard_constraints["break after meeting"] = 0
-                hard_constraints["break after task"] = 0
-                hard_constraints["break after must be"] = 0
-                hard_constraints["start of the day"] = 8
-                hard_constraints["end of the day"] = 22
-                hard_constraints["working days"] = [1,2,3,4,5]
-                soft_constraints["meetings are close together"] = 1
-                soft_constraints["tasks are close together"] = 1
-                soft_constraints["breaks are continuous"] = 1
-                soft_constraints["finish the day early"] = 1
-                soft_constraints["start the day late"] = 1
+
             for ele in root.winfo_children():
                 ele.destroy()
             self.add_menu()
 
-            panel = Label(root, text = "Edit\\create " + name +"'s data", font=('calibre', 50), justify='center')
-            panel.place(x=0, y=0,width=600)
+            panel = Label(root, text="Edit\\create " + name + "'s data", font=('calibre', 50), justify='center')
+            panel.place(x=0, y=0, width=600)
             print(name)
 
-            submit = Button(root, text="Submit", command=submit_func, bd=3, font=('calibre', 25), bg='white')
-            submit.place(x=225, y=410, width=150, height=70)
-
             olm = tk.IntVar()
-            c1 = tk.Checkbutton(root, text='overlapping meetings', variable=olm, onvalue=1, offvalue=0, font=('calibre', 18))
+            c1 = tk.Checkbutton(root, text='overlapping meetings', variable=olm, onvalue=1, offvalue=0,
+                                font=('calibre', 18))
             c1.place(x=0, y=200)
 
             olt = tk.IntVar()
-            c1 = tk.Checkbutton(root, text='overlapping tasks', variable=olt, onvalue=1, offvalue=0, font=('calibre', 18))
+            c1 = tk.Checkbutton(root, text='overlapping tasks', variable=olt, onvalue=1, offvalue=0,
+                                font=('calibre', 18))
             c1.place(x=0, y=225)
 
             olmb = tk.IntVar()
@@ -178,36 +182,36 @@ class App:
             mbimb = tk.IntVar()
             c1 = tk.Checkbutton(root, text='must be is must be', variable=mbimb, onvalue=1, offvalue=0,
                                 font=('calibre', 18))
-            c1.place(x=0, y=325)
+            c1.place(x=0, y=350)
 
             bbm = StringVar(root)
             bbm.set("break before meeting")  # default value
-            w = OptionMenu(root, bbm, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
+            w = OptionMenu(root, bbm, 0, 5, 10, 15, 20)
             w.place(x=0, y=80)
 
             bbt = StringVar(root)
             bbt.set("break before task")  # default value
-            w = OptionMenu(root, bbt, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
+            w = OptionMenu(root, bbt, 0, 5, 10, 15, 20)
             w.place(x=0, y=120)
 
             bbmb = StringVar(root)
             bbmb.set("break before must be")  # default value
-            w = OptionMenu(root, bbmb, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
+            w = OptionMenu(root, bbmb, 0, 5, 10, 15, 20)
             w.place(x=0, y=160)
 
             bam = StringVar(root)
             bam.set("break after meeting")  # default value
-            w = OptionMenu(root, bam, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
+            w = OptionMenu(root, bam, 0, 5, 10, 15, 20)
             w.place(x=200, y=80)
 
             bat = StringVar(root)
             bat.set("break after task")  # default value
-            w = OptionMenu(root, bat, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
+            w = OptionMenu(root, bat, 0, 5, 10, 15, 20)
             w.place(x=200, y=120)
 
             bamb = StringVar(root)
             bamb.set("break after must be")  # default value
-            w = OptionMenu(root, bamb, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
+            w = OptionMenu(root, bamb, 0, 5, 10, 15, 20)
             w.place(x=200, y=160)
 
             sotd = StringVar(root)
@@ -223,20 +227,100 @@ class App:
             sd = tk.IntVar()
             c1 = tk.Checkbutton(root, text='1', variable=sd, onvalue=1, offvalue=0,
                                 font=('calibre', 14))
-            c1.place(x=400, y=170)
+            c1.place(x=380, y=180)
 
             md = tk.IntVar()
             c1 = tk.Checkbutton(root, text='2', variable=md, onvalue=1, offvalue=0,
                                 font=('calibre', 14))
-            c1.place(x=400, y=180)
+            c1.place(x=420, y=180)
 
             tud = tk.IntVar()
             c1 = tk.Checkbutton(root, text='3', variable=tud, onvalue=1, offvalue=0,
                                 font=('calibre', 14))
-            c1.place(x=400, y=190)
+            c1.place(x=460, y=180)
+
+            wd = tk.IntVar()
+            c1 = tk.Checkbutton(root, text='4', variable=wd, onvalue=1, offvalue=0,
+                                font=('calibre', 14))
+            c1.place(x=500, y=180)
+
+            thd = tk.IntVar()
+            c1 = tk.Checkbutton(root, text='5', variable=thd, onvalue=1, offvalue=0,
+                                font=('calibre', 14))
+            c1.place(x=540, y=180)
+
+            Label(root,
+                  text="Working days:", font=('calibre', 14)).place(x=430,
+                                                                    y=155)
+
+            mact = StringVar(root)
+            mact.set("meetings are close together")  # default value
+            w = OptionMenu(root, mact, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
+            w.place(x=300, y=230)
+
+            tact = StringVar(root)
+            tact.set("tasks are close together")  # default value
+            w = OptionMenu(root, tact, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
+            w.place(x=300, y=260)
+
+            bac = StringVar(root)
+            bac.set("breaks are continuous")  # default value
+            w = OptionMenu(root, bac, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
+            w.place(x=300, y=290)
+
+            fde = StringVar(root)
+            fde.set("finish the day early")  # default value
+            w = OptionMenu(root, fde, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
+            w.place(x=300, y=320)
+
+            stdl = StringVar(root)
+            stdl.set("start the day late")  # default value
+            w = OptionMenu(root, stdl, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
+            w.place(x=300, y=350)
+
+            def submit_user():
+                constraints = Constraints()
+                constraints.set_hard_constraint("overlapping meetings", olm.get())
+                constraints.set_hard_constraint("overlapping tasks", olt.get())
+                constraints.set_hard_constraint("overlapping must be", olmb.get())
+                constraints.set_hard_constraint("overlap meeting task", olmt.get())
+                constraints.set_hard_constraint("overlap meeting must be", olmmb.get())
+                constraints.set_hard_constraint("overlap must be task", olmbt.get())
+                constraints.set_hard_constraint("must be is must be", mbimb.get())
+                constraints.set_hard_constraint("break before meeting", int(bbm.get()))
+                constraints.set_hard_constraint("break before task", int(bbt.get()))
+                constraints.set_hard_constraint("break before must be", int(bbmb.get()))
+                constraints.set_hard_constraint("break after meeting", int(bam.get()))
+                constraints.set_hard_constraint("break after task", int(bat.get()))
+                constraints.set_hard_constraint("break after must be", int(bamb.get()))
+                constraints.set_hard_constraint("start of the day", int(sotd.get()))
+                constraints.set_hard_constraint("end of the day", int(eotd.get()))
+                days = []
+                if int(sd.get()):
+                    days.append(1)
+                if int(md.get()):
+                    days.append(2)
+                if int(tud.get()):
+                    days.append(3)
+                if int(wd.get()):
+                    days.append(4)
+                if int(thd.get()):
+                    days.append(5)
+                constraints.set_hard_constraint("working days", days)
+                constraints.set_soft_constraint("meetings are close together", int(mact.get()))
+                constraints.set_soft_constraint("tasks are close together", int(tact.get()))
+                constraints.set_soft_constraint("breaks are continuous", int(bac.get()))
+                constraints.set_soft_constraint("finish the day early", int(fde.get()))
+                constraints.set_soft_constraint("start the day late", int(stdl.get()))
+                new_user = User(name, constraints)
+                self.__manager.add_user(new_user)
+                self.home()
+
+            submit = Button(root, text="Submit", command=submit_user, bd=3, font=('calibre', 25), bg='white')
+            submit.place(x=225, y=410, width=150, height=70)
 
         submit = Button(root, text="Submit", command=submit_func, bd=3, font=('calibre', 25), bg='white')
-        submit.place(x=225,y=310, width = 150, height=70)
+        submit.place(x=225, y=310, width=150, height=70)
 
         # sub_btn = tk.Button(root, text='Submit', command=submit)
 

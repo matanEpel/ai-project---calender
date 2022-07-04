@@ -86,6 +86,9 @@ class Time:
     def __str__(self):
         return "{}:{}".format(self.hours, self.minutes)
 
+    def __repr__(self):
+        return "{}:{}".format(self.hours, self.minutes)
+
     @staticmethod
     def get_next(t):
         """

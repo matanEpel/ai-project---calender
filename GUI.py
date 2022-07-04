@@ -194,6 +194,8 @@ class App:
                                 curr_user = u
                         partici.append(curr_user)
                     assignment = Assignment(int(ass_week_var.get()), ass_name_var.get(), int(ass_length_var.get()), participants=partici)
+                    for part in partici:
+                        part.add_assignment(assignment)
                     user.add_assignment(assignment)
                 self.home()
             submit = Button(root, text="Submit", command=submit_func_ass, bd=3, font=('calibre', 25), bg='white')

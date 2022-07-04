@@ -25,10 +25,16 @@ def main_epel():
     slots = [a[2][k]["free slots"] for k in a[2]]
     a = find_possible_slots(Time(h=2, m=33), slots)
     print(a)
+
 def main_amit():
     """
         random staff for debuging
     """
+    c = Constraints()
+    c.set_soft_constraint("starting the day late", 100)
+    ofir = User("Ofir", c)
+    matan = User("matan", c)
+    amit = User("amit", c)
 
     a1 = Assignment(week=1, name="ex1", duration=Time(h=1), kind=kinds["TASK"])
     a2 = Assignment(week=1, name="ex2", duration=Time(h=4), kind=kinds["TASK"])
@@ -40,23 +46,13 @@ def main_amit():
     a8 = Assignment(week=1, name="ex8", duration=Time(h=2), kind=kinds["TASK"])
     a9 = Assignment(week=1, name="ex9", duration=Time(h=1), kind=kinds["TASK"])
     a10 = Assignment(week=1, name="ex10", duration=Time(h=1), kind=kinds["TASK"])
-    a11 = Assignment(week=1, name="ex11", duration=Time(h=10), kind=kinds["TASK"])
+    a11 = Assignment(week=1, name="ex11", duration=Time(h=5), kind=kinds["TASK"])
 
-    b1 = Assignment(week=1, name="m1", duration=Time(h=2), kind=kinds["MEETING"], day=2, time=Time(h=8, m=45))
-    b2 = Assignment(week=1, name="m2", duration=Time(h=2), kind=kinds["MEETING"], day=1, time=Time(h=9, m=30))
-    """
-    a1 = Assignment(week=1, name="ex1", duration=Time(h=1), kind=kinds["TASK"])
-    a2 = Assignment(week=1, name="ex2", duration=Time(h=1, m=30), kind=kinds["TASK"])
-    a3 = Assignment(week=1, name="ex3", duration=Time(h=3), kind=kinds["TASK"])
-    a4 = Assignment(week=1, name="ex4", duration=Time(h=3, m=15), kind=kinds["TASK"])
-    a5 = Assignment(week=1, name="ex5", duration=Time(h=2, m=45), kind=kinds["TASK"])
-    a6 = Assignment(week=1, name="ex6", duration=Time(h=2), kind=kinds["TASK"])
-    a7 = Assignment(week=1, name="ex7", duration=Time(h=1, m=15), kind=kinds["TASK"])
-    a8 = Assignment(week=1, name="ex8", duration=Time(h=2, m=15), kind=kinds["TASK"])
-    a9 = Assignment(week=1, name="ex9", duration=Time(h=4), kind=kinds["TASK"])
-    a10 = Assignment(week=1, name="ex10", duration=Time(h=3, m=45), kind=kinds["TASK"])
-    a11 = Assignment(week=1, name="ex11", duration=Time(h=4, m=15), kind=kinds["TASK"])
-    """
+    b1 = Assignment(week=1, name="m1", duration=Time(h=2), kind=kinds["MEETING"], participants=[ofir, amit, matan])
+    b2 = Assignment(week=1, name="m2", duration=Time(h=2), kind=kinds["MEETING"], participants=[ofir, amit])
+    mb1 = Assignment(week=1, name="mb1", duration=Time(h=2, m=30), kind=kinds["MUST_BE_IN"], day = 1, time=Time(h=9,m=30))
+    mb2 = Assignment(week=1, name="mb2", duration=Time(h=2), kind=kinds["MUST_BE_IN"], day = 2, time=Time(h=10,m=30))
+    mb3 = Assignment(week=1, name="mb3", duration=Time(h=2), kind=kinds["MUST_BE_IN"], day = 1, time=Time(h=13,m=15))
 
     c = Constraints()
 
@@ -75,10 +71,47 @@ def main_amit():
     ofir.add_assignment(a11)
     ofir.add_assignment(b1)
     ofir.add_assignment(b2)
+    ofir.add_assignment(mb1)
+    ofir.add_assignment(mb2)
+    ofir.add_assignment(mb3)
 
+    matan.add_assignment(a1)
+    matan.add_assignment(a2)
+    matan.add_assignment(a3)
+    matan.add_assignment(a4)
+    matan.add_assignment(a5)
+    matan.add_assignment(a7)
+    matan.add_assignment(a8)
+    matan.add_assignment(a9)
+    matan.add_assignment(a11)
+    matan.add_assignment(b1)
+    matan.add_assignment(mb1)
+    matan.add_assignment(mb2)
+    matan.add_assignment(mb3)
     print(ofir.schedule_week(1, SHUFFLE=False))
 
+    amit.add_assignment(a1)
+    amit.add_assignment(a2)
+    amit.add_assignment(a3)
+    amit.add_assignment(a4)
+    amit.add_assignment(a5)
+    amit.add_assignment(a7)
+    amit.add_assignment(a8)
+    amit.add_assignment(b1)
+    amit.add_assignment(b2)
+    amit.add_assignment(mb1)
+    amit.add_assignment(mb2)
+    amit.add_assignment(mb3)
+
+    manager = Manager()
+    manager.add_user(ofir)
+    manager.add_user(amit)
+    manager.add_user(matan)
+    manager.schedule_week(1)
+    print(matan)
+    print(amit)
     print(ofir)
+    # print(ofir)
     #print(ofir.get_schedule(1))
 
 

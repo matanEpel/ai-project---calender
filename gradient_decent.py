@@ -13,10 +13,6 @@ class GradientDecent:
         self.__free_times = free_times
         self.__kind = kind
         self.__users = users
-        # setting the meetings as scheduled:
-        for m in self.__meetings:
-            for u in m.get_participants():
-                u.move_to_scheduled(week, m)
 
     def score(self, scores):
         if self.__kind == "sum":
@@ -39,11 +35,12 @@ class GradientDecent:
 
         # trying X different starting points:
         for _ in range(100):
+            print(_)
             # get random starting point:
             time_for_each_meeting = self.get_random_start_point(optional_slots) # [(day, time) - list of times for the meetings]
             for i in range(len(self.__meetings)):
-                self.__meetings[i]["object"].set_day(time_for_each_meeting[0])
-                self.__meetings[i]["object"].set_time(time_for_each_meeting[1])
+                self.__meetings[i]["object"].set_day(time_for_each_meeting[i][0])
+                self.__meetings[i]["object"].set_time(time_for_each_meeting[i][1])
             scores = [user.schedule_week(self.__week) for user in self.__users]
             prev_score = -np.inf
             new_score = self.score(scores)
@@ -53,8 +50,8 @@ class GradientDecent:
                 new_times = []
                 for new_times_for_each_meeting in self.get_neighbor_times(optional_slots, time_for_each_meeting):
                     for i in range(len(self.__meetings)):
-                        self.__meetings[i]["object"].set_day(time_for_each_meeting[0])
-                        self.__meetings[i]["object"].set_time(time_for_each_meeting[1])
+                        self.__meetings[i]["object"].set_day(time_for_each_meeting[i][0])
+                        self.__meetings[i]["object"].set_time(time_for_each_meeting[i][1])
                     scores = [user.schedule_week(self.__week) for user in self.__users]
                     if self.score(scores) > max:
                         max = self.score(scores)
@@ -66,10 +63,11 @@ class GradientDecent:
             if prev_score > final_score:
                 final_score = prev_score
                 final_time_for_each_meeting = time_for_each_meeting
+                print(final_score)
 
         for i in range(len(self.__meetings)):
-            self.__meetings[i]["object"].set_day(final_time_for_each_meeting[0])
-            self.__meetings[i]["object"].set_time(final_time_for_each_meeting[1])
+            self.__meetings[i]["object"].set_day(final_time_for_each_meeting[i][0])
+            self.__meetings[i]["object"].set_time(final_time_for_each_meeting[i][1])
 
     def get_random_start_point(self, optional_slots):
         slots = []
@@ -105,7 +103,9 @@ class GradientDecent:
     def is_consistent(self, option, optional_slots):
         for i in range(len(option)):
             time = option[i]
-            if all([time["start"] != slot["start"] for slot in optional_slots[i] if slot["day"] == time["day"]]):
+            day = time[0]
+            time_in_day = time[1]
+            if all([time_in_day != slot["start"] for slot in optional_slots[i] if slot["day"] == day]):
                 return False
         return True
 

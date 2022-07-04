@@ -4,7 +4,7 @@ from PIL import ImageTk, Image
 
 from assignment import Assignment
 from constraint import Constraints
-from consts import MIDDLE_OUT, MIDDLE_FIIL, DOWN_GUI, UP_GUI, TOP_FIIL, TOP_OUT
+from consts import MIDDLE_OUT, MIDDLE_FIIL, DOWN_GUI, UP_GUI, TOP_FIIL, TOP_OUT, BUTTON_OUT, BUTTON_FILL
 from manager import Manager
 from user import User
 from time_ import Time
@@ -282,6 +282,8 @@ class App:
             roundPolygon(canvas, [170, 440, 440, 170], [340-DOWN_GUI, 340-DOWN_GUI, 425-DOWN_GUI, 425-DOWN_GUI], 10, width=5, outline="#82B366", fill="#D5E8D4")
             roundPolygon(canvas, [50, 560, 560, 50], [190-DOWN_GUI, 190-DOWN_GUI, 320-DOWN_GUI, 320-DOWN_GUI], 10, width=5, outline=MIDDLE_OUT, fill=MIDDLE_FIIL)
             roundPolygon(canvas, [10, 590, 590, 10], [60-UP_GUI, 60-UP_GUI, 220-UP_GUI, 220-UP_GUI], 10, width=5, outline=TOP_OUT, fill=TOP_FIIL)
+            roundPolygon(canvas, [15, 150, 15], [400, 445, 490], 8, width=5, outline=BUTTON_OUT, fill=BUTTON_FILL)
+            roundPolygon(canvas, [445+15, 445+150, 445+15], [400, 445, 490], 8, width=5, outline=BUTTON_OUT, fill=BUTTON_FILL)
             canvas.place(x=0, y=0)
 
             panel = Label(root, text="Edit\\create " + name + "'s data", font=('calibre', 30), justify='center')
@@ -511,11 +513,12 @@ class App:
                 self.__manager.add_user(new_user)
                 self.home()
 
-            submit = Button(root, text="Submit", command=submit_user, bd=3, font=('calibre', 25), bg='white')
-            submit.place(x=460, y=410, width=120, height=70)
+            submit = Button(root, text="Submit", command=submit_user, bd=3, font=('calibre', 20), highlightbackground='black', relief=FLAT)
+            submit.place(x=450, y=410, width=120, height=70)
 
-            submit = Button(root, text="default", command=default, bd=3, font=('calibre', 25), bg='white')
-            submit.place(x=25, y=410, width=120, height=70)
+            submit = Button(root, text="default", command=default, bd=3, font=('calibre', 20), highlightbackground='black', relief=FLAT)
+            submit.config(bg=BUTTON_FILL)
+            submit.place(x=5, y=410, width=120, height=70)
 
         submit = Button(root, text="Submit", command=submit_func, bd=3, font=('calibre', 25), bg='white')
         submit.place(x=225, y=310, width=150, height=70)

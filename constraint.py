@@ -9,13 +9,9 @@ class Constraints:
     def __init__(self):
         # defining all the default hard constraints values (can be changed)
         self.__hard_constraints = dict()
-        self.__hard_constraints["overlapping meetings"] = False
-        self.__hard_constraints["overlapping tasks"] = False
-        self.__hard_constraints["overlapping must be"] = False
         self.__hard_constraints["overlap meeting task"] = False
-        self.__hard_constraints["overlap meeting must be"] = False
         self.__hard_constraints["overlap must be task"] = False
-        self.__hard_constraints["must be is must be"] = True
+        self.__hard_constraints["launch time"] = (Time(h=12),Time(h=14),Time(h=1)) # range for launch and time of launch
         self.__hard_constraints["break before meeting"] = Time()
         self.__hard_constraints["break before task"] = Time()
         self.__hard_constraints["break before must be"] = Time()

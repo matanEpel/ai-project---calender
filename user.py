@@ -2,6 +2,8 @@ import itertools
 from copy import deepcopy
 from typing import Dict, Tuple
 
+import numpy as np
+
 import consts
 from assignment import *
 from constraint import *
@@ -95,6 +97,21 @@ class User:
 
         return output
 
+    def __repr__(self):
+        # TODO currently for debuging prints only week §
+        output = "[User] {}\nassignments:\n".format(self.__name)
+        if len(self.__assignments):
+            for a in self.__assignments[1]:
+                output += str(a)
+                output += "\n"
+        if len(self.__schedule):
+            output += "\nschedule:\n"
+            for a in self.__schedule[0]:
+                output += str(a)
+                output += "\n"
+
+        return output
+
     def schedule_week(self, week: int):
         """
             schedule the tasks of a specific user in specific week
@@ -116,6 +133,9 @@ class User:
         self.assignments_map = list(enumerate(duration_array))  # map between assignments
 
         schedule = self.csp_schedule_assignment(week=week)
+        if not schedule:
+            print("no solution found")
+            return -np.inf
         for s in schedule.items():
             assignments_array[s[0][0]].set_time(s[1][0])
             assignments_array[s[0][0]].set_day(s[1][1])

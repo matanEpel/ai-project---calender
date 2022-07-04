@@ -1,10 +1,31 @@
 from assignment import Assignment
+from manager import Manager
 from time_ import *
 from consts import kinds
+from time_slots import find_possible_slots
 from user import User
 from constraint import Constraints
 
-def main():
+def main_epel():
+    a1 = Assignment(week=1, name="ex1", duration=Time(h=1), kind=kinds["TASK"])
+    a2 = Assignment(week=1, name="ex2", duration=Time(h=4), kind=kinds["MEETING"])
+    a3 = Assignment(week=1, name="ex3", duration=Time(h=2), kind=kinds["MUST_BE_IN"], day=2, time=Time(h=10))
+    a4 = Assignment(week=1, name="ex3", duration=Time(h=2, m=31), kind=kinds["MUST_BE_IN"], day=2, time=Time(h=11))
+    a5 = Assignment(week=1, name="ex3", duration=Time(h=2), kind=kinds["MUST_BE_IN"], day=3, time=Time(h=10))
+    consts = Constraints()
+    user = User("matan", consts)
+    user.add_assignment(a1)
+    user.add_assignment(a2)
+    user.add_assignment(a3)
+    user.add_assignment(a4)
+    user.add_assignment(a5)
+    manager = Manager()
+    manager.add_user(user)
+    a = manager.get_data(1, "sum", manager.get_users())
+    slots = [a[2][k]["free slots"] for k in a[2]]
+    a = find_possible_slots(Time(h=2, m=33), slots)
+    print(a)
+def main_amit():
     """
         random staff for debuging
     """
@@ -64,4 +85,5 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    # main_amit()
+    main_epel()

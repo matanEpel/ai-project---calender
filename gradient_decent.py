@@ -1,3 +1,8 @@
+import numpy as np
+
+from time_slots import find_possible_slots
+
+
 class GradientDecent:
     def __init__(self, week, meetings, free_times, kind, users):
         self.__week = week
@@ -10,5 +15,18 @@ class GradientDecent:
             for u in m.get_participants():
                 u.move_to_scheduled(week, m)
 
+    def score(self, scores):
+        if self.__kind == "sum":
+            return sum(scores)
+        elif self.__kind == "equal":
+            """
+            maximizing the equality == minimizing the std
+            """
+            return -np.std(np.array(scores))
+
     def solve(self):
-        pass
+        optional_slots = [[] for _ in range(len(self.__meetings))] # optional slots for every meeting
+        for i in self.__meetings.keys():
+            time_slots = [self.__free_times[k]["free slots"] for k in self.__meetings[i]["participants"]]
+            optional_slots[i] += find_possible_slots(self.__meetings[i]["duration"], time_slots)
+

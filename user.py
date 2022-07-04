@@ -214,29 +214,47 @@ class User:
         for day in self.get_constraints().get_hard_constraints()["working days"]:
             intervals = [(x[1][0], x[0][1] + x[1][0]) for x in list(assigned_variables_dict.items()) if x[1][1] == day]
 
-            meetings_intervals = [(m.get_time(), m.get_time() + m.get_duration()) for m in self.__schedule[week] if
-                                  m.get_day() == day and m.get_kind() == consts.kinds["MEETING"]]
-
             must_be_intervals = [(m.get_time(), m.get_time() + m.get_duration()) for m in self.__schedule[week] if
                                   m.get_day() == day and m.get_kind() == consts.kinds["MUST_BE_IN"]]
 
-            if Time.is_list_overlap(intervals=intervals + meetings_intervals + must_be_intervals):
+            final_intervals = intervals
+            if not self.__constraints.get_hard_constraints()["overlap meeting task"]:
+                meetings_intervals = [(m.get_time(), m.get_time() + m.get_duration()) for m in self.__schedule[week] if
+                                      m.get_day() == day and m.get_kind() == consts.kinds["MEETING"]]
+                final_intervals += meetings_intervals
+
+            if not self.__constraints.get_hard_constraints()["overlap must be task"]:
+                must_be_intervals = [(m.get_time(), m.get_time() + m.get_duration()) for m in self.__schedule[week] if
+                                     m.get_day() == day and m.get_kind() == consts.kinds["MUST_BE_IN"]]
+                final_intervals += must_be_intervals
+
+            if Time.is_list_overlap(intervals=final_intervals):
                 return False
 
             #add breaks:
+
             break_before_task = self.__constraints.get_hard_constraints()["break before task"]
             break_after_task = self.__constraints.get_hard_constraints()["break after task"]
-            break_before_meeting = self.__constraints.get_hard_constraints()["break before meeting"]
-            break_after_meeting = self.__constraints.get_hard_constraints()["break after meeting"]
-            break_before_must_be = self.__constraints.get_hard_constraints()["break before must be"]
-            break_after_must_be = self.__constraints.get_hard_constraints()["break after must be"]
+            final_intervals_breaks = [(interval[0] - break_before_task, interval[1] + break_after_task) for interval in intervals]
 
-            intervals = [(interval[0] - break_before_task, interval[1] + break_after_task) for interval in intervals]
-            meetings_intervals = [(interval[0] - break_before_meeting, interval[1] + break_after_meeting) for interval in meetings_intervals]
-            must_be_intervals = [(interval[0] - break_before_must_be, interval[1] + break_after_must_be) for interval
-                                  in must_be_intervals]
 
-            if Time.is_list_overlap(intervals=intervals + meetings_intervals + must_be_intervals):
+            if not self.__constraints.get_hard_constraints()["overlap meeting task"]:
+                break_before_meeting = self.__constraints.get_hard_constraints()["break before meeting"]
+                break_after_meeting = self.__constraints.get_hard_constraints()["break after meeting"]
+                meetings_intervals = [(interval[0] - break_before_meeting, interval[1] + break_after_meeting) for
+                                      interval in meetings_intervals]
+                final_intervals_breaks += meetings_intervals
+
+            if not self.__constraints.get_hard_constraints()["overlap must be task"]:
+                break_before_must_be = self.__constraints.get_hard_constraints()["break before must be"]
+                break_after_must_be = self.__constraints.get_hard_constraints()["break after must be"]
+                must_be_intervals = [(interval[0] - break_before_must_be, interval[1] + break_after_must_be) for
+                                     interval in must_be_intervals]
+                final_intervals_breaks += must_be_intervals
+
+
+
+            if Time.is_list_overlap(intervals=final_intervals_breaks):
                 return False
 
             if Time.max_time(intervals) > self.get_constraints().get_hard_constraints()["end of the day"]:

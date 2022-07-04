@@ -12,12 +12,12 @@ class Constraints:
         self.__hard_constraints["overlap meeting task"] = False
         self.__hard_constraints["overlap must be task"] = False
         self.__hard_constraints["launch time"] = (Time(h=12),Time(h=14),Time(h=1)) # range for launch and time of launch
-        self.__hard_constraints["break before meeting"] = Time()
-        self.__hard_constraints["break before task"] = Time()
-        self.__hard_constraints["break before must be"] = Time()
-        self.__hard_constraints["break after meeting"] = Time(m=15)
-        self.__hard_constraints["break after task"] = Time(m=15)
-        self.__hard_constraints["break after must be"] = Time()
+        self.__hard_constraints["break before meeting"] = Time() # done
+        self.__hard_constraints["break before task"] = Time() # done
+        self.__hard_constraints["break before must be"] = Time() # done
+        self.__hard_constraints["break after meeting"] = Time(m=15) # done
+        self.__hard_constraints["break after task"] = Time(m=15) # done
+        self.__hard_constraints["break after must be"] = Time() # done
         self.__hard_constraints["start of the day"] = Time(h=8)  # done
         self.__hard_constraints["end of the day"] = Time(h=22)  # done
         self.__hard_constraints["working days"] = [1, 2, 3, 4, 5]  # done

@@ -117,6 +117,8 @@ class User:
             self.place_assignment(assignments_array[s[0][0]], week=week)
 
 
+
+
         """
             kinds = {"TASK": 0, "MEETING": 1, "MUST_BE_IN": 2}, every MEETING and MUST_BE_IN comes immediatly with time.
         """
@@ -143,10 +145,10 @@ class User:
         self.times_domain = list(itertools.product(available_times,
                                                  self.get_constraints().get_hard_constraints()["working days"]))  # domain
 
-        for t in self.assignments_map:
-            print(t)
-        for t in self.times_domain:  # DEBUG
-            print("time {}, d {}".format(str(t[0]), t[1]))
+        # for t in self.assignments_map:
+        #     print(t)
+        # for t in self.times_domain:  # DEBUG
+        #     print("time {}, d {}".format(str(t[0]), t[1]))
 
         return self.backtrack_search(week=week)
 

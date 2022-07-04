@@ -84,6 +84,7 @@ class Manager:
         takes all of the assignments in user and sets for them a day and an houer
         returns the score of the scheduling
         """
+        # need to iterate over ~20 options with different BLOCKS in order to get different results and choose the best one.
         return user.schedule_week(week)
 
     def get_data(self, week, kind):

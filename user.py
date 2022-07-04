@@ -110,10 +110,11 @@ class User:
 
         self.assignments_map = list(enumerate(duration_array))  # map between assignments
 
-        schedule = self.csp_schedule_assignment()
+        schedule = self.csp_schedule_assignment(week=week)
         for s in schedule.items():
             assignments_array[s[0][0]].set_time(s[1][0])
             assignments_array[s[0][0]].set_day(s[1][1])
+            self.place_assignment(assignments_array[s[0][0]], week=week)
 
 
         """
@@ -129,7 +130,7 @@ class User:
         self.__schedule[week].append(assignment)
 
 
-    def csp_schedule_assignment(self):
+    def csp_schedule_assignment(self, week):
         """
             in order to reduce memory and time, we get only array of durations and match them to the assignments by index.
             VARIABLES - self.assignments_map - [(0, duration), (1, duration), ...]
@@ -147,11 +148,11 @@ class User:
         for t in self.times_domain:  # DEBUG
             print("time {}, d {}".format(str(t[0]), t[1]))
 
-        return self.backtrack_search()
+        return self.backtrack_search(week=week)
 
 
 
-    def backtrack_search(self, assigned_variables_dict: Dict[Tuple[int, Time], Time] = {}):
+    def backtrack_search(self, week, assigned_variables_dict: Dict[Tuple[int, Time], Time] = {}):
         """
             times_dict -
         """
@@ -169,15 +170,15 @@ class User:
         for time in self.times_domain: # can iterate randomly on the time domain in order to make the back track random
             local_assigned_variables_dict = assigned_variables_dict.copy()
             local_assigned_variables_dict[current_var] = time
-            if self.consistent(local_assigned_variables_dict):
+            if self.consistent(local_assigned_variables_dict, week=week):
                 # NEED TO WRITE self.consistent
-                result = self.backtrack_search(local_assigned_variables_dict)
+                result = self.backtrack_search(week=week, assigned_variables_dict=local_assigned_variables_dict)
                 if result is not None:
                     return result
 
         return None
 
-    def consistent(self, assigned_variables_dict: Dict[Tuple[int, Time], Time]):
+    def consistent(self, assigned_variables_dict: Dict[Tuple[int, Time], Time], week):
         """
             need to check if the assignment is legal by all of the constraints
             need to take into considiration:
@@ -187,7 +188,10 @@ class User:
         """
         for day in self.get_constraints().get_hard_constraints()["working days"]:
             intervals = [(x[1][0], x[0][1] + x[1][0]) for x in list(assigned_variables_dict.items()) if x[1][1] == day]
-            if Time.is_list_overlap(intervals=intervals):
+
+            s = self.__schedule[week]
+            meetings_intervals = [(m.get_time(), m.get_time() + m.get_duration()) for m in self.__schedule[week] if m.get_day() == day]
+            if Time.is_list_overlap(intervals=intervals + meetings_intervals):
                 return False
 
         # preform more many checks ....

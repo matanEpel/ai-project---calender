@@ -20,6 +20,9 @@ def main():
     a9 = Assignment(week=1, name="ex9", duration=Time(h=1), kind=kinds["TASK"])
     a10 = Assignment(week=1, name="ex10", duration=Time(h=1), kind=kinds["TASK"])
     a11 = Assignment(week=1, name="ex11", duration=Time(h=5), kind=kinds["TASK"])
+
+    b1 = Assignment(week=1, name="m1", duration=Time(h=2), kind=kinds["MEETING"], day=2, time=Time(h=8, m=45))
+    b2 = Assignment(week=1, name="m2", duration=Time(h=2), kind=kinds["MEETING"], day=1, time=Time(h=9, m=30))
     """
     a1 = Assignment(week=1, name="ex1", duration=Time(h=1), kind=kinds["TASK"])
     a2 = Assignment(week=1, name="ex2", duration=Time(h=1, m=30), kind=kinds["TASK"])
@@ -49,6 +52,8 @@ def main():
     ofir.add_assignment(a9)
     ofir.add_assignment(a10)
     ofir.add_assignment(a11)
+    ofir.add_assignment(b1)
+    ofir.add_assignment(b2)
 
     ofir.schedule_week(1)
 

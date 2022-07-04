@@ -19,12 +19,12 @@ class Constraints:
         self.__hard_constraints["break before meeting"] = Time()
         self.__hard_constraints["break before task"] = Time()
         self.__hard_constraints["break before must be"] = Time()
-        self.__hard_constraints["break after meeting"] = Time()
-        self.__hard_constraints["break after task"] = Time()
+        self.__hard_constraints["break after meeting"] = Time(m=15)
+        self.__hard_constraints["break after task"] = Time(m=15)
         self.__hard_constraints["break after must be"] = Time()
-        self.__hard_constraints["start of the day"] = Time(h=8)
-        self.__hard_constraints["end of the day"] = Time(h=22)
-        self.__hard_constraints["working days"] = [1, 2, 3, 4, 5]
+        self.__hard_constraints["start of the day"] = Time(h=8)  # done
+        self.__hard_constraints["end of the day"] = Time(h=22)  # done
+        self.__hard_constraints["working days"] = [1, 2, 3, 4, 5]  # done
 
         # defining all the soft constraints weight (each constraint has a weight which defines it's importance)
         # for each time a soft constraint is satisfied - the user gives it 1 point normalized

@@ -1,3 +1,6 @@
+from typing import List
+
+from assignment import Assignment
 from time_ import Time
 from consts import kinds
 
@@ -45,7 +48,14 @@ class Constraints:
     def set_soft_constraint(self, name, value):
         self.__soft_constraints[name] = value
 
-    def calculate_score(self, week_schedule):
+    def calculate_score(self, week_schedule: List[Assignment]):
+        """
+
+        :param week_schedule:
+        :return:
+        """
+        week_schedule = {i: sorted([ass for ass in week_schedule if ass.get_day() == i], key=lambda ass: ass.get_time())
+                         for i in range(1,8)}
         start_late = 0
         finish_early = 0
         close_meetings = 0
@@ -54,9 +64,10 @@ class Constraints:
 
         for day in range(1,8):
             if len(week_schedule[day]) != 0:
-                start_late += week_schedule[day][0].get_hour()-self.__hard_constraints["start of the day"]
-                finish_early += self.__hard_constraints["end of the day"] - (week_schedule[day][-1].get_hour() +
-                                                                             week_schedule[day][-1].get_time())
+                start_late += week_schedule[day][0].get_time().get_hours()+week_schedule[day][0].get_time().get_minutes()/60
+                start_late -= self.__hard_constraints["start of the day"].get_hours()
+                finish_early += self.__hard_constraints["end of the day"].get_hours()
+                finish_early -= (week_schedule[day][-1].get_time().get_hours() + week_schedule[day][-1].get_time().get_minutes()/60)
             for i in range(len(week_schedule[day])-1):
                 if week_schedule[day][i].get_kind() == kinds["TASK"] and \
                    week_schedule[day][i+1].get_kind() == kinds["TASK"]:
@@ -64,10 +75,11 @@ class Constraints:
                 if week_schedule[day][i].get_kind() == kinds["MEETING"] and\
                    week_schedule[day][i+1].get_kind() == kinds["MEETING"]:
                     close_meetings += 1
-                if week_schedule[day][i+1].get_hour() > \
-                   week_schedule[day][i].get_hour() + week_schedule[day][i].get_time():
-                    continuous_breaks += week_schedule[day][i+1].get_hour() - \
-                                         (week_schedule[day][i].get_hour() + week_schedule[day][i].get_time())
+                if week_schedule[day][i+1].get_time() > \
+                   week_schedule[day][i].get_time() + week_schedule[day][i].get_duration():
+                    time = week_schedule[day][i+1].get_time() - \
+                                         (week_schedule[day][i].get_duration() + week_schedule[day][i].get_time())
+                    continuous_breaks += time.get_hours() + time.get_minutes()/60
         score = start_late*self.__soft_constraints["start the day late"]
         score += finish_early*self.__soft_constraints["finish the day early"]
         score += close_meetings*self.__soft_constraints["meetings are close together"]

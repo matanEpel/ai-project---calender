@@ -89,7 +89,6 @@ class User:
 
         return output
 
-
     def schedule_week(self, week: int):
         """
             schedule the tasks of a specific user in specific week
@@ -115,10 +114,7 @@ class User:
             assignments_array[s[0][0]].set_time(s[1][0])
             assignments_array[s[0][0]].set_day(s[1][1])
             self.place_assignment(assignments_array[s[0][0]], week=week)
-
-
-
-
+        return self.__constraints.calculate_score(self.__schedule[week])
         """
             kinds = {"TASK": 0, "MEETING": 1, "MUST_BE_IN": 2}, every MEETING and MUST_BE_IN comes immediatly with time.
         """
@@ -131,7 +127,6 @@ class User:
 
         self.__schedule[week].append(assignment)
 
-
     def csp_schedule_assignment(self, week):
         """
             in order to reduce memory and time, we get only array of durations and match them to the assignments by index.
@@ -139,11 +134,12 @@ class User:
             DOMAIN - available_times_days
             CONSTRAINTS -
         """
-        starting_times = list() # variables
+        starting_times = list()  # variables
         available_times = Time.get_range(self.get_constraints().get_hard_constraints()["start of the day"],
                                          self.get_constraints().get_hard_constraints()["end of the day"])
         self.times_domain = list(itertools.product(available_times,
-                                                 self.get_constraints().get_hard_constraints()["working days"]))  # domain
+                                                   self.get_constraints().get_hard_constraints()[
+                                                       "working days"]))  # domain
 
         # for t in self.assignments_map:
         #     print(t)
@@ -151,8 +147,6 @@ class User:
         #     print("time {}, d {}".format(str(t[0]), t[1]))
 
         return self.backtrack_search(week=week)
-
-
 
     def backtrack_search(self, week, assigned_variables_dict: Dict[Tuple[int, Time], Time] = {}):
         """
@@ -169,7 +163,7 @@ class User:
 
         current_var = unassigned_variables[0]  # Chooses the first, can in the future choose a random value
 
-        for time in self.times_domain: # can iterate randomly on the time domain in order to make the back track random
+        for time in self.times_domain:  # can iterate randomly on the time domain in order to make the back track random
             local_assigned_variables_dict = assigned_variables_dict.copy()
             local_assigned_variables_dict[current_var] = time
             if self.consistent(local_assigned_variables_dict, week=week):
@@ -192,7 +186,8 @@ class User:
             intervals = [(x[1][0], x[0][1] + x[1][0]) for x in list(assigned_variables_dict.items()) if x[1][1] == day]
 
             s = self.__schedule[week]
-            meetings_intervals = [(m.get_time(), m.get_time() + m.get_duration()) for m in self.__schedule[week] if m.get_day() == day]
+            meetings_intervals = [(m.get_time(), m.get_time() + m.get_duration()) for m in self.__schedule[week] if
+                                  m.get_day() == day]
             if Time.is_list_overlap(intervals=intervals + meetings_intervals):
                 return False
 
@@ -201,11 +196,4 @@ class User:
         for var in assigned_variables_dict:
             pass
 
-
-
         return True
-
-
-
-
-

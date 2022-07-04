@@ -1,3 +1,7 @@
+import itertools
+from copy import deepcopy
+from typing import Dict, Tuple, Int
+
 import consts
 from assignment import *
 from constraint import *
@@ -86,7 +90,6 @@ class User:
         return output
 
 
-
     def schedule_week(self, week: int):
         """
             schedule the tasks of a specific user in specific week
@@ -101,9 +104,14 @@ class User:
             if a.get_kind() == consts.kinds["MEETING"] or a.get_kind() == consts.kinds["MUST_BE_IN"]:
                 self.place_assignment(a, week)
 
-        for a in self.get_assignments(week):
-            if a.get_kind() == consts.kinds["TASK"]:
-                self.greedy_schedule_assignment(a, week)
+        # schedule the assignments
+        assignments_array = [a for a in self.get_assignments(week) if a.get_kind() == consts.kinds["TASK"]]
+        duration_array = [a.get_duration() for a in assignments_array]
+
+        self.assignments_map = list(enumerate(duration_array))  # map between assignments
+
+        self.csp_schedule_assignment()
+
 
         """
             kinds = {"TASK": 0, "MEETING": 1, "MUST_BE_IN": 2}, every MEETING and MUST_BE_IN comes immediatly with time.
@@ -117,12 +125,63 @@ class User:
 
         self.__schedule[week].append(assignment)
 
-    def greedy_schedule_assignment(self, assignment: Assignment, week: int):
-        duration = assignment.get_duration()
-        # TODO place at the first available slot
-        assignment.set_day(1)
-        assignment.set_time(Time(h=9))
-        self.__schedule[week].append(assignment)
+
+    def csp_schedule_assignment(self):
+        """
+            in order to reduce memory and time, we get only array of durations and match them to the assignments by index.
+            VARIABLES - self.assignments_map - [(0, duration), (1, duration), ...]
+            DOMAIN - available_times_days
+            CONSTRAINTS -
+        """
+        starting_times = list() # variables
+        available_times = Time.get_range(self.get_constraints().get_hard_constraints()["start of the day"],
+                                         self.get_constraints().get_hard_constraints()["end of the day"])
+        self.times_domain = itertools.product(available_times,
+                                                 self.get_constraints().get_hard_constraints()["working days"])  # domain
+
+        for t in self.assignments_map:
+            print(t)
+        for t in self.times_domain:  # DEBUG
+            print("time {}, d {}".format(str(t[0]), t[1]))
+
+        print(self.backtrack_search())
+
+
+    def backtrack_search(self, assigned_variables_dict: Dict[Tuple[Int, Time], Time] = {}):
+        """
+            times_dict -
+        """
+        if len(assigned_variables_dict) == len(self.assignments_map):
+            # every assignment has starting_time
+            return assigned_variables_dict
+
+        unassigned_variables = [v for v in self.assignments_map if v not in assigned_variables_dict.keys()]
+        print(unassigned_variables)  # DEBUG
+
+        current_var = unassigned_variables[0]  # Choses the first, can in the future choose a random value
+
+        for time in self.times_domain:
+            local_assigned_variables_dict = assigned_variables_dict.copy()
+            local_assigned_variables_dict[current_var] = time
+            if self.consistent(current_var, local_assigned_variables_dict):
+                # NEED TO WRITE self.consistent
+                result = self.backtrack_search(local_assigned_variables_dict)
+                if result is not None:
+                    return result
+
+        return None
+
+    def consistent(self, var: Tuple[Int, Time], assigned_variables_dict: Dict[Tuple[Int, Time], Time]):
+        """
+
+            need to check if the assignment is legal by all of the constraints
+            need to take into considiration:
+            1. self.__constraints
+            2. the assignements which already been asigned
+            3. the MEETINGS and MUST BE events
+
+        """
+        return True
 
 
 

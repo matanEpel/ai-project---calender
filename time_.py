@@ -1,3 +1,4 @@
+from copy import deepcopy
 
 class Time:
 
@@ -18,6 +19,9 @@ class Time:
 
     def set_hours(self, h):
         self.hours = h
+
+    def __deepcopy__(self, memodict={}):
+        return Time(h=self.get_hours(), m=self.get_minutes())
 
     def __add__(self, other):
         hours = self.get_hours() + other.get_hours()
@@ -70,10 +74,35 @@ class Time:
         return "{}:{}".format(self.hours, self.minutes)
 
     @staticmethod
+    def get_next(t):
+        """
+            adds 15 minutes to the time
+        """
+        return t + Time(m=15)
+
+    @staticmethod
+    def get_range(t_s, t_f):
+        """
+            returns a range of times with jumps of 15m
+            [t_s, t_f)
+        """
+        t = deepcopy(t_s)
+        time_range = list()
+        while t != t_f:
+            time_range.append(t)
+            t = Time.get_next(t)
+
+        return time_range
+
+
+    @staticmethod
     def is_overlap(x1, x2, y1, y2):
         """
             checks if the the 2 intervals [x1, x2] and [y1, y2] are overlapping
         """
         return x1 <= y2 and y1 <= x2
 
+
+if __name__ == "__main__":
+    print(Time.get_range(Time(h=8), Time(h=12)))
 

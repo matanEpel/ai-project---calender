@@ -6,7 +6,7 @@ from assignment import Assignment
 from constraint import Constraints
 from manager import Manager
 from user import User
-
+from time_ import Time
 
 class App:
     def __init__(self, root):
@@ -373,14 +373,14 @@ class App:
                 constraints.set_hard_constraint("overlap meeting must be", olmmb.get())
                 constraints.set_hard_constraint("overlap must be task", olmbt.get())
                 constraints.set_hard_constraint("must be is must be", mbimb.get())
-                constraints.set_hard_constraint("break before meeting", int(bbm.get()))
-                constraints.set_hard_constraint("break before task", int(bbt.get()))
-                constraints.set_hard_constraint("break before must be", int(bbmb.get()))
-                constraints.set_hard_constraint("break after meeting", int(bam.get()))
-                constraints.set_hard_constraint("break after task", int(bat.get()))
-                constraints.set_hard_constraint("break after must be", int(bamb.get()))
-                constraints.set_hard_constraint("start of the day", int(sotd.get()))
-                constraints.set_hard_constraint("end of the day", int(eotd.get()))
+                constraints.set_hard_constraint("break before meeting", Time(m=int(bbm.get())))
+                constraints.set_hard_constraint("break before task", Time(m=int(bbt.get())))
+                constraints.set_hard_constraint("break before must be", Time(m=int(bbmb.get())))
+                constraints.set_hard_constraint("break after meeting", Time(m=int(bam.get())))
+                constraints.set_hard_constraint("break after task", Time(m=int(bat.get())))
+                constraints.set_hard_constraint("break after must be", Time(m=int(bamb.get())))
+                constraints.set_hard_constraint("start of the day", Time(h=int(sotd.get())))
+                constraints.set_hard_constraint("end of the day", Time(h=int(eotd.get())))
                 days = []
                 if int(sd.get()):
                     days.append(1)

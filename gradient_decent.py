@@ -40,7 +40,6 @@ class GradientDecent:
         for _ in range(EPOCHS):
             # get random starting point:
             time_for_each_meeting = self.get_random_start_point(optional_slots) # [(day, time) - list of times for the meetings]
-            scores = [user.schedule_week(self.__week) for user in self.__users]
             prev_score = -np.inf
             new_score = -np.inf
             # doing the gradient decent part
@@ -51,10 +50,9 @@ class GradientDecent:
                     self.__meetings[i]["object"].set_time(time_for_each_meeting[i][1])
                 scores = [user.schedule_week(self.__week) for user in self.__users]
                 max = self.score(scores)
-                new_times = []
+                new_times = time_for_each_meeting
                 for_final_users = deepcopy(self.__users)
                 for new_times_for_each_meeting in self.get_neighbor_times(optional_slots, time_for_each_meeting):
-                    print(111)
                     for i in range(len(self.__meetings)):
                         self.__meetings[i]["object"].set_day(time_for_each_meeting[i][0])
                         self.__meetings[i]["object"].set_time(time_for_each_meeting[i][1])
@@ -62,6 +60,7 @@ class GradientDecent:
                     if self.score(scores) > max:
                         for_final_users = deepcopy(self.__users)
                         max = self.score(scores)
+
                         new_times = new_times_for_each_meeting
 
                 prev_score = new_score

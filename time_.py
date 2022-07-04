@@ -7,7 +7,7 @@ from typing import Tuple
 class Time:
 
     def __init__(self, h=0, m=0):
-        if h < 0 or h > 24 or m < 0 or m >= 59:
+        if h < 0 or m < 0 or m >= 59:
             raise ValueError("hours or minutes are not in range")
         self.hours = h
         self.minutes = m
@@ -131,6 +131,16 @@ class Time:
                     return True
 
         return False
+
+    @staticmethod
+    def max_time(intervals: list[Tuple[Time, Time]]) -> Time:
+        max_end_time = Time()
+
+        for t in intervals:
+            if t[1] > max_end_time:
+                max_end_time = t[1]
+
+        return max_end_time
 
 
 

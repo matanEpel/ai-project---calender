@@ -40,7 +40,7 @@ def main_amit():
     a8 = Assignment(week=1, name="ex8", duration=Time(h=2), kind=kinds["TASK"])
     a9 = Assignment(week=1, name="ex9", duration=Time(h=1), kind=kinds["TASK"])
     a10 = Assignment(week=1, name="ex10", duration=Time(h=1), kind=kinds["TASK"])
-    a11 = Assignment(week=1, name="ex11", duration=Time(h=5), kind=kinds["TASK"])
+    a11 = Assignment(week=1, name="ex11", duration=Time(h=10), kind=kinds["TASK"])
 
     b1 = Assignment(week=1, name="m1", duration=Time(h=2), kind=kinds["MEETING"], day=2, time=Time(h=8, m=45))
     b2 = Assignment(week=1, name="m2", duration=Time(h=2), kind=kinds["MEETING"], day=1, time=Time(h=9, m=30))
@@ -78,7 +78,7 @@ def main_amit():
 
     print(ofir.schedule_week(1))
 
-    # print(ofir)
+    print(ofir)
     #print(ofir.get_schedule(1))
 
 

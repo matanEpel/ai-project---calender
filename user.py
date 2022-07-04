@@ -54,6 +54,12 @@ class User:
     def get_assignments(self, week: int):
         return self.__assignments[week]
 
+    def all_get_assignments(self):
+        asses = []
+        for week in self.__assignments.keys():
+            asses += self.__assignments[week]
+        return asses
+
     def get_schedule(self, week: int):
         return self.__schedule[week]
 

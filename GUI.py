@@ -84,7 +84,7 @@ class App:
         week_var.set("CHOOSE THE WEEK YOU WANT TO LOOK AT")
         weeks = set()
         for u in self.__manager.get_users():
-            for ass in u.all_get_assignments():
+            for ass in u.get_all_assignments():
                 weeks.add(ass.get_week())
         w = OptionMenu(root, week_var, 1, *(weeks))
         w.place(x=150, y=150)
@@ -96,7 +96,7 @@ class App:
             for ele in root.winfo_children():
                 ele.destroy()
             self.add_menu()
-            panel = Label(root, text=bamb.get() + "'s assignments", font=('calibre', 80), bg='white', justify='center')
+            panel = Label(root, text=bamb.get() + "'s assignments", font=('calibre', 50), bg='white', justify='center')
             panel.place(x=0, y=0, width=600)
 
             user = None
@@ -364,6 +364,32 @@ class App:
             w = OptionMenu(root, stdl, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
             w.place(x=300, y=350)
 
+            def default():
+                olm.set(0)
+                olt.set(0)
+                olmb.set(0)
+                olmt.set(0)
+                olmmb.set(0)
+                olmbt.set(0)
+                mbimb.set(1)
+                bbm.set(10)
+                bbt.set(10)
+                bbmb.set(10)
+                bam.set(10)
+                bat.set(10)
+                bamb.set(10)
+                sotd.set(8)
+                eotd.set(22)
+                sd.set(1)
+                md.set(1)
+                tud.set(1)
+                sd.set(0)
+                thd.set(1)
+                mact.set(1)
+                tact.set(1)
+                bac.set(1)
+                fde.set(1)
+                stdl.set(1)
             def submit_user():
                 constraints = Constraints()
                 constraints.set_hard_constraint("overlapping meetings", olm.get())
@@ -404,6 +430,9 @@ class App:
 
             submit = Button(root, text="Submit", command=submit_user, bd=3, font=('calibre', 25), bg='white')
             submit.place(x=225, y=410, width=150, height=70)
+
+            submit = Button(root, text="default", command=default, bd=3, font=('calibre', 25), bg='white')
+            submit.place(x=25, y=410, width=150, height=70)
 
         submit = Button(root, text="Submit", command=submit_func, bd=3, font=('calibre', 25), bg='white')
         submit.place(x=225, y=310, width=150, height=70)

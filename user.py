@@ -285,8 +285,6 @@ class User:
                 if lunch[1][0] < lunch_start_time or lunch[0][1] + lunch[1][0] > lunch_end_time:
                     return False
 
-
-
             # add breaks:
             break_before_task = self.__constraints.get_hard_constraints()["break before task"]
             break_after_task = self.__constraints.get_hard_constraints()["break after task"]
@@ -324,12 +322,5 @@ class User:
 
             if Time.max_time(intervals) > self.get_constraints().get_hard_constraints()["end of the day"]:
                 return False
-
-
-
-        # preform more many checks ....
-
-        for var in assigned_variables_dict:
-            pass
 
         return True

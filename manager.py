@@ -26,7 +26,7 @@ def gradient_solution(week, meetings, free_times, kind, users):
 
 
 class Manager:
-    def __init__(self, type="genetic", kind="sum"):
+    def __init__(self, type="gradient", kind="sum"):
         self.__type = type
         self.__kind = kind
         self.__users = []

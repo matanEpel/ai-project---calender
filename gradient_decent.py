@@ -75,7 +75,7 @@ class GradientDecent:
         optional_slots = [[] for _ in range(len(self.__meetings))]  # optional slots for every meeting
         for i in self.__meetings.keys():
             time_slots = [self.__free_times[k]["free slots"] for k in self.__meetings[i]["participants"]]
-            optional_slots[i] += find_possible_slots(self.__meetings[i]["duration"], self.__lunches)
+            optional_slots[i] += find_possible_slots(self.__meetings[i]["duration"], time_slots, self.__lunches)
 
         final_time_for_each_meeting = []
         final_score = -np.inf
@@ -98,7 +98,7 @@ class GradientDecent:
         print("score", final_score)
         return self.__users
 
-    def get_random_start_point(self, optional_slots, idx):
+    def get_random_start_point(self, optional_slots):
         slots = []
         for slots_of_day in optional_slots:
             available_slots = []

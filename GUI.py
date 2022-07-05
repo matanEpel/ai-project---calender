@@ -15,7 +15,7 @@ def default_users(manager):
     c = Constraints()
     # c.set_soft_constraint("meetings are close together", 1000)
     c.set_soft_constraint("meetings are close together", 100)
-    c.set_soft_constraint("breaks are continuous", -100)
+    # c.set_soft_constraint("breaks are continuous", -100)
     ofir = User("Ofir", c)
     matan = User("matan", c)
     amit = User("amit", c)

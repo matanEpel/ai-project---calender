@@ -21,7 +21,7 @@ def genetic_solution(week, meetings, free_times, kind, users):
 
 
 def gradient_solution(week, meetings, free_times, kind, users):
-    solver = GradientDecent(week, meetings, free_times, kind, users, "LOW_MEETINGS")
+    solver = GradientDecent(week, meetings, free_times, kind, users)
     return solver.solve()
 
 
@@ -31,7 +31,9 @@ def search_solution(week, meetings, free_times, kind, users):
 
 
 class Manager:
-    def __init__(self):
+    def __init__(self, type="gradient", kind="sum"):
+        self.__type = type
+        self.__kind = kind
         self.__users = []
 
     def __repr__(self):
@@ -47,8 +49,13 @@ class Manager:
         if user in self.__users:
             self.__users.remove(user)
 
+    def set_type(self, type):
+        self.__type = type
 
-    def schedule_week(self, week, type="gradient", kind="sum"):
+    def set_kind_of_optimization(self, kind):
+        self.__kind = kind
+
+    def schedule_week(self, week):
         """
         schedules the week of all the users together - uses three different algorithms:
         1. genetic algorithm
@@ -63,12 +70,12 @@ class Manager:
         :return:
         """
         print("sdkfjsdkfjdskf")
-        if type == "genetic":
-            self.__users = genetic_solution(*self.get_data(week, kind, self.__users))
-        elif type == "gradient":
-            self.__users = gradient_solution(*self.get_data(week, kind, self.__users))
-        elif type == "search":
-            self.__users = search_solution(*self.get_data(week, kind, self.__users))
+        if self.__type == "genetic":
+            self.__users = genetic_solution(*self.get_data(week, self.__kind, self.__users))
+        elif self.__type == "gradient":
+            self.__users = gradient_solution(*self.get_data(week, self.__kind, self.__users))
+        elif self.__type == "search":
+            self.__users = search_solution(*self.get_data(week, self.__kind, self.__users))
 
     def schedule_week_user(self, week: int, user: User):
         """
@@ -101,7 +108,7 @@ class Manager:
                             add = False
                     if add:
                         meetings[meeting_count] = {"object": ass, "duration": ass.get_duration(),
-                                               "participants": participants}
+                                                   "participants": participants}
                     meeting_count += 1
                 # create time slots for each user
                 elif ass.get_kind() == kinds["MUST_BE_IN"]:

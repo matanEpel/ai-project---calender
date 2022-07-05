@@ -176,8 +176,8 @@ class User:
 
         for a in self.get_assignments(week):
                 if a.get_kind() == consts.kinds["MEETING"]:
-                    print(a.get_time(), a.get_day(), a.get_duration(), end=' - ')
-        print("solution was found")
+                    pass
+                    # print(a.get_time(), a.get_day(), a.get_duration(), end=' - ')
         return self.__constraints.calculate_score(self.__schedule[week])
 
 
@@ -208,6 +208,7 @@ class User:
         """
             times_dict -
         """
+        # print(len(assigned_variables_dict))
         if len(assigned_variables_dict) == len(self.assignments_map):
             # every assignment has starting_time
             return assigned_variables_dict

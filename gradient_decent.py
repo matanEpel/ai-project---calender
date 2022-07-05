@@ -38,13 +38,17 @@ class GradientDecent:
         final_users = deepcopy(self.__users)
         # trying X different starting points:
         for _ in range(EPOCHS):
+            print(_)
             # get random starting point:
             time_for_each_meeting = self.get_random_start_point(optional_slots) # [(day, time) - list of times for the meetings]
             prev_score = -np.inf
             new_score = -np.inf
             # doing the gradient decent part
             curr_final_users = deepcopy(self.__users)
+            count_in = 0
             while new_score > prev_score or new_score == -np.inf:
+                print("\t",count_in)
+                count_in += 1
                 for i in range(len(self.__meetings)):
                     self.__meetings[i]["object"].set_day(time_for_each_meeting[i][0])
                     self.__meetings[i]["object"].set_time(time_for_each_meeting[i][1])
@@ -53,6 +57,7 @@ class GradientDecent:
                 new_times = time_for_each_meeting
                 for_final_users = deepcopy(self.__users)
                 for new_times_for_each_meeting in self.get_neighbor_times(optional_slots, time_for_each_meeting):
+                    # print(new_times_for_each_meeting)
                     for i in range(len(self.__meetings)):
                         self.__meetings[i]["object"].set_day(time_for_each_meeting[i][0])
                         self.__meetings[i]["object"].set_time(time_for_each_meeting[i][1])

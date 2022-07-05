@@ -2,6 +2,7 @@ import itertools
 import random
 from copy import deepcopy
 from typing import Dict, Tuple
+from threading import Thread
 
 import numpy as np
 
@@ -112,6 +113,12 @@ class User:
 
         self.__schedule[week].append(assignment)
 
+    def schedule_week_with_vary_constraints(self, week: int, SHUFFLE=True):
+        n = 20
+        users_list = [deepcopy(self) for _ in n]
+        return
+
+
     def schedule_week(self, week: int, SHUFFLE=True):
         """
             schedule the tasks of a specific user in specific week
@@ -120,7 +127,6 @@ class User:
             return constraints.get_score()
         """
 
-        #  only for now, not csp yet
         self.__schedule[week] = list()
         for a in self.get_assignments(week):
             if a.get_kind() == consts.kinds["MEETING"] or a.get_kind() == consts.kinds["MUST_BE_IN"]:
@@ -139,6 +145,21 @@ class User:
             self.assignments_map.append((n, self.__constraints.get_hard_constraints()["lunch time"][2], day))
             n += 1
 
+
+        """
+            ADD THREADING
+            
+            for i in range(len(threads)):
+            threads[i] = Thread(target=foo, args=('world!', results, i))
+            threads[i].start()
+        
+        # do some other stuff
+        
+        for i in range(len(threads)):
+            threads[i].join()
+        
+        print " ".join(results)
+        """
         schedule = self.csp_schedule_assignment(week=week, SHUFFLE=SHUFFLE)
 
         if schedule is None:
@@ -158,9 +179,6 @@ class User:
                     print(a.get_time(), a.get_day(), a.get_duration(), end=' - ')
         print("solution was found")
         return self.__constraints.calculate_score(self.__schedule[week])
-        """
-            kinds = {"TASK": 0, "MEETING": 1, "MUST_BE_IN": 2}, every MEETING and MUST_BE_IN comes immediatly with time.
-        """
 
 
     def csp_schedule_assignment(self, week, SHUFFLE):

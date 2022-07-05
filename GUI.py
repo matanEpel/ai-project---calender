@@ -1,10 +1,10 @@
 import tkinter as tk
 from tkinter import *
 from PIL import ImageTk, Image
-
+import tkmacosx
 from assignment import Assignment
 from constraint import Constraints
-from consts import MIDDLE_OUT, MIDDLE_FIIL, DOWN_GUI, UP_GUI, TOP_FIIL, TOP_OUT, BUTTON_OUT, BUTTON_FILL
+from consts import MIDDLE_OUT, MIDDLE_FIIL, DOWN_GUI, UP_GUI, TOP_FIIL, TOP_OUT, BUTTON_OUT, BUTTON_FILL, TITLE_COLOR
 from manager import Manager
 from user import User
 from time_ import Time
@@ -112,12 +112,21 @@ class App:
             ele.destroy()
         self.add_menu()
 
-        canvas = Canvas(root, width=600, height=500)
-        roundPolygon(canvas, [90, 505, 505, 90], [80, 80, 200, 200], 10,
+        canvas = Canvas(root, width=610, height=500, bg="black")
+        roundPolygon(canvas, [90+10, 505+10, 505+10, 90+10], [80, 80, 200, 200], 10,
                      width=5, outline=TOP_OUT, fill=TOP_FIIL)
-        canvas.place(x=0, y=0)
 
-        panel = Label(root, text="All users", font=('calibre', 30), bg='white', justify='center')
+
+        FIRST = 100
+        SEC = 350
+        roundPolygon(canvas, [15 + 10+FIRST, 150+FIRST + 10, 15 + 10+FIRST], [280, 325, 370], 8, width=5, outline=BUTTON_OUT,
+                     fill=BUTTON_FILL)
+        roundPolygon(canvas, [15 + 10 + SEC, 150 + SEC + 10, 15 + 10 + SEC], [280, 325, 370], 8, width=5,
+                     outline=BUTTON_OUT,
+                     fill=BUTTON_FILL)
+        canvas.place(x=0-10, y=0)
+
+        panel = Label(root, text="All users", font=('calibre', 30), bg=TITLE_COLOR, justify='center', fg="white")
         panel.place(x=0, y=0, width=600)
 
         users = {}
@@ -150,7 +159,7 @@ class App:
             for ele in root.winfo_children():
                 ele.destroy()
             self.add_menu()
-            panel = Label(root, text=bamb.get() + "'s assignments", font=('calibre', 50), bg='white', justify='center')
+            panel = Label(root, text=bamb.get() + "'s assignments", font=('calibre', 30), bg=TITLE_COLOR, justify='center', fg="white")
             panel.place(x=0, y=0, width=600)
 
             user = None
@@ -175,29 +184,38 @@ class App:
                     panel.place(x=0, y=100 + i * 50, width=600)
                 i += 1
 
-        submit = Button(root, text="GO!", command=submit_func, bd=3, font=('calibre', 25), bg='white')
-        submit.place(x=100, y=300, width=150, height=70)
+        submit = tkmacosx.Button(root, text="GO!", command=submit_func, bd=3, font=('calibre', 13), highlightbackground=BUTTON_FILL)
+        submit.config(bg=BUTTON_FILL)
+        submit.place(x=120, y=310, width=70, height=30)
 
         def schedule():
+            # TODO: look good
             for week in weeks:
                 print("week " + str(week) + " was scheduled!")
                 self.__manager.schedule_week(week)
 
 
-        submit = Button(root, text="SCHEDULE!", command=schedule, bd=3, font=('calibre', 25), bg='white')
-        submit.place(x=350, y=300, width=150, height=70)
+        submit = tkmacosx.Button(root, text="SCHEDULE!", command=schedule, bd=3, font=('calibre', 13), highlightbackground=BUTTON_FILL)
+        submit.config(bg=BUTTON_FILL)
+        submit.place(x=370, y=310, width=78, height=30)
 
     def add_assignment(self):
         for ele in root.winfo_children():
             ele.destroy()
         self.add_menu()
 
-        canvas = Canvas(root, width=600, height=500)
-        roundPolygon(canvas, [140, 460, 460, 140], [160, 160, 290, 290], 10,
+        canvas = Canvas(root, width=610, height=500, bg="black", bd=0, relief='ridge')
+        roundPolygon(canvas, [140+10, 460+10, 460+10, 140+10], [160, 160, 290, 290], 10,
                      width=5, outline="#82B366", fill="#D5E8D4")
-        canvas.place(x=0, y=0)
+        WIDTH = 215
+        HEIGHT = 69
+        roundPolygon(canvas, [15 + WIDTH, 150 + WIDTH + 10, 15 + WIDTH],
+                     [280 + HEIGHT - 10, 325 + HEIGHT, 370 + HEIGHT + 10], 8, width=5,
+                     outline=BUTTON_OUT,
+                     fill=BUTTON_FILL)
+        canvas.place(x=-10, y=0)
 
-        panel = Label(root, text="Add assignment to user", font=('calibre', 30), bg='white', justify='center')
+        panel = Label(root, text="Add assignment to user", font=('calibre', 30), bg=TITLE_COLOR, justify='center', fg='white')
         panel.place(x=0, y=0, width=600)
 
         name_var = tk.StringVar()
@@ -216,33 +234,50 @@ class App:
                 ele.destroy()
             self.add_menu()
 
-            ass_name_var = tk.StringVar()
-            e1 = tk.Entry(root, textvariable=ass_name_var, bd=3, font=('calibre', 25), justify='center')
-            e1.place(x=150, y=50, width=300, height=50)
+            canvas = Canvas(root, width=610, height=500, bg="black")
+            C_H = 20
+            roundPolygon(canvas, [60+10, 280+10, 280+10, 60+10], [120-C_H, 120-C_H, 340-C_H, 340-C_H], 10,
+                         width=5, outline=TOP_OUT, fill=TOP_FIIL)
+            roundPolygon(canvas, [60+260+10, 280+260+10, 280+260+10, 60+260+10], [120-C_H, 120-C_H, 340-C_H, 340-C_H], 10,
+                         width=5, outline=MIDDLE_OUT, fill=MIDDLE_FIIL)
+            WIDTH = 215
+            HEIGHT = 69
+            roundPolygon(canvas, [15 + WIDTH, 150 + WIDTH + 10, 15 + WIDTH],
+                         [280 + HEIGHT - 10, 325 + HEIGHT, 370 + HEIGHT + 10], 8, width=5,
+                         outline=BUTTON_OUT,
+                         fill=BUTTON_FILL)
+            canvas.place(x=-10, y=0)
 
-            panel = Label(root, text="enter assignment name:", font=('calibre', 30), bg='white')
-            panel.place(x=150, y=0)
+            panel = Label(root, text="Assignment metadata", font=('calibre', 30), justify='center', bg=TITLE_COLOR, fg="white")
+            panel.place(x=0, y=0, width=600)
+
+            ass_name_var = tk.StringVar()
+            e1 = tk.Entry(root, textvariable=ass_name_var, bd=0, font=('calibre', 20), justify='center', bg=TOP_FIIL,highlightbackground="black", highlightthickness=2)
+            e1.place(x=70, y=170-C_H, width=200, height=50)
+
+            panel = Label(root, text="name:", font=('calibre', 20), bg=TOP_FIIL)
+            panel.place(x=140, y=130-C_H)
 
             ass_length_var = tk.StringVar()
-            e1 = tk.Entry(root, textvariable=ass_length_var, bd=3, font=('calibre', 25), justify='center')
-            e1.place(x=150, y=150, width=300, height=50)
+            e1 = tk.Entry(root, textvariable=ass_length_var, bd=0, font=('calibre', 20), justify='center', bg=TOP_FIIL,highlightbackground="black", highlightthickness=2)
+            e1.place(x=70, y=270-C_H, width=200, height=50)
 
-            panel = Label(root, text="enter assignment length:", font=('calibre', 30), bg='white')
-            panel.place(x=150, y=100)
+            panel = Label(root, text="length:", font=('calibre', 20), bg=TOP_FIIL)
+            panel.place(x=135, y=230-C_H)
 
             ass_week_var = tk.StringVar()
-            e1 = tk.Entry(root, textvariable=ass_week_var, bd=3, font=('calibre', 25), justify='center')
-            e1.place(x=150, y=250, width=300, height=50)
+            e1 = tk.Entry(root, textvariable=ass_week_var, bd=0, font=('calibre', 20), justify='center',bg=MIDDLE_FIIL,highlightbackground="black", highlightthickness=2)
+            e1.place(x=330, y=170-C_H, width=200, height=50)
 
-            panel = Label(root, text="enter assignment week:", font=('calibre', 30), bg='white')
-            panel.place(x=150, y=200)
+            panel = Label(root, text="week:", font=('calibre', 20), bg=MIDDLE_FIIL)
+            panel.place(x=400, y=130-C_H)
 
             ass_part_var = tk.StringVar()
-            e1 = tk.Entry(root, textvariable=ass_part_var, bd=3, font=('calibre', 25), justify='center')
-            e1.place(x=150, y=350, width=300, height=50)
+            e1 = tk.Entry(root, textvariable=ass_part_var, bd=0, font=('calibre', 20), justify='center',bg=MIDDLE_FIIL,highlightbackground="black", highlightthickness=2)
+            e1.place(x=330, y=270-C_H, width=200, height=50)
 
-            panel = Label(root, text="enter assignment participants:", font=('calibre', 30), bg='white')
-            panel.place(x=110, y=300)
+            panel = Label(root, text="participants:", font=('calibre', 20),bg=MIDDLE_FIIL)
+            panel.place(x=380, y=230-C_H)
 
             def submit_func_ass():
                 print(1)
@@ -268,24 +303,32 @@ class App:
                     user.add_assignment(assignment)
                 self.home()
 
-            submit = Button(root, text="Submit", command=submit_func_ass, bd=3, font=('calibre', 25), bg='white')
-            submit.place(x=225, y=410, width=150, height=70)
+            submit = tkmacosx.Button(root, text="Submit", command=submit_func_ass, bd=3, font=('calibre', 25),
+                                     highlightbackground=BUTTON_FILL)
+            submit.config(bg=BUTTON_FILL)
+            submit.place(x=225, y=380, width=90, height=30)
 
         photo = PhotoImage(file=r"resources/all.png")
-        submit = Button(root, text="Submit", command=submit_func, bd=3, font=('calibre', 25), bg='white')
-        submit.place(x=225, y=380, width=150, height=70)
+        submit = tkmacosx.Button(root, text="Submit", command=submit_func, bd=3, font=('calibre', 25), highlightbackground=BUTTON_FILL)
+        submit.config(bg=BUTTON_FILL)
+        submit.place(x=225, y=380, width=90, height=30)
 
     def specific_user(self):
         for ele in root.winfo_children():
             ele.destroy()
         self.add_menu()
 
-        canvas = Canvas(root, width=600, height=500)
-        roundPolygon(canvas, [140, 460, 460, 140], [160, 160, 290, 290], 10,
+        canvas = Canvas(root, width=610, height=500, bg="black")
+        roundPolygon(canvas, [140+10, 460+10, 460+10, 140+10], [160, 160, 290, 290], 10,
                      width=5, outline="#82B366", fill="#D5E8D4")
-        canvas.place(x=0, y=0)
+        WIDTH = 215
+        HEIGHT = 69
+        roundPolygon(canvas, [15+WIDTH, 150+WIDTH+10, 15+WIDTH], [280+HEIGHT-10, 325+HEIGHT, 370+HEIGHT+10], 8, width=5,
+                     outline=BUTTON_OUT,
+                     fill=BUTTON_FILL)
+        canvas.place(x=0-10, y=0)
 
-        panel = Label(root, text="Edit\\add user", font=('calibre', 30), bg='white', justify='center')
+        panel = Label(root, text="Edit\\add user", font=('calibre', 30), bg=TITLE_COLOR, justify='center', fg="white")
         panel.place(x=0, y=0, width=600)
 
         name_var = tk.StringVar()
@@ -309,19 +352,19 @@ class App:
                 ele.destroy()
             self.add_menu()
 
-            canvas = Canvas(root, width=600, height=500)
-            roundPolygon(canvas, [170, 440, 440, 170], [340 - DOWN_GUI, 340 - DOWN_GUI, 425 - DOWN_GUI, 425 - DOWN_GUI],
+            canvas = Canvas(root, width=610, height=500, bg="black")
+            roundPolygon(canvas, [170+10, 440+10, 440+10, 170+10], [340 - DOWN_GUI, 340 - DOWN_GUI, 425 - DOWN_GUI, 425 - DOWN_GUI],
                          10, width=5, outline="#82B366", fill="#D5E8D4")
-            roundPolygon(canvas, [50, 560, 560, 50], [190 - DOWN_GUI, 190 - DOWN_GUI, 320 - DOWN_GUI, 320 - DOWN_GUI],
+            roundPolygon(canvas, [50+10, 560+10, 560+10, 50+10], [190 - DOWN_GUI, 190 - DOWN_GUI, 320 - DOWN_GUI, 320 - DOWN_GUI],
                          10, width=5, outline=MIDDLE_OUT, fill=MIDDLE_FIIL)
-            roundPolygon(canvas, [10, 590, 590, 10], [60 - UP_GUI, 60 - UP_GUI, 220 - UP_GUI, 220 - UP_GUI], 10,
+            roundPolygon(canvas, [10+10, 590+10, 590+10, 10+10], [60 - UP_GUI, 60 - UP_GUI, 220 - UP_GUI, 220 - UP_GUI], 10,
                          width=5, outline=TOP_OUT, fill=TOP_FIIL)
-            roundPolygon(canvas, [15, 150, 15], [400, 445, 490], 8, width=5, outline=BUTTON_OUT, fill=BUTTON_FILL)
-            roundPolygon(canvas, [445 + 15, 445 + 150, 445 + 15], [400, 445, 490], 8, width=5, outline=BUTTON_OUT,
+            roundPolygon(canvas, [15+10, 150+10, 15+10], [400, 445, 490], 8, width=5, outline=BUTTON_OUT, fill=BUTTON_FILL)
+            roundPolygon(canvas, [445 + 15+10, 445 + 150+10, 445 + 15+10], [400, 445, 490], 8, width=5, outline=BUTTON_OUT,
                          fill=BUTTON_FILL)
-            canvas.place(x=0, y=0)
+            canvas.place(x=0-10, y=0)
 
-            panel = Label(root, text="Edit\\create " + name + "'s data", font=('calibre', 30), justify='center')
+            panel = Label(root, text="Edit\\create " + name + "'s data", font=('calibre', 30), justify='center', bg=TITLE_COLOR, fg="white")
             panel.place(x=0, y=0, width=600)
             print(name)
 
@@ -552,17 +595,20 @@ class App:
                 self.__manager.add_user(new_user)
                 self.home()
 
-            submit = Button(root, text="Submit", command=submit_user, bd=3, font=('calibre', 20),
-                            highlightbackground='black', relief=FLAT)
-            submit.place(x=450, y=410, width=120, height=70)
-
-            submit = Button(root, text="default", command=default, bd=3, font=('calibre', 20),
-                            highlightbackground='black', relief=FLAT)
+            submit = tkmacosx.Button(root, text="Submit", command=submit_user, bd=3, font=('calibre', 20),
+                            highlightbackground=BUTTON_FILL, relief=FLAT)
             submit.config(bg=BUTTON_FILL)
-            submit.place(x=5, y=410, width=120, height=70)
+            submit.place(x=470, y=430, width=70, height=30)
 
-        submit = Button(root, text="Submit", command=submit_func, bd=3, font=('calibre', 25), bg='white')
-        submit.place(x=225, y=380, width=150, height=70)
+            submit = tkmacosx.Button(root, text="default", command=default, bd=3, font=('calibre', 20),
+                            highlightbackground=BUTTON_FILL, relief=FLAT)
+            submit.config(bg=BUTTON_FILL)
+            submit.place(x=25, y=430, width=70, height=30)
+
+
+        submit = tkmacosx.Button(root, text="Submit", command=submit_func, bd=3, font=('calibre', 25), highlightbackground=BUTTON_FILL)
+        submit.config(bg=BUTTON_FILL)
+        submit.place(x=225, y=380, width=90, height=30)
 
         # sub_btn = tk.Button(root, text='Submit', command=submit)
 

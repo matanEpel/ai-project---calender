@@ -32,7 +32,7 @@ def main_amit():
     """
     c = Constraints()
     # c.set_soft_constraint("meetings are close together", 100)
-    c.set_soft_constraint("tasks are close together", 100)
+    c.set_soft_constraint("start the day late", 100)
     ofir = User("Ofir", c)
     matan = User("matan", c)
     amit = User("amit", c)
@@ -57,8 +57,8 @@ def main_amit():
     mb3 = Assignment(week=1, name="mb3", duration=Time(h=2), kind=kinds["MUST_BE_IN"], day = 1, time=Time(h=13,m=15))
 
     ofir.add_assignment(a1)
-    ofir.add_assignment(a2)
-    ofir.add_assignment(a3)
+    # ofir.add_assignment(a2)
+    # ofir.add_assignment(a3)
     # ofir.add_assignment(a4)
     # ofir.add_assignment(a5)
     # ofir.add_assignment(a6)
@@ -67,7 +67,7 @@ def main_amit():
     # ofir.add_assignment(a9)
     # ofir.add_assignment(a10)
     # ofir.add_assignment(a11)
-    # ofir.add_assignment(b1)
+    ofir.add_assignment(b1)
     # ofir.add_assignment(b2)
     # ofir.add_assignment(b4)
     # print(ofir.schedule_week(1))

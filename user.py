@@ -157,8 +157,9 @@ class User:
         if schedule is None:
             for a in self.get_assignments(week):
                 if a.get_kind() == consts.kinds["MEETING"]:
-                    print(a.get_time(), a.get_day(), a.get_duration(), end=' - ')
-            print("solution not found")
+                    pass
+                    # print(a.get_time(), a.get_day(), a.get_duration(), end=' - ')
+            # print("solution not found")
             return -100
 
         for s in schedule.items():

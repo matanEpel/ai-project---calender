@@ -21,7 +21,7 @@ def genetic_solution(week, meetings, free_times, kind, users):
 
 
 def gradient_solution(week, meetings, free_times, kind, users):
-    solver = GradientDecent(week, meetings, free_times, kind, users)
+    solver = GradientDecent(week, meetings, free_times, kind, users, "LOW_MEETINGS")
     return solver.solve()
 
 

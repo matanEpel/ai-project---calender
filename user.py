@@ -10,6 +10,7 @@ import consts
 from assignment import *
 from constraint import *
 from time_ import Time
+from utils.utils import exit_after
 
 
 class User:
@@ -146,21 +147,12 @@ class User:
             n += 1
 
 
-        """
-            ADD THREADING
-            
-            for i in range(len(threads)):
-            threads[i] = Thread(target=foo, args=('world!', results, i))
-            threads[i].start()
-        
-        # do some other stuff
-        
-        for i in range(len(threads)):
-            threads[i].join()
-        
-        print " ".join(results)
-        """
-        schedule = self.csp_schedule_assignment(week=week, SHUFFLE=SHUFFLE)
+        # csp_schedule_assignment raises KeyboardInterrupt if the program took more then 0.5s
+        try:
+            schedule = self.csp_schedule_assignment(week=week, SHUFFLE=SHUFFLE)
+        except KeyboardInterrupt:
+            print("solution not found, time more then 0.5s")
+            return -100
 
         if schedule is None:
             for a in self.get_assignments(week):
@@ -180,7 +172,7 @@ class User:
                     # print(a.get_time(), a.get_day(), a.get_duration(), end=' - ')
         return self.__constraints.calculate_score(self.__schedule[week])
 
-
+    @exit_after(0.5)
     def csp_schedule_assignment(self, week, SHUFFLE):
         """
             in order to reduce memory and time, we get only array of durations and match them to the assignments by index.

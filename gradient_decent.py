@@ -26,7 +26,7 @@ class GradientDecent:
             """
             return -np.std(np.array(scores))
 
-    def solve_epoch(self, optional_slots):
+    def solve_epoch(self, optional_slots, num):
         time_for_each_meeting = self.get_random_start_point(
             optional_slots)  # [(day, time) - list of times for the meetings]
         prev_score = -np.inf
@@ -35,7 +35,6 @@ class GradientDecent:
         curr_final_users = deepcopy(self.__users)
         count_in = 0
         while new_score > prev_score or new_score == -np.inf:
-            print("\t", count_in)
             count_in += 1
             for i in range(len(self.__meetings)):
                 self.__meetings[i]["object"].set_day(time_for_each_meeting[i][0])
@@ -46,7 +45,7 @@ class GradientDecent:
             for_final_users = deepcopy(self.__users)
             count_for = 0
             for new_times_for_each_meeting in self.get_neighbor_times(optional_slots, time_for_each_meeting):
-                # print("\t\t", count_for)
+                print(num, count_in, count_for)
                 count_for += 1
                 # print(new_times_for_each_meeting)
                 for i in range(len(self.__meetings)):
@@ -56,7 +55,7 @@ class GradientDecent:
                 if self.score(scores) > max:
                     for_final_users = deepcopy(self.__users)
                     max = self.score(scores)
-                    print(max)
+                    # print(max)
 
                     new_times = new_times_for_each_meeting
 
@@ -85,9 +84,8 @@ class GradientDecent:
             epochs_amount = EPOCHS//10
         # trying X different starting points:
         for _ in range(epochs_amount):
-            print(_)
             # get random starting point:
-            new_score, prev_score, curr_final_users = self.solve_epoch(optional_slots)
+            new_score, prev_score, curr_final_users = self.solve_epoch(optional_slots, _)
             if np.max([new_score, prev_score]) > final_score:
                 final_users = curr_final_users
                 final_score = np.max([new_score, prev_score])
@@ -108,7 +106,7 @@ class GradientDecent:
                         available = False
                 if available:
                     available_slots.append(curr_slot)
-            slot = random.choice(slots_of_day)
+            slot = random.choice(available_slots)
             slots.append(slot)
 
         return [(s["day"], s["start"]) for s in slots]

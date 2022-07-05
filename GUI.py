@@ -14,7 +14,8 @@ from time_ import Time
 def default_users(manager):
     c = Constraints()
     # c.set_soft_constraint("meetings are close together", 1000)
-    c.set_soft_constraint("start the day late", 100)
+    c.set_soft_constraint("meetings are close together", 100)
+    c.set_soft_constraint("breaks are continuous", -100)
     ofir = User("Ofir", c)
     matan = User("matan", c)
     amit = User("amit", c)
@@ -41,7 +42,15 @@ def default_users(manager):
     # a11 = Assignment(week=1, name="ex17", duration=Time(h=5), kind=kinds["MUST_BE_IN"], day=5, time=Time(h=6, m=0))
     b2 = Assignment(week=1, name="m2", duration=Time(h=2), kind=kinds["MEETING"], participants=[ofir], day=2,
                     time=Time(h=6, m=0))
-    b4 = Assignment(week=1, name="m3", duration=Time(h=2), kind=kinds["MEETING"], participants=[ofir], day=2,
+    b3 = Assignment(week=1, name="m3", duration=Time(h=2), kind=kinds["MEETING"], participants=[ofir], day=2,
+                    time=Time(h=6, m=0))
+    b4 = Assignment(week=1, name="m4", duration=Time(h=2), kind=kinds["MEETING"], participants=[ofir], day=2,
+                    time=Time(h=6, m=0))
+    b5 = Assignment(week=1, name="m5", duration=Time(h=2), kind=kinds["MEETING"], participants=[ofir], day=2,
+                    time=Time(h=6, m=0))
+    b6 = Assignment(week=1, name="m6", duration=Time(h=2), kind=kinds["MEETING"], participants=[ofir], day=2,
+                    time=Time(h=6, m=0))
+    b7 = Assignment(week=1, name="m7", duration=Time(h=2), kind=kinds["MEETING"], participants=[ofir], day=2,
                     time=Time(h=14, m=30))
     mb1 = Assignment(week=1, name="mb1", duration=Time(h=2, m=30), kind=kinds["MUST_BE_IN"], day=1,
                      time=Time(h=9, m=30))
@@ -51,19 +60,24 @@ def default_users(manager):
     ofir.add_assignment(a1)
     ofir.add_assignment(a2)
     ofir.add_assignment(a3)
-    # ofir.add_assignment(a4)
-    # ofir.add_assignment(a5)
-    # ofir.add_assignment(a6)
+    ofir.add_assignment(a4)
+    ofir.add_assignment(a5)
+    ofir.add_assignment(a6)
     # ofir.add_assignment(a7)
-    ofir.add_assignment(a8)
-    ofir.add_assignment(a9)
-    ofir.add_assignment(a10)
-    ofir.add_assignment(a11)
-    ofir.add_assignment(a12)
-    ofir.add_assignment(a13)
+    # ofir.add_assignment(a8)
+    # ofir.add_assignment(a9)
+    # ofir.add_assignment(a10)
+    # ofir.add_assignment(a11)
+    # ofir.add_assignment(a12)
+    # ofir.add_assignment(a13)
     # ofir.add_assignment(a14)
     ofir.add_assignment(b1)
     ofir.add_assignment(b2)
+    ofir.add_assignment(b3)
+    ofir.add_assignment(b4)
+    ofir.add_assignment(b5)
+    ofir.add_assignment(b6)
+    ofir.add_assignment(b7)
     # ofir.add_assignment(b4)
     # print(ofir.schedule_week(1))
     # print(ofir)

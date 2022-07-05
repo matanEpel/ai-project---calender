@@ -3,7 +3,7 @@ from consts import *
 from time_ import Time
 
 
-def find_possible_slots(duration, time_slots_list):
+def find_possible_slots(duration, time_slots_list, lunches):
     """
     finding all the time intervals of length duration which are possible in all the time slots in the list
     :param duration: the duration
@@ -17,6 +17,13 @@ def find_possible_slots(duration, time_slots_list):
             if not time_slot.check_all_available(1+i // (HOURS * QUARTERS), 1+(i % (HOURS * QUARTERS)) // QUARTERS,
                                                  i % QUARTERS, duration):
                 free = False
+            start_time = Time(h=1 + (i % (HOURS * QUARTERS)) // QUARTERS, m=(i % QUARTERS) * 15)
+            finish_time = Time(h=1+(i % (HOURS * QUARTERS)) // QUARTERS)
+            # consistent with lunch:
+            for (start, finish, duration_lunch) in lunches:
+                if (start_time < start or duration_lunch < (start_time-start)) and (finish<finish_time or duration_lunch < finish-finish_time):
+                    free = False
+
         if free:
             free_slots.append({"day": 1+i // (HOURS * QUARTERS),
                                "start": Time(h=1+(i % (HOURS * QUARTERS)) // QUARTERS, m=(i % QUARTERS) * 15),

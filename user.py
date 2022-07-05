@@ -183,7 +183,7 @@ class User:
 
         if count == 4:
             logging.debug("did not found a a solution, returning -100")
-            return -100
+            return -np.inf
 
         if schedule is None:
             for a in self.get_assignments(week):
@@ -191,7 +191,7 @@ class User:
                     pass
                     # print(a.get_time(), a.get_day(), a.get_duration(), end=' - ')
             # print("solution not found")
-            return -100
+            return -np.inf
 
         for s in schedule.items():
             assignments_array[s[0][0]].set_time(s[1][0])

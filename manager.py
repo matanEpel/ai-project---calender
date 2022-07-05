@@ -26,7 +26,7 @@ def gradient_solution(week, meetings, free_times, kind, users):
 
 
 class Manager:
-    def __init__(self, type="gradient", kind="sum"):
+    def __init__(self, type="genetic", kind="sum"):
         self.__type = type
         self.__kind = kind
         self.__users = []
@@ -119,6 +119,8 @@ class Manager:
                 for i in range((25 - user.get_constraints().get_hard_constraints()["end of the day"].get_hours()) * 4):
                     free_slots.set_unavailable(day, user.get_constraints().get_hard_constraints()[
                         "end of the day"].get_hours() + i // QUARTERS, i % QUARTERS)
+                lunch = user.get_constraints().get_hard_constraints()["lunch time"]
+
             data_slots_dict[user_count] = {"user": user, "free slots": free_slots}
             user_count += 1
         """
@@ -126,7 +128,7 @@ class Manager:
         dict which contains numbered meetings:
         idx: assignment, duration, list of indexed participants
         
-        free times:
+        data_slots_dict:
         dict of the free times and the user of each idx
         idx: user, its free times
         """

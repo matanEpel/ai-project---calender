@@ -16,6 +16,7 @@ class GeneticAlgorithm:
         self.__free_times = free_times
         self.__kind = kind
         self.__users = users
+        self.__lunches = [u.get_constraints().get_hard_constraints()["lunch time"] for u in self.__users]
         self.__amount_of_starting_points = AMOUNT_STARTING_POINTS
 
     def score(self, scores):
@@ -31,25 +32,25 @@ class GeneticAlgorithm:
         optional_slots = [[] for _ in range(len(self.__meetings))]  # optional slots for every meeting
         for i in self.__meetings.keys():
             time_slots = [self.__free_times[k]["free slots"] for k in self.__meetings[i]["participants"]]
-            optional_slots[i] += find_possible_slots(self.__meetings[i]["duration"], time_slots)
+            optional_slots[i] += find_possible_slots(self.__meetings[i]["duration"], time_slots, self.__lunches)
         time_pool = [self.get_start_point(optional_slots) for _ in
                      range(self.__amount_of_starting_points)]  # [(day, time) - list of times for the meetings]
         for _ in range(self.__amount_of_epochs):
+            print(_)
             solutions = []
             for i in range(len(time_pool)):
+                # print("\t", i)
                 new_times_for_each_meeting = time_pool[i]
-                for j in range(len(self.__meetings)):
-                    self.__meetings[i]["object"].set_day(new_times_for_each_meeting[j][0])
-                    self.__meetings[i]["object"].set_time(new_times_for_each_meeting[j][1])
+                for j in range(len(new_times_for_each_meeting)):
+                    self.__meetings[j]["object"].set_day(new_times_for_each_meeting[j][0])
+                    self.__meetings[j]["object"].set_time(new_times_for_each_meeting[j][1])
                 scores = [user.schedule_week(self.__week) for user in self.__users]
                 solutions.append({"meetings": new_times_for_each_meeting, "users": deepcopy(self.__users),
                                   "score": self.score(scores)})
             if _ == self.__amount_of_epochs - 1:
                 best = max(solutions, key=lambda s: s["score"])
                 max_users = best["users"]
-                max_score = best["score"]
-                self.__users = max_users
-                return max_score
+                return max_users
             else:
                 remaining_solutions = sorted(solutions, key=lambda s: s["score"], reverse=True)
                 remaining_solutions = remaining_solutions[:self.__amount_of_starting_points]
@@ -92,6 +93,8 @@ class GeneticAlgorithm:
     def children(self, meetings_1, meetings_2, optional_slots):
         options = []
         # switching between times of meetings
+        meetings_1 = meetings_1["meetings"]
+        meetings_2 = meetings_2["meetings"]
         for i in range(len(meetings_1)):
             opt1 = meetings_2[:i] + [meetings_1[i]] + meetings_2[i + 1:]
             opt2 = meetings_1[:i] + [meetings_2[i]] + meetings_1[i + 1:]
@@ -101,14 +104,15 @@ class GeneticAlgorithm:
                 options.append(opt2)
         return options
 
-    def get_random_point(self, optional_slots, idx, other_slots):
+    def get_random_point(self, optional_slots, idx, other_slots, durations):
         slots_of_day = optional_slots[idx]
         available_slots = []
         for curr_slot in slots_of_day:
             available = True
-            for slot in other_slots:
-                if curr_slot["day"] == slot["day"] and Time.is_overlap(curr_slot["start"], curr_slot["finish"],
-                                                                       slot["start"], slot["finish"]):
+            for i in range(len(other_slots)):
+                slot = other_slots[i]
+                if curr_slot["day"] == slot[0] and Time.is_overlap(curr_slot["start"], curr_slot["finish"],
+                                                                       slot[1], slot[1]+durations[i]):
                     available = False
             if available:
                 available_slots.append(curr_slot)
@@ -122,8 +126,13 @@ class GeneticAlgorithm:
 
         for child in childrens:
             idx = random.choice(list(range(len(child))))
-            new_loc = self.get_random_point(optional_slots, idx, child[:idx] + child[idx + 1:])
+            durations = []
+            for i in self.__meetings:
+                if i != idx:
+                    durations.append(self.__meetings[i])
+            durations = [m["object"].get_duration() for m in durations]
+            new_loc = self.get_random_point(optional_slots, idx, child[:idx] + child[idx + 1:], durations)
             if new_loc:
-                final.append(child[:idx] + [new_loc] + child[idx + 1:])
+                final.append(child[:idx] + [(new_loc["day"], new_loc["start"])] + child[idx + 1:])
 
         return final

@@ -15,6 +15,7 @@ class GradientDecent:
         self.__free_times = free_times
         self.__kind = kind
         self.__users = users
+        self.__lunches = [u.get_constraints().get_hard_constraints()["lunch time"] for u in self.__users]
         if len(self.__meetings) >= THRESHOLD_LOT_OF_MEETS:
             self.__mode = "HIGH_MEETINGS"
         else:
@@ -74,7 +75,7 @@ class GradientDecent:
         optional_slots = [[] for _ in range(len(self.__meetings))]  # optional slots for every meeting
         for i in self.__meetings.keys():
             time_slots = [self.__free_times[k]["free slots"] for k in self.__meetings[i]["participants"]]
-            optional_slots[i] += find_possible_slots(self.__meetings[i]["duration"], time_slots)
+            optional_slots[i] += find_possible_slots(self.__meetings[i]["duration"], self.__lunches)
 
         final_time_for_each_meeting = []
         final_score = -np.inf

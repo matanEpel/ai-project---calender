@@ -11,14 +11,19 @@ from googleapiclient.errors import HttpError
 
 # If modifying these scopes, delete the file token.json.
 from assignment import Assignment
+from consts import *
+from time_ import Time
 
 SCOPES = ['https://www.googleapis.com/auth/calendar.readonly', 'https://www.googleapis.com/auth/calendar.events']
 
 
-def export():
+def export(assignments):
     """Shows basic usage of the Google Calendar API.
     Prints the start and name of the next 10 events on the user's calendar.
     """
+
+    evs = [assignment_to_event(ass) for ass in assignments]
+
     creds = None
     # The file token.json stores the user's access and refresh tokens, and is
     # created automatically when the authorization flow completes for the first
@@ -40,59 +45,48 @@ def export():
     try:
         service = build('calendar', 'v3', credentials=creds)
 
-        # Call the Calendar API
-        now = datetime.datetime.utcnow().isoformat() + 'Z'  # 'Z' indicates UTC time
-        print('Getting the upcoming 10 events')
-        events_result = service.events().list(calendarId='primary', timeMin=now,
-                                              maxResults=10, singleEvents=True,
-                                              orderBy='startTime').execute()
-        events = events_result.get('items', [])
+        # # Call the Calendar API
+        # now = datetime.datetime.utcnow().isoformat() + 'Z'  # 'Z' indicates UTC time
+        # print('Getting the upcoming 10 events')
+        # events_result = service.events().list(calendarId='primary', timeMin=now,
+        #                                       maxResults=10, singleEvents=True,
+        #                                       orderBy='startTime').execute()
+        # events = events_result.get('items', [])
 
-        event = {
-            'summary': 'Google I/O 2015',
-            'location': '800 Howard St., San Francisco, CA 94103',
-            'description': 'A chance to hear more about Google\'s developer products.',
-            'start': {
-                'dateTime': '2022-07-04T09:00:00-07:00',
-                'timeZone': 'America/Los_Angeles',
-            },
-            'end': {
-                'dateTime': '2022-07-04T17:00:00-07:00',
-                'timeZone': 'America/Los_Angeles',
-            },
-            'recurrence': [
-                'RRULE:FREQ=DAILY;COUNT=2'
-            ],
-            'attendees': [
-                {'email': 'lpage@example.com'},
-                {'email': 'sbrin@example.com'},
-            ],
-            'reminders': {
-                'useDefault': False,
-                'overrides': [
-                    {'method': 'email', 'minutes': 24 * 60},
-                    {'method': 'popup', 'minutes': 10},
-                ],
-            },
-        }
-
-        service.events().insert(calendarId='primary', body=event).execute()
-
-        print("added event")
-
-        if not events:
-            print('No upcoming events found.')
-            return
-
-        # Prints the start and name of the next 10 events
-        for event in events:
-            start = event['start'].get('dateTime', event['start'].get('date'))
-            print(start, event['summary'])
+        for event in evs:
+            service.events().insert(calendarId='primary', body=event).execute()
 
     except HttpError as error:
         print('An error occurred: %s' % error)
 
 
+def assignment_to_event(ass: Assignment):
+    summary = ass.get_name()
+    start, end = ass.to_datetime_time()
+    participants = ass.get_participants()
+    kind = (ass.get_kind())
+
+    event = {
+        'summary': summary,
+        'colorId': str(GOOGLE_COLORS[kind]),
+        'start': {
+                'dateTime': start.astimezone().isoformat(),
+        },
+        'end': {
+                'dateTime': end.astimezone().isoformat(),
+        },
+    }
+
+    if participants:
+        event['attendees'] = []
+        for participant in participants:
+            event['attendees'].append({'email':participant + "@gmail.com"})
+    return event
+
 if __name__ == '__main__':
-    asses = Assignment()
-    export(asses)
+    b1 = Assignment(week=1, name="m1", duration=Time(h=2), kind=kinds["MEETING"], participants=["ophir.carmel"], day=4,
+                    time=Time(h=20, m=00))
+    b2 = Assignment(week=1, name="m2", duration=Time(h=3), kind=kinds["TASK"], participants=["ophir.carmel"], day=5,
+                    time=Time(h=13, m=30))
+
+    export([b1, b2])

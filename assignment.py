@@ -1,4 +1,5 @@
 from consts import *
+from datetime import datetime, timedelta
 
 
 
@@ -61,6 +62,9 @@ class Assignment:
     def get_participants(self):
         return self.__participants
 
+    def get_curr_day(self):
+        return self.__curr_day
+
     def add_participant(self, user):
         self.__participants.append(user)
 
@@ -92,9 +96,30 @@ class Assignment:
         self.__time = time
 
     def update_curr(self):
-        days = (self.__day - 1)
-        d = datetime.timedelta(days=days)
-        self.__curr_day
+        days = (self.__week - 1) * 7 + (self.__day - 1)
+        d = timedelta(days=days)
+        self.__curr_day += d
+
+    def to_datetime_time(self):
+        self.update_curr()
+        start_hours = self.get_time().get_hours()
+        start_minutes = self.get_time().get_minutes()
+
+        end_time = self.get_time() + self.get_duration()
+        end_hours = end_time.get_hours()
+        end_minutes = end_time.get_minutes()
+
+        start_time = datetime.strptime(f"{start_hours}:{start_minutes}", "%H:%M").time()
+        end_time = datetime.strptime(f"{end_hours}:{end_minutes}", "%H:%M").time()
+        date = self.get_curr_day()
+
+        start = datetime.combine(date, start_time)
+        end = datetime.combine(date, end_time)
+
+        return start, end
+
+
+
 
     def __str__(self):
         return "name: {}, starting at {}, for {} at day {},week {}".format(

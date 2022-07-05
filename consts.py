@@ -1,4 +1,5 @@
 import logging
+from datetime import datetime
 
 kinds = {"TASK": 0, "MEETING": 1, "MUST_BE_IN": 2, "LUNCH": 3}
 topics = {"CN":"Course Name", "SP": "Sports", "CO": "Country Names", "TO": "General Topics", "MU": "Music Genres", "WO": "Work Related"}
@@ -17,3 +18,4 @@ DOWN_GUI = -30
 UP_GUI = 15
 THRESHOLD_LOT_OF_MEETS = 7
 LOG_LEVEL = logging.DEBUG
+BASELINE_DAY = datetime.strptime("2022-7-3","%Y-%m-%d")

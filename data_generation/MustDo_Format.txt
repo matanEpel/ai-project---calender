@@ -7,3 +7,8 @@ Nap time
 Lunch Break
 Exercise
 Exam
+Boss
+% - Lecture
+$ - Lecture about %
+Boss Hour
+Clean Office

@@ -3,6 +3,7 @@ import random
 from copy import deepcopy
 from typing import Dict, Tuple
 from threading import Thread
+import logging
 
 import numpy as np
 
@@ -11,6 +12,8 @@ from assignment import *
 from constraint import *
 from time_ import Time
 from utils.utils import exit_after
+
+logging.basicConfig(level=consts.LOG_LEVEL)
 
 
 class User:
@@ -108,6 +111,7 @@ class User:
 
     def place_assignment(self, assignment: Assignment, week: int):
         if assignment.get_time() is None or assignment.get_day() is None:
+            logging.error("assignment cannot be placed")
             raise ValueError("assignment cannot be placed")
 
         # TODO need to check if slot is available
@@ -176,9 +180,8 @@ class User:
                 count+=1
 
         if count == 4:
-            print("did not found a a solution, returning -100")
+            logging.debug("did not found a a solution, returning -100")
             return -100
-
 
         if schedule is None:
             for a in self.get_assignments(week):

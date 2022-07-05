@@ -1,3 +1,5 @@
+import logging
+
 kinds = {"TASK": 0, "MEETING": 1, "MUST_BE_IN": 2, "LUNCH": 3}
 topics = {"CN":"Course Name", "SP": "Sports", "CO": "Country Names", "TO": "General Topics", "MU": "Music Genres", "WO": "Work Related"}
 DAYS = 7
@@ -14,3 +16,4 @@ TITLE_COLOR = "black"
 DOWN_GUI = -30
 UP_GUI = 15
 THRESHOLD_LOT_OF_MEETS = 7
+LOG_LEVEL = logging.DEBUG

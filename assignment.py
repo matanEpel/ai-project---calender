@@ -38,6 +38,7 @@ class Assignment:
         self.__time = time  # time of beginning
         self.__duration = duration  # duration of event
         self.__participants = participants
+        self.__curr_day =  BASELINE_DAY
 
     def get_time(self):
         return self.__time
@@ -89,6 +90,11 @@ class Assignment:
 
     def set_time(self, time):
         self.__time = time
+
+    def update_curr(self):
+        days = (self.__day - 1)
+        d = datetime.timedelta(days=days)
+        self.__curr_day
 
     def __str__(self):
         return "name: {}, starting at {}, for {} at day {},week {}".format(

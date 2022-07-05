@@ -13,7 +13,7 @@ class Constraints:
         self.__hard_constraints = dict()
         self.__hard_constraints["overlap meeting task"] = False
         self.__hard_constraints["overlap must be task"] = False
-        self.__hard_constraints["lunch time"] = (Time(h=12),Time(h=15),Time(m=30)) # range for launch and time of launch
+        self.__hard_constraints["lunch time"] = (Time(h=12),Time(h=15),Time(h=1,m=30)) # range for launch and time of launch
         self.__hard_constraints["break before meeting"] = Time() # done
         self.__hard_constraints["break before task"] = Time() # done
         self.__hard_constraints["break before must be"] = Time() # done

@@ -71,6 +71,8 @@ class User:
     def get_schedule(self, week: int):
         return self.__schedule[week]
 
+    def has_schedule(self, week):
+        return week in self.__schedule and len(self.__schedule[week]) > 0
     def set_schedule(self, week: int):
         """
         This function copies all the assignment of a week into the schedule dict

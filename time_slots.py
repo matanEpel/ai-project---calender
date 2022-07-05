@@ -11,7 +11,7 @@ def find_possible_slots(duration, time_slots_list):
     :return: [(day, x1, x2) - list of time intervals and their days]
     """
     free_slots = []
-    for i in range(DAYS * (HOURS-1) * QUARTERS):
+    for i in range((DAYS-2) * (HOURS-1) * QUARTERS):
         free = True
         for time_slot in time_slots_list:
             if not time_slot.check_all_available(1+i // (HOURS * QUARTERS), 1+(i % (HOURS * QUARTERS)) // QUARTERS,
@@ -31,7 +31,7 @@ class TimeSlots:
     """
 
     def __init__(self):
-        self.__slots = np.array([[1] * QUARTERS * HOURS] * DAYS)
+        self.__slots = np.array([[1] * QUARTERS * HOURS] * (DAYS-2))
 
     def set_unavailable(self, day, hour, quarter):
         self.__slots[day - 1, (hour - 1) * 4 + quarter] = 0

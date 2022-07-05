@@ -119,7 +119,7 @@ class Manager:
                     for i in range(int(duration.get_hours() * 4 + duration.get_minutes() // 15)):
                         free_slots.set_unavailable(day + (hour * QUARTERS + quarter + i) // (QUARTERS * HOURS),
                                                    hour + (quarter + i) // QUARTERS, (quarter + i) % QUARTERS)
-            for day in range(1, DAYS + 1):
+            for day in range(1, DAYS + 1-2):
                 for i in range(
                         (-1 + user.get_constraints().get_hard_constraints()["start of the day"].get_hours()) * 4):
                     free_slots.set_unavailable(day, 1 + i // QUARTERS, i % QUARTERS)

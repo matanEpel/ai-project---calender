@@ -10,54 +10,65 @@ from manager import Manager
 from user import User
 from time_ import Time
 
+
 def default_users(manager):
     c = Constraints()
     # c.set_soft_constraint("meetings are close together", 1000)
-    c.set_soft_constraint("start the day late", -1)
+    c.set_soft_constraint("start the day late", 100)
     ofir = User("Ofir", c)
     matan = User("matan", c)
     amit = User("amit", c)
 
-    a1 = Assignment(week=1, name="ex1", duration=Time(h=1), kind=kinds["TASK"])
-    a2 = Assignment(week=1, name="ex2", duration=Time(h=1), kind=kinds["TASK"])
-    a3 = Assignment(week=1, name="ex3", duration=Time(h=1), kind=kinds["TASK"])
-    a4 = Assignment(week=1, name="ex4", duration=Time(h=1), kind=kinds["TASK"])
-    a5 = Assignment(week=1, name="ex5", duration=Time(h=1), kind=kinds["TASK"])
-    a6 = Assignment(week=1, name="ex6", duration=Time(h=2), kind=kinds["TASK"])
-    a7 = Assignment(week=1, name="ex7", duration=Time(h=3), kind=kinds["TASK"])
-    a8 = Assignment(week=1, name="ex8", duration=Time(h=2), kind=kinds["TASK"])
-    a9 = Assignment(week=1, name="ex9", duration=Time(h=1), kind=kinds["TASK"])
-    a10 = Assignment(week=1, name="ex10", duration=Time(h=1), kind=kinds["TASK"])
-    a11 = Assignment(week=1, name="ex11", duration=Time(h=5), kind=kinds["TASK"])
+    a1 = Assignment(week=1, name="ex1", duration=Time(h=1), kind=kinds["TASK"], day=3,time=Time(h=10, m=30))
+    a2 = Assignment(week=1, name="ex2", duration=Time(h=1), kind=kinds["TASK"], day=3,time=Time(h=12, m=30))
+    a3 = Assignment(week=1, name="ex3", duration=Time(h=0,m=45), kind=kinds["TASK"], day=3,time=Time(h=16, m=30))
+    a4 = Assignment(week=1, name="ex4", duration=Time(h=1), kind=kinds["TASK"], day=3,time=Time(h=19, m=30))
+    a5 = Assignment(week=1, name="ex5", duration=Time(h=1), kind=kinds["TASK"], day=4,time=Time(h=10, m=30))
+    a6 = Assignment(week=1, name="ex6", duration=Time(h=2), kind=kinds["TASK"], day=4, time=Time(h=20, m=30))
+    a7 = Assignment(week=1, name="ex7", duration=Time(h=1), kind=kinds["TASK"], day=4, time=Time(h=22, m=30))
+    a8 = Assignment(week=1, name="ex8", duration=Time(h=2), kind=kinds["TASK"], day=4, time=Time(h=13, m=30))
+    a9 = Assignment(week=1, name="ex9", duration=Time(h=1), kind=kinds["TASK"], day=5, time=Time(h=10, m=30))
+    a10 = Assignment(week=1, name="ex10", duration=Time(h=1), kind=kinds["TASK"], day=5, time=Time(h=12, m=30))
+    a11 = Assignment(week=1, name="ex11", duration=Time(h=5), kind=kinds["TASK"], day=5, time=Time(h=13, m=30))
 
-    b1 = Assignment(week=1, name="m1", duration=Time(h=2), kind=kinds["MEETING"], participants=[ofir], day=4,
-                    time=Time(h=11, m=45))
-    b2 = Assignment(week=1, name="m2", duration=Time(h=2), kind=kinds["MEETING"], participants=[ofir], day=5,
-                    time=Time(h=9, m=15))
+    b1 = Assignment(week=1, name="m1", duration=Time(h=2), kind=kinds["MEETING"], participants=[ofir], day=1,
+                    time=Time(h=22, m=0))
+    a12 = Assignment(week=1, name="ex12", duration=Time(h=5), kind=kinds["MUST_BE_IN"], day=1, time=Time(h=6, m=0))
+    a13 = Assignment(week=1, name="ex13", duration=Time(h=1), kind=kinds["MUST_BE_IN"], day=1, time=Time(h=11, m=0))
+    # a14 = Assignment(week=1, name="ex14", duration=Time(h=2), kind=kinds["LUNCH"], day=1, time=Time(h=12, m=30))
+    # a11 = Assignment(week=1, name="ex15", duration=Time(h=5), kind=kinds["MUST_BE_IN"], day=5, time=Time(h=6, m=0))
+    # a11 = Assignment(week=1, name="ex16", duration=Time(h=5), kind=kinds["MUST_BE_IN"], day=5, time=Time(h=6, m=0))
+    # a11 = Assignment(week=1, name="ex17", duration=Time(h=5), kind=kinds["MUST_BE_IN"], day=5, time=Time(h=6, m=0))
+    b2 = Assignment(week=1, name="m2", duration=Time(h=2), kind=kinds["MEETING"], participants=[ofir], day=2,
+                    time=Time(h=6, m=0))
     b4 = Assignment(week=1, name="m3", duration=Time(h=2), kind=kinds["MEETING"], participants=[ofir], day=2,
                     time=Time(h=14, m=30))
     mb1 = Assignment(week=1, name="mb1", duration=Time(h=2, m=30), kind=kinds["MUST_BE_IN"], day=1,
                      time=Time(h=9, m=30))
-    mb2 = Assignment(week=1, name="mb2", duration=Time(h=2), kind=kinds["MUST_BE_IN"], day=2, time=Time(h=10, m=30))
-    mb3 = Assignment(week=1, name="mb3", duration=Time(h=2), kind=kinds["MUST_BE_IN"], day=1, time=Time(h=13, m=15))
+    mb2 = Assignment(week=1, name="mb2", duration=Time(h=2), kind=kinds["MUST_BE_IN"], day=2, time=Time(h=6, m=0))
+    mb3 = Assignment(week=1, name="mb3", duration=Time(h=2), kind=kinds["MUST_BE_IN"], day=1, time=Time(h=22, m=0))
 
     ofir.add_assignment(a1)
     ofir.add_assignment(a2)
     ofir.add_assignment(a3)
-    ofir.add_assignment(a4)
-    ofir.add_assignment(a5)
-    ofir.add_assignment(a6)
-    ofir.add_assignment(a7)
+    # ofir.add_assignment(a4)
+    # ofir.add_assignment(a5)
+    # ofir.add_assignment(a6)
+    # ofir.add_assignment(a7)
     ofir.add_assignment(a8)
     ofir.add_assignment(a9)
     ofir.add_assignment(a10)
     ofir.add_assignment(a11)
+    ofir.add_assignment(a12)
+    ofir.add_assignment(a13)
+    # ofir.add_assignment(a14)
     ofir.add_assignment(b1)
     ofir.add_assignment(b2)
     # ofir.add_assignment(b4)
     # print(ofir.schedule_week(1))
     # print(ofir)
     manager.add_user(ofir)
+
 
 def roundPolygon(canvas, x, y, sharpness, **kwargs):
     # The sharpness here is just how close the sub-points
@@ -163,18 +174,18 @@ class App:
         self.add_menu()
 
         canvas = Canvas(root, width=610, height=500, bg="black")
-        roundPolygon(canvas, [90+10, 505+10, 505+10, 90+10], [80, 80, 200, 200], 10,
+        roundPolygon(canvas, [90 + 10, 505 + 10, 505 + 10, 90 + 10], [80, 80, 200, 200], 10,
                      width=5, outline=TOP_OUT, fill=TOP_FIIL)
-
 
         FIRST = 100
         SEC = 350
-        roundPolygon(canvas, [15 + 10+FIRST, 150+FIRST + 10, 15 + 10+FIRST], [280, 325, 370], 8, width=5, outline=BUTTON_OUT,
+        roundPolygon(canvas, [15 + 10 + FIRST, 150 + FIRST + 10, 15 + 10 + FIRST], [280, 325, 370], 8, width=5,
+                     outline=BUTTON_OUT,
                      fill=BUTTON_FILL)
         roundPolygon(canvas, [15 + 10 + SEC, 150 + SEC + 10, 15 + 10 + SEC], [280, 325, 370], 8, width=5,
                      outline=BUTTON_OUT,
                      fill=BUTTON_FILL)
-        canvas.place(x=0-10, y=0)
+        canvas.place(x=0 - 10, y=0)
 
         panel = Label(root, text="All users", font=('calibre', 30), bg=TITLE_COLOR, justify='center', fg="white")
         panel.place(x=0, y=0, width=600)
@@ -185,13 +196,15 @@ class App:
 
         bamb = StringVar(root)
         bamb.set("none")
-        Label(root, text="The user you want to look at:", font=('calibre', 25), bg=TOP_FIIL, justify='center').place(x=100, y=100)
+        Label(root, text="The user you want to look at:", font=('calibre', 25), bg=TOP_FIIL, justify='center').place(
+            x=100, y=100)
         w = OptionMenu(root, bamb, "none", *(users.keys()))
         w.config(bg=TOP_FIIL)
         w.place(x=430, y=108)
 
         week_var = StringVar(root)
-        Label(root, text="The week you want to look at:", font=('calibre', 25), bg=TOP_FIIL, justify='center').place(x=100, y=150)
+        Label(root, text="The week you want to look at:", font=('calibre', 25), bg=TOP_FIIL, justify='center').place(
+            x=100, y=150)
         weeks = set()
         for u in self.__manager.get_users():
             for ass in u.get_all_assignments():
@@ -215,13 +228,14 @@ class App:
                 if u.get_name() == name:
                     user = u
             week = int(week_var.get())
-            if not user.get_assignments(week)[0].get_time():
+            if not user.has_schedule(week):
                 canvas = Canvas(root, width=610, height=500, bg="black")
                 roundPolygon(canvas, [220, 420, 420, 220], [10, 10, 450, 450], 8, width=5,
                              outline=TOP_OUT,
                              fill=TOP_FIIL)
                 canvas.place(x=-10, y=40)
-                panel = Label(root, text=bamb.get() + "'s assignments - haven't scheduled yet :)", font=('calibre', 30), bg=TITLE_COLOR, justify='center', fg="white")
+                panel = Label(root, text=bamb.get() + "'s assignments - haven't scheduled yet :)", font=('calibre', 30),
+                              bg=TITLE_COLOR, justify='center', fg="white")
                 panel.place(x=0, y=0, width=600)
 
                 i = 0
@@ -234,9 +248,10 @@ class App:
                     panel.place(x=235, y=70 + i * 30)
                     i += 1
             else:
-                self.calender_page(user)
+                self.calender_page(user, week)
 
-        submit = tkmacosx.Button(root, text="GO!", command=submit_func, bd=3, font=('calibre', 13), highlightbackground=BUTTON_FILL)
+        submit = tkmacosx.Button(root, text="GO!", command=submit_func, bd=3, font=('calibre', 13),
+                                 highlightbackground=BUTTON_FILL)
         submit.config(bg=BUTTON_FILL)
         submit.place(x=120, y=310, width=70, height=30)
 
@@ -246,8 +261,8 @@ class App:
                 print("week " + str(week) + " was scheduled!")
                 self.__manager.schedule_week(week)
 
-
-        submit = tkmacosx.Button(root, text="SCHEDULE!", command=schedule, bd=3, font=('calibre', 13), highlightbackground=BUTTON_FILL)
+        submit = tkmacosx.Button(root, text="SCHEDULE!", command=schedule, bd=3, font=('calibre', 13),
+                                 highlightbackground=BUTTON_FILL)
         submit.config(bg=BUTTON_FILL)
         submit.place(x=370, y=310, width=78, height=30)
 
@@ -257,7 +272,7 @@ class App:
         self.add_menu()
 
         canvas = Canvas(root, width=610, height=500, bg="black", bd=0, relief='ridge')
-        roundPolygon(canvas, [140+10, 460+10, 460+10, 140+10], [160, 160, 290, 290], 10,
+        roundPolygon(canvas, [140 + 10, 460 + 10, 460 + 10, 140 + 10], [160, 160, 290, 290], 10,
                      width=5, outline="#82B366", fill="#D5E8D4")
         WIDTH = 215
         HEIGHT = 69
@@ -267,7 +282,8 @@ class App:
                      fill=BUTTON_FILL)
         canvas.place(x=-10, y=0)
 
-        panel = Label(root, text="Add assignment to user", font=('calibre', 30), bg=TITLE_COLOR, justify='center', fg='white')
+        panel = Label(root, text="Add assignment to user", font=('calibre', 30), bg=TITLE_COLOR, justify='center',
+                      fg='white')
         panel.place(x=0, y=0, width=600)
 
         name_var = tk.StringVar()
@@ -278,9 +294,8 @@ class App:
         panel = Label(root, text="enter user name:", font=('calibre', 30), bg="#D5E8D4")
         panel.place(x=180, y=170)
 
-
         def submit_func():
-            #TODO: look good
+            # TODO: look good
             name = name_var.get()
             for ele in root.winfo_children():
                 ele.destroy()
@@ -288,9 +303,11 @@ class App:
 
             canvas = Canvas(root, width=610, height=500, bg="black")
             C_H = 20
-            roundPolygon(canvas, [60+10, 280+10, 280+10, 60+10], [120-C_H, 120-C_H, 340-C_H, 340-C_H], 10,
+            roundPolygon(canvas, [60 + 10, 280 + 10, 280 + 10, 60 + 10], [120 - C_H, 120 - C_H, 340 - C_H, 340 - C_H],
+                         10,
                          width=5, outline=TOP_OUT, fill=TOP_FIIL)
-            roundPolygon(canvas, [60+260+10, 280+260+10, 280+260+10, 60+260+10], [120-C_H, 120-C_H, 340-C_H, 340-C_H], 10,
+            roundPolygon(canvas, [60 + 260 + 10, 280 + 260 + 10, 280 + 260 + 10, 60 + 260 + 10],
+                         [120 - C_H, 120 - C_H, 340 - C_H, 340 - C_H], 10,
                          width=5, outline=MIDDLE_OUT, fill=MIDDLE_FIIL)
             WIDTH = 215
             HEIGHT = 69
@@ -300,36 +317,41 @@ class App:
                          fill=BUTTON_FILL)
             canvas.place(x=-10, y=0)
 
-            panel = Label(root, text="Assignment metadata", font=('calibre', 30), justify='center', bg=TITLE_COLOR, fg="white")
+            panel = Label(root, text="Assignment metadata", font=('calibre', 30), justify='center', bg=TITLE_COLOR,
+                          fg="white")
             panel.place(x=0, y=0, width=600)
 
             ass_name_var = tk.StringVar()
-            e1 = tk.Entry(root, textvariable=ass_name_var, bd=0, font=('calibre', 20), justify='center', bg=TOP_FIIL,highlightbackground="black", highlightthickness=2)
-            e1.place(x=70, y=170-C_H, width=200, height=50)
+            e1 = tk.Entry(root, textvariable=ass_name_var, bd=0, font=('calibre', 20), justify='center', bg=TOP_FIIL,
+                          highlightbackground="black", highlightthickness=2)
+            e1.place(x=70, y=170 - C_H, width=200, height=50)
 
             panel = Label(root, text="name:", font=('calibre', 20), bg=TOP_FIIL)
-            panel.place(x=140, y=130-C_H)
+            panel.place(x=140, y=130 - C_H)
 
             ass_length_var = tk.StringVar()
-            e1 = tk.Entry(root, textvariable=ass_length_var, bd=0, font=('calibre', 20), justify='center', bg=TOP_FIIL,highlightbackground="black", highlightthickness=2)
-            e1.place(x=70, y=270-C_H, width=200, height=50)
+            e1 = tk.Entry(root, textvariable=ass_length_var, bd=0, font=('calibre', 20), justify='center', bg=TOP_FIIL,
+                          highlightbackground="black", highlightthickness=2)
+            e1.place(x=70, y=270 - C_H, width=200, height=50)
 
             panel = Label(root, text="length:", font=('calibre', 20), bg=TOP_FIIL)
-            panel.place(x=135, y=230-C_H)
+            panel.place(x=135, y=230 - C_H)
 
             ass_week_var = tk.StringVar()
-            e1 = tk.Entry(root, textvariable=ass_week_var, bd=0, font=('calibre', 20), justify='center',bg=MIDDLE_FIIL,highlightbackground="black", highlightthickness=2)
-            e1.place(x=330, y=170-C_H, width=200, height=50)
+            e1 = tk.Entry(root, textvariable=ass_week_var, bd=0, font=('calibre', 20), justify='center', bg=MIDDLE_FIIL,
+                          highlightbackground="black", highlightthickness=2)
+            e1.place(x=330, y=170 - C_H, width=200, height=50)
 
             panel = Label(root, text="week:", font=('calibre', 20), bg=MIDDLE_FIIL)
-            panel.place(x=400, y=130-C_H)
+            panel.place(x=400, y=130 - C_H)
 
             ass_part_var = tk.StringVar()
-            e1 = tk.Entry(root, textvariable=ass_part_var, bd=0, font=('calibre', 20), justify='center',bg=MIDDLE_FIIL,highlightbackground="black", highlightthickness=2)
-            e1.place(x=330, y=270-C_H, width=200, height=50)
+            e1 = tk.Entry(root, textvariable=ass_part_var, bd=0, font=('calibre', 20), justify='center', bg=MIDDLE_FIIL,
+                          highlightbackground="black", highlightthickness=2)
+            e1.place(x=330, y=270 - C_H, width=200, height=50)
 
-            panel = Label(root, text="participants:", font=('calibre', 20),bg=MIDDLE_FIIL)
-            panel.place(x=380, y=230-C_H)
+            panel = Label(root, text="participants:", font=('calibre', 20), bg=MIDDLE_FIIL)
+            panel.place(x=380, y=230 - C_H)
 
             def submit_func_ass():
                 print(1)
@@ -348,7 +370,8 @@ class App:
                                 curr_user = u
                         if curr_user:
                             partici.append(curr_user)
-                    assignment = Assignment(int(ass_week_var.get()), ass_name_var.get(), int(ass_length_var.get()),
+                    minutes = int(ass_length_var.get())
+                    assignment = Assignment(int(ass_week_var.get()), ass_name_var.get(), Time(h=minutes//60,m=minutes%60),
                                             participants=partici)
                     for part in partici:
                         part.add_assignment(assignment)
@@ -361,7 +384,8 @@ class App:
             submit.place(x=225, y=380, width=90, height=30)
 
         photo = PhotoImage(file=r"resources/all.png")
-        submit = tkmacosx.Button(root, text="Submit", command=submit_func, bd=3, font=('calibre', 25), highlightbackground=BUTTON_FILL)
+        submit = tkmacosx.Button(root, text="Submit", command=submit_func, bd=3, font=('calibre', 25),
+                                 highlightbackground=BUTTON_FILL)
         submit.config(bg=BUTTON_FILL)
         submit.place(x=225, y=380, width=90, height=30)
 
@@ -371,20 +395,22 @@ class App:
         self.add_menu()
 
         canvas = Canvas(root, width=610, height=500, bg="black")
-        roundPolygon(canvas, [140+10, 460+10, 460+10, 140+10], [160, 160, 290, 290], 10,
+        roundPolygon(canvas, [140 + 10, 460 + 10, 460 + 10, 140 + 10], [160, 160, 290, 290], 10,
                      width=5, outline="#82B366", fill="#D5E8D4")
         WIDTH = 215
         HEIGHT = 69
-        roundPolygon(canvas, [15+WIDTH, 150+WIDTH+10, 15+WIDTH], [280+HEIGHT-10, 325+HEIGHT, 370+HEIGHT+10], 8, width=5,
+        roundPolygon(canvas, [15 + WIDTH, 150 + WIDTH + 10, 15 + WIDTH],
+                     [280 + HEIGHT - 10, 325 + HEIGHT, 370 + HEIGHT + 10], 8, width=5,
                      outline=BUTTON_OUT,
                      fill=BUTTON_FILL)
-        canvas.place(x=0-10, y=0)
+        canvas.place(x=0 - 10, y=0)
 
         panel = Label(root, text="Edit\\add user", font=('calibre', 30), bg=TITLE_COLOR, justify='center', fg="white")
         panel.place(x=0, y=0, width=600)
 
         name_var = tk.StringVar()
-        e1 = tk.Entry(root, textvariable=name_var, bd=0,font=('calibre', 25), justify='center', bg="#D5E8D4", highlightbackground="black", highlightthickness=2)
+        e1 = tk.Entry(root, textvariable=name_var, bd=0, font=('calibre', 25), justify='center', bg="#D5E8D4",
+                      highlightbackground="black", highlightthickness=2)
         e1.place(x=155, y=220, width=290, height=50)
 
         panel = Label(root, text="enter user name:", font=('calibre', 30), bg="#D5E8D4")
@@ -405,18 +431,24 @@ class App:
             self.add_menu()
 
             canvas = Canvas(root, width=610, height=500, bg="black")
-            roundPolygon(canvas, [170+10, 440+10, 440+10, 170+10], [340 - DOWN_GUI, 340 - DOWN_GUI, 425 - DOWN_GUI, 425 - DOWN_GUI],
+            roundPolygon(canvas, [170 + 10, 440 + 10, 440 + 10, 170 + 10],
+                         [340 - DOWN_GUI, 340 - DOWN_GUI, 425 - DOWN_GUI, 425 - DOWN_GUI],
                          10, width=5, outline="#82B366", fill="#D5E8D4")
-            roundPolygon(canvas, [50+10, 560+10, 560+10, 50+10], [190 - DOWN_GUI, 190 - DOWN_GUI, 320 - DOWN_GUI, 320 - DOWN_GUI],
+            roundPolygon(canvas, [50 + 10, 560 + 10, 560 + 10, 50 + 10],
+                         [190 - DOWN_GUI, 190 - DOWN_GUI, 320 - DOWN_GUI, 320 - DOWN_GUI],
                          10, width=5, outline=MIDDLE_OUT, fill=MIDDLE_FIIL)
-            roundPolygon(canvas, [10+10, 590+10, 590+10, 10+10], [60 - UP_GUI, 60 - UP_GUI, 220 - UP_GUI, 220 - UP_GUI], 10,
+            roundPolygon(canvas, [10 + 10, 590 + 10, 590 + 10, 10 + 10],
+                         [60 - UP_GUI, 60 - UP_GUI, 220 - UP_GUI, 220 - UP_GUI], 10,
                          width=5, outline=TOP_OUT, fill=TOP_FIIL)
-            roundPolygon(canvas, [15+10, 150+10, 15+10], [400, 445, 490], 8, width=5, outline=BUTTON_OUT, fill=BUTTON_FILL)
-            roundPolygon(canvas, [445 + 15+10, 445 + 150+10, 445 + 15+10], [400, 445, 490], 8, width=5, outline=BUTTON_OUT,
+            roundPolygon(canvas, [15 + 10, 150 + 10, 15 + 10], [400, 445, 490], 8, width=5, outline=BUTTON_OUT,
                          fill=BUTTON_FILL)
-            canvas.place(x=0-10, y=0)
+            roundPolygon(canvas, [445 + 15 + 10, 445 + 150 + 10, 445 + 15 + 10], [400, 445, 490], 8, width=5,
+                         outline=BUTTON_OUT,
+                         fill=BUTTON_FILL)
+            canvas.place(x=0 - 10, y=0)
 
-            panel = Label(root, text="Edit\\create " + name + "'s data", font=('calibre', 30), justify='center', bg=TITLE_COLOR, fg="white")
+            panel = Label(root, text="Edit\\create " + name + "'s data", font=('calibre', 30), justify='center',
+                          bg=TITLE_COLOR, fg="white")
             panel.place(x=0, y=0, width=600)
             print(name)
 
@@ -648,24 +680,90 @@ class App:
                 self.home()
 
             submit = tkmacosx.Button(root, text="Submit", command=submit_user, bd=3, font=('calibre', 20),
-                            highlightbackground=BUTTON_FILL, relief=FLAT)
+                                     highlightbackground=BUTTON_FILL, relief=FLAT)
             submit.config(bg=BUTTON_FILL)
             submit.place(x=470, y=430, width=70, height=30)
 
             submit = tkmacosx.Button(root, text="default", command=default, bd=3, font=('calibre', 20),
-                            highlightbackground=BUTTON_FILL, relief=FLAT)
+                                     highlightbackground=BUTTON_FILL, relief=FLAT)
             submit.config(bg=BUTTON_FILL)
             submit.place(x=25, y=430, width=70, height=30)
 
-
-        submit = tkmacosx.Button(root, text="Submit", command=submit_func, bd=3, font=('calibre', 25), highlightbackground=BUTTON_FILL)
+        submit = tkmacosx.Button(root, text="Submit", command=submit_func, bd=3, font=('calibre', 25),
+                                 highlightbackground=BUTTON_FILL)
         submit.config(bg=BUTTON_FILL)
         submit.place(x=225, y=380, width=90, height=30)
 
         # sub_btn = tk.Button(root, text='Submit', command=submit)
 
-    def calender_page(self, user):
-        pass
+    def calender_page(self, user, week):
+        for ele in root.winfo_children():
+            ele.destroy()
+        self.add_menu()
+        canvas = Canvas(root, width=610, height=500, bg="black")
+        canvas.create_line(20, 105, 600, 105,  fill="#C8C9C9", dash=(5,5))
+        canvas.create_line(80 + 40, 60, 80 + 40, 490, fill="white")
+        canvas.create_line(200 + 40, 60, 200 + 40, 490, fill="white")
+        canvas.create_line(320 + 40, 60, 320 + 40, 490, fill="white")
+        canvas.create_line(440 + 40, 60, 440 + 40, 490, fill="white")
+
+        canvas.create_line(20, 233-5, 600, 233-5, fill="#C8C9C9", dash=(5,5))
+        canvas.create_line(20, 366-5, 600, 366-5, fill="#C8C9C9", dash=(5,5))
+        canvas.create_line(20, 470-2, 600, 470-2, fill="#C8C9C9", dash=(5,5))
+
+        for ass in user.get_schedule(week):
+            name = ass.get_name()
+            day = ass.get_day()
+            quarters = ass.get_duration().get_hours() * 4 + ass.get_duration().get_minutes() // 15
+            start_quarters = ass.get_time().get_hours() * 4 + ass.get_time().get_minutes() // 15
+            kind = ass.get_kind()
+            color_dict = {0: (TOP_FIIL, TOP_OUT), 1: (BUTTON_FILL, BUTTON_OUT), 2: (MIDDLE_FIIL, MIDDLE_OUT),
+             3: ("#D5E8D4", "#82B366")}
+            fill, out = color_dict[kind]
+            if day == 1:
+                roundPolygon(canvas, [15 + (day - 1) * 120, 15 + (day - 1) * 120 + 100, 15 + (day - 1) * 120 + 100,
+                                      15 + (day - 1) * 120],
+                             [100 + (start_quarters - 22) * 5, 100 + (start_quarters - 22) * 5,
+                              95 + (start_quarters + quarters - 22) * 5, 95 + (start_quarters + quarters - 22) * 5], 10,
+                             width=2, outline=out, fill=fill)
+            else:
+                roundPolygon(canvas, [10+(day-1)*120,10+(day-1)*120+100,10+(day-1)*120+100,10+(day-1)*120], [100+(start_quarters-22)*5,100+(start_quarters-22)*5,95+(start_quarters+quarters-22)*5,95+(start_quarters+quarters-22)*5], 10,
+                         width=2, outline=out, fill=fill)
+
+        canvas.place(x=0 - 10, y=0)
+
+        Label(root, text=user.get_name() + "'s week " + str(week) + " calender", font=('calibre', 30), bg="black",
+              fg="white").place(x=0, y=0, width=600)
+        Label(root, text="Sunday", font=('calibre', 15), bg="black",
+              fg="white").place(x=20, y=65)
+        Label(root, text="Monday", font=('calibre', 15), bg="black",
+              fg="white").place(x=140, y=65)
+        Label(root, text="Tuesday", font=('calibre', 15), bg="black",
+              fg="white").place(x=260, y=65)
+        Label(root, text="Wednesday", font=('calibre', 15), bg="black",
+              fg="white").place(x=370, y=65)
+        Label(root, text="Thursday", font=('calibre', 15), bg="black",
+              fg="white").place(x=490, y=65)
+        for ass in user.get_schedule(week):
+            name = ass.get_name()
+            day = ass.get_day()
+            quarters = ass.get_duration().get_hours() * 4 + ass.get_duration().get_minutes() // 15
+            start_quarters = ass.get_time().get_hours() * 4 + ass.get_time().get_minutes() // 15
+            kind = ass.get_kind()
+            color_dict = {0: (TOP_FIIL, TOP_OUT), 1: (BUTTON_FILL, BUTTON_OUT), 2: (MIDDLE_FIIL, MIDDLE_OUT),
+             3: ("#D5E8D4", "#82B366")}
+            fill, out = color_dict[kind]
+            if quarters >= 4:
+                if day == 1:
+                    x = 15 + (day - 1) * 120
+                    y = 100 + (start_quarters - 22) * 5
+                    Label(root, text=name, font=('calibre', 8), bg=fill,
+                          fg="black").place(x=x, y=y+5, height=8)
+                else:
+                    x = 10+(day-1)*120
+                    y = 100+(start_quarters-22)*5
+                    Label(root, text=name, font=('calibre', 8), bg=fill,
+                          fg="black").place(x=x, y=y+5, height=8)
 
 
 if __name__ == "__main__":

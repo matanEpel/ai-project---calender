@@ -115,9 +115,27 @@ class User:
         self.__schedule[week].append(assignment)
 
     def schedule_week_with_vary_constraints(self, week: int, SHUFFLE=True):
-        n = 20
-        users_list = [deepcopy(self) for _ in n]
-        return
+        users_list = list()
+        for i in range(4):
+            for j in range(4):
+                new_user = deepcopy(self)
+                new_user.__constraints.get_hard_constraints()["start of the day"] =\
+                    self.__constraints.get_hard_constraints() + Time(h=i)
+                new_user.__constraints.get_hard_constraints()["end of the day"] = \
+                    self.__constraints.get_hard_constraints() - Time(h=j)
+                users_list.append(new_user)
+
+        score_list = [u.schedule_week(week=week, SHUFFLE=SHUFFLE) for u in users_list]
+
+        max_score = -101
+        max_index = 0
+        for i in range(len(score_list)):
+            if score_list[i] > max_score:
+                max_score = score_list[i]
+                max_index = i
+
+        self.user.__schedule = deepcopy(users_list[max_index].__schedule)
+        return max_score
 
 
     def schedule_week(self, week: int, SHUFFLE=True):
@@ -146,13 +164,20 @@ class User:
             self.assignments_map.append((n, self.__constraints.get_hard_constraints()["lunch time"][2], day))
             n += 1
 
+        count = 0
+        while(count < 4):
+            try:
+                # csp_schedule_assignment raises KeyboardInterrupt if the program took more then 0.5s
+                schedule = self.csp_schedule_assignment(week=week, SHUFFLE=SHUFFLE)
+                break
+            except KeyboardInterrupt:
+                print("solution not found, trying again")
+                count+=1
 
-        # csp_schedule_assignment raises KeyboardInterrupt if the program took more then 0.5s
-        try:
-            schedule = self.csp_schedule_assignment(week=week, SHUFFLE=SHUFFLE)
-        except KeyboardInterrupt:
-            print("solution not found, time more then 0.5s")
+        if count == 4:
+            print("did not found a a solution, returning -100")
             return -100
+
 
         if schedule is None:
             for a in self.get_assignments(week):

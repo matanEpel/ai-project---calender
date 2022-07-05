@@ -7,7 +7,7 @@ from typing import Tuple
 class Time:
 
     def __init__(self, h=0, m=0):
-        if h < 0 or h > 24 or m < 0 or m >= 59:
+        if h < 0 or m < 0 or m >= 59:
             raise ValueError("hours or minutes are not in range")
         self.hours = h
         self.minutes = m
@@ -86,6 +86,9 @@ class Time:
     def __str__(self):
         return "{}:{}".format(self.hours, self.minutes)
 
+    def __repr__(self):
+        return "{}:{}".format(self.hours, self.minutes)
+
     @staticmethod
     def get_next(t):
         """
@@ -121,16 +124,35 @@ class Time:
             intervals - list of tuples that stands for init time and duration
         """
         #TODO i think this algorithm can be improved using a data structure like tims_slots
-        for i in range(len(intervals)):
-            for j in range(len(intervals)):
-                if i == j:
-                    continue
-                l1 = intervals[i]
-                l2 = intervals[j]
-                if Time.is_overlap(l1[0], l1[1], l2[0], l2[1]):
-                    return True
+
+        # for i in range(len(intervals)):
+        #     for j in range(len(intervals)):
+        #         if i == j:
+        #             continue
+        #         l1 = intervals[i]
+        #         l2 = intervals[j]
+        #         if Time.is_overlap(l1[0], l1[1], l2[0], l2[1]):
+        #             return True
+        #
+        # return False
+
+        intervals = sorted(intervals, key=lambda x: x[0])
+        for i in range(len(intervals) - 1):
+            if intervals[i][1] > intervals[i + 1][0]:
+                return True
 
         return False
+
+
+    @staticmethod
+    def max_time(intervals: list[Tuple[Time, Time]]) -> Time:
+        max_end_time = Time()
+
+        for t in intervals:
+            if t[1] > max_end_time:
+                max_end_time = t[1]
+
+        return max_end_time
 
 
 

@@ -31,8 +31,13 @@ def search_solution(week, meetings, free_times, kind, users):
 
 
 class Manager:
-    def __init__(self):
+    def __init__(self, type="gradient", kind="sum"):
+        self.__type = type
+        self.__kind = kind
         self.__users = []
+
+    def __repr__(self):
+        return "Manager with " + str(len(self.__users)) + " users: " + "\n".join([u.get_name() for u in self.__users])
 
     def get_users(self):
         return self.__users
@@ -44,20 +49,13 @@ class Manager:
         if user in self.__users:
             self.__users.remove(user)
 
-    def set_solution(self, week, assignments_assigned):
-        """
-        Sets the assignment of the assignments as the schedule of the week
-        for every user.
-        :param week: the week we edit
-        :param assignments_assigned: the assignments we assigned
-        :return: none
-        """
-        for user, ass, day, hour in assignments_assigned:
-            ass.set_day(day)
-            ass.set_hour(hour)
-            user.move_to_scheduled(week, ass)
+    def set_type(self, type):
+        self.__type = type
 
-    def schedule_week(self, week, type="gradient", kind="sum"):
+    def set_kind_of_optimization(self, kind):
+        self.__kind = kind
+
+    def schedule_week(self, week):
         """
         schedules the week of all the users together - uses three different algorithms:
         1. genetic algorithm
@@ -72,12 +70,12 @@ class Manager:
         :return:
         """
         print("sdkfjsdkfjdskf")
-        if type == "genetic":
-            self.set_solution(week, genetic_solution(*self.get_data(week, kind, self.__users)))
-        elif type == "gradient":
-            self.set_solution(week, gradient_solution(*self.get_data(week, kind, self.__users)))
-        elif type == "search":
-            self.set_solution(week, search_solution(*self.get_data(week, kind, self.__users)))
+        if self.__type == "genetic":
+            self.__users = genetic_solution(*self.get_data(week, self.__kind, self.__users))
+        elif self.__type == "gradient":
+            self.__users = gradient_solution(*self.get_data(week, self.__kind, self.__users))
+        elif self.__type == "search":
+            self.__users = search_solution(*self.get_data(week, self.__kind, self.__users))
 
     def schedule_week_user(self, week: int, user: User):
         """
@@ -104,7 +102,13 @@ class Manager:
                         for i in range(len(users)):
                             if participant.get_name() == users[i].get_name():
                                 participants.append(i)
-                    meetings[meeting_count] = {"object": ass, "duration": ass.get_duration(), "participants": participants}
+                    add = True
+                    for key in meetings:
+                        if ass == meetings[key]["object"] and participants == meetings[key]["participants"]:
+                            add = False
+                    if add:
+                        meetings[meeting_count] = {"object": ass, "duration": ass.get_duration(),
+                                                   "participants": participants}
                     meeting_count += 1
                 # create time slots for each user
                 elif ass.get_kind() == kinds["MUST_BE_IN"]:
@@ -112,14 +116,16 @@ class Manager:
                     day = ass.get_day()
                     hour = ass.get_time().get_hours()
                     quarter = ass.get_time().get_minutes() // 15
-                    for i in range(int(duration.get_hours() * 4+duration.get_minutes()//15)):
+                    for i in range(int(duration.get_hours() * 4 + duration.get_minutes() // 15)):
                         free_slots.set_unavailable(day + (hour * QUARTERS + quarter + i) // (QUARTERS * HOURS),
                                                    hour + (quarter + i) // QUARTERS, (quarter + i) % QUARTERS)
-            for day in range(1,DAYS+1):
-                for i in range((-1+user.get_constraints().get_hard_constraints()["start of the day"].get_hours())*4):
+            for day in range(1, DAYS + 1):
+                for i in range(
+                        (-1 + user.get_constraints().get_hard_constraints()["start of the day"].get_hours()) * 4):
                     free_slots.set_unavailable(day, 1 + i // QUARTERS, i % QUARTERS)
-                for i in range((25-user.get_constraints().get_hard_constraints()["end of the day"].get_hours()) * 4):
-                    free_slots.set_unavailable(day, user.get_constraints().get_hard_constraints()["end of the day"].get_hours() + i // QUARTERS, i % QUARTERS)
+                for i in range((25 - user.get_constraints().get_hard_constraints()["end of the day"].get_hours()) * 4):
+                    free_slots.set_unavailable(day, user.get_constraints().get_hard_constraints()[
+                        "end of the day"].get_hours() + i // QUARTERS, i % QUARTERS)
             data_slots_dict[user_count] = {"user": user, "free slots": free_slots}
             user_count += 1
         """

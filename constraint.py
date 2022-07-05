@@ -1,5 +1,7 @@
 from typing import List
 
+import numpy as np
+
 from assignment import Assignment
 from time_ import Time
 from consts import kinds
@@ -9,22 +11,18 @@ class Constraints:
     def __init__(self):
         # defining all the default hard constraints values (can be changed)
         self.__hard_constraints = dict()
-        self.__hard_constraints["overlapping meetings"] = False
-        self.__hard_constraints["overlapping tasks"] = False
-        self.__hard_constraints["overlapping must be"] = False
         self.__hard_constraints["overlap meeting task"] = False
-        self.__hard_constraints["overlap meeting must be"] = False
         self.__hard_constraints["overlap must be task"] = False
-        self.__hard_constraints["must be is must be"] = True
-        self.__hard_constraints["break before meeting"] = Time()
-        self.__hard_constraints["break before task"] = Time()
-        self.__hard_constraints["break before must be"] = Time()
-        self.__hard_constraints["break after meeting"] = Time()
-        self.__hard_constraints["break after task"] = Time()
-        self.__hard_constraints["break after must be"] = Time()
-        self.__hard_constraints["start of the day"] = Time(h=8)
-        self.__hard_constraints["end of the day"] = Time(h=22)
-        self.__hard_constraints["working days"] = [1, 2, 3, 4, 5]
+        self.__hard_constraints["lunch time"] = (Time(h=12),Time(h=15),Time(m=30)) # range for launch and time of launch
+        self.__hard_constraints["break before meeting"] = Time() # done
+        self.__hard_constraints["break before task"] = Time() # done
+        self.__hard_constraints["break before must be"] = Time() # done
+        self.__hard_constraints["break after meeting"] = Time(m=15) # done
+        self.__hard_constraints["break after task"] = Time(m=15) # done
+        self.__hard_constraints["break after must be"] = Time() # done
+        self.__hard_constraints["start of the day"] = Time(h=8)  # done
+        self.__hard_constraints["end of the day"] = Time(h=22)  # done
+        self.__hard_constraints["working days"] = [1, 2, 3, 4, 5]  # done
 
         # defining all the soft constraints weight (each constraint has a weight which defines it's importance)
         # for each time a soft constraint is satisfied - the user gives it 1 point normalized
@@ -63,6 +61,7 @@ class Constraints:
         continuous_breaks = 0
 
         for day in range(1,8):
+            continuous_breaks_in_day = 0
             if len(week_schedule[day]) != 0:
                 start_late += week_schedule[day][0].get_time().get_hours()+week_schedule[day][0].get_time().get_minutes()/60
                 start_late -= self.__hard_constraints["start of the day"].get_hours()
@@ -79,11 +78,13 @@ class Constraints:
                    week_schedule[day][i].get_time() + week_schedule[day][i].get_duration():
                     time = week_schedule[day][i+1].get_time() - \
                                          (week_schedule[day][i].get_duration() + week_schedule[day][i].get_time())
-                    continuous_breaks += time.get_hours() + time.get_minutes()/60
+                    continuous_breaks_in_day = np.max([time.get_hours() + time.get_minutes()/60, continuous_breaks_in_day])
+            continuous_breaks += continuous_breaks_in_day
         score = start_late*self.__soft_constraints["start the day late"]
         score += finish_early*self.__soft_constraints["finish the day early"]
         score += close_meetings*self.__soft_constraints["meetings are close together"]
         score += close_tasks*self.__soft_constraints["tasks are close together"]
         score += continuous_breaks*self.__soft_constraints["breaks are continuous"]
         score /= (sum([self.__soft_constraints[c] for c in self.__soft_constraints]))
+        # print(" | ".join([", ".join([str(a) for a in week_schedule[i]]) for i in week_schedule]), score)
         return score

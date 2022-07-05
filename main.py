@@ -25,16 +25,24 @@ def main_epel():
     slots = [a[2][k]["free slots"] for k in a[2]]
     a = find_possible_slots(Time(h=2, m=33), slots)
     print(a)
+
+
 def main_amit():
     """
         random staff for debuging
     """
+    c = Constraints()
+    # c.set_soft_constraint("meetings are close together", 1000)
+    c.set_soft_constraint("start the day late", -1)
+    ofir = User("Ofir", c)
+    matan = User("matan", c)
+    amit = User("amit", c)
 
     a1 = Assignment(week=1, name="ex1", duration=Time(h=1), kind=kinds["TASK"])
-    a2 = Assignment(week=1, name="ex2", duration=Time(h=4), kind=kinds["TASK"])
-    a3 = Assignment(week=1, name="ex3", duration=Time(h=2), kind=kinds["TASK"])
-    a4 = Assignment(week=1, name="ex4", duration=Time(h=5), kind=kinds["TASK"])
-    a5 = Assignment(week=1, name="ex5", duration=Time(h=6), kind=kinds["TASK"])
+    a2 = Assignment(week=1, name="ex2", duration=Time(h=1), kind=kinds["TASK"])
+    a3 = Assignment(week=1, name="ex3", duration=Time(h=1), kind=kinds["TASK"])
+    a4 = Assignment(week=1, name="ex4", duration=Time(h=1), kind=kinds["TASK"])
+    a5 = Assignment(week=1, name="ex5", duration=Time(h=1), kind=kinds["TASK"])
     a6 = Assignment(week=1, name="ex6", duration=Time(h=2), kind=kinds["TASK"])
     a7 = Assignment(week=1, name="ex7", duration=Time(h=3), kind=kinds["TASK"])
     a8 = Assignment(week=1, name="ex8", duration=Time(h=2), kind=kinds["TASK"])
@@ -42,25 +50,12 @@ def main_amit():
     a10 = Assignment(week=1, name="ex10", duration=Time(h=1), kind=kinds["TASK"])
     a11 = Assignment(week=1, name="ex11", duration=Time(h=5), kind=kinds["TASK"])
 
-    b1 = Assignment(week=1, name="m1", duration=Time(h=2), kind=kinds["MEETING"], day=2, time=Time(h=8, m=45))
-    b2 = Assignment(week=1, name="m2", duration=Time(h=2), kind=kinds["MEETING"], day=1, time=Time(h=9, m=30))
-    """
-    a1 = Assignment(week=1, name="ex1", duration=Time(h=1), kind=kinds["TASK"])
-    a2 = Assignment(week=1, name="ex2", duration=Time(h=1, m=30), kind=kinds["TASK"])
-    a3 = Assignment(week=1, name="ex3", duration=Time(h=3), kind=kinds["TASK"])
-    a4 = Assignment(week=1, name="ex4", duration=Time(h=3, m=15), kind=kinds["TASK"])
-    a5 = Assignment(week=1, name="ex5", duration=Time(h=2, m=45), kind=kinds["TASK"])
-    a6 = Assignment(week=1, name="ex6", duration=Time(h=2), kind=kinds["TASK"])
-    a7 = Assignment(week=1, name="ex7", duration=Time(h=1, m=15), kind=kinds["TASK"])
-    a8 = Assignment(week=1, name="ex8", duration=Time(h=2, m=15), kind=kinds["TASK"])
-    a9 = Assignment(week=1, name="ex9", duration=Time(h=4), kind=kinds["TASK"])
-    a10 = Assignment(week=1, name="ex10", duration=Time(h=3, m=45), kind=kinds["TASK"])
-    a11 = Assignment(week=1, name="ex11", duration=Time(h=4, m=15), kind=kinds["TASK"])
-    """
-
-    c = Constraints()
-
-    ofir = User("Ofir", c)
+    b1 = Assignment(week=1, name="m1", duration=Time(h=2), kind=kinds["MEETING"], participants=[ofir], day = 4, time=Time(h=11,m=45))
+    b2 = Assignment(week=1, name="m2", duration=Time(h=2), kind=kinds["MEETING"], participants=[ofir], day = 5, time=Time(h=9,m=15))
+    b4 = Assignment(week=1, name="m3", duration=Time(h=2), kind=kinds["MEETING"], participants=[ofir], day = 2, time=Time(h=14,m=30))
+    mb1 = Assignment(week=1, name="mb1", duration=Time(h=2, m=30), kind=kinds["MUST_BE_IN"], day = 1, time=Time(h=9,m=30))
+    mb2 = Assignment(week=1, name="mb2", duration=Time(h=2), kind=kinds["MUST_BE_IN"], day = 2, time=Time(h=10,m=30))
+    mb3 = Assignment(week=1, name="mb3", duration=Time(h=2), kind=kinds["MUST_BE_IN"], day = 1, time=Time(h=13,m=15))
 
     ofir.add_assignment(a1)
     ofir.add_assignment(a2)
@@ -75,9 +70,14 @@ def main_amit():
     ofir.add_assignment(a11)
     ofir.add_assignment(b1)
     ofir.add_assignment(b2)
-
-    print(ofir.schedule_week(1))
-
+    # ofir.add_assignment(b4)
+    # print(ofir.schedule_week(1))
+    # print(ofir)
+    manager = Manager()
+    manager.add_user(ofir)
+    manager.schedule_week(1)
+    for u in manager.get_users():
+        print(u)
     # print(ofir)
     #print(ofir.get_schedule(1))
 

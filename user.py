@@ -1,11 +1,19 @@
 import itertools
+import random
 from copy import deepcopy
 from typing import Dict, Tuple
+from threading import Thread
+import logging
+
+import numpy as np
 
 import consts
 from assignment import *
 from constraint import *
 from time_ import Time
+from utils.utils import exit_after
+
+logging.basicConfig(level=consts.LOG_LEVEL)
 
 
 class User:
@@ -54,6 +62,12 @@ class User:
     def get_assignments(self, week: int):
         return self.__assignments[week]
 
+    def get_all_assignments(self):
+        final = []
+        for week in self.__assignments.keys():
+            final += self.__assignments[week]
+        return final
+
     def get_schedule(self, week: int):
         return self.__schedule[week]
 
@@ -77,19 +91,58 @@ class User:
 
     def __str__(self):
         # TODO currently for debuging prints only week §
-        output = "[User] {}\nassignments:\n".format(self.__name)
-        for a in self.__assignments[1]:
-            output += str(a)
-            output += "\n"
+        output = "[User] {}\nschedule:\n".format(self.__name)
 
-        output += "\nschedule:\n"
         for a in self.__schedule[1]:
             output += str(a)
             output += "\n"
 
         return output
 
-    def schedule_week(self, week: int):
+    def __repr__(self):
+        # TODO currently for debuging prints only week §
+        output = "[User] {}\nschedule:\n".format(self.__name)
+
+        for a in self.__schedule[1]:
+            output += str(a)
+            output += "\n"
+
+        return output
+
+    def place_assignment(self, assignment: Assignment, week: int):
+        if assignment.get_time() is None or assignment.get_day() is None:
+            logging.error("assignment cannot be placed")
+            raise ValueError("assignment cannot be placed")
+
+        # TODO need to check if slot is available
+
+        self.__schedule[week].append(assignment)
+
+    def schedule_week_with_vary_constraints(self, week: int, SHUFFLE=True):
+        users_list = list()
+        for i in range(4):
+            for j in range(4):
+                new_user = deepcopy(self)
+                new_user.__constraints.get_hard_constraints()["start of the day"] =\
+                    self.__constraints.get_hard_constraints() + Time(h=i)
+                new_user.__constraints.get_hard_constraints()["end of the day"] = \
+                    self.__constraints.get_hard_constraints() - Time(h=j)
+                users_list.append(new_user)
+
+        score_list = [u.schedule_week(week=week, SHUFFLE=SHUFFLE) for u in users_list]
+
+        max_score = -101
+        max_index = 0
+        for i in range(len(score_list)):
+            if score_list[i] > max_score:
+                max_score = score_list[i]
+                max_index = i
+
+        self.__schedule = deepcopy(users_list[max_index].__schedule)
+        return max_score
+
+
+    def schedule_week(self, week: int, SHUFFLE=True):
         """
             schedule the tasks of a specific user in specific week
             takes all of the assignments in user and sets for them a day and an houer
@@ -97,7 +150,6 @@ class User:
             return constraints.get_score()
         """
 
-        #  only for now, not csp yet
         self.__schedule[week] = list()
         for a in self.get_assignments(week):
             if a.get_kind() == consts.kinds["MEETING"] or a.get_kind() == consts.kinds["MUST_BE_IN"]:
@@ -109,25 +161,49 @@ class User:
 
         self.assignments_map = list(enumerate(duration_array))  # map between assignments
 
-        schedule = self.csp_schedule_assignment(week=week)
+        # add lunch times:
+        n = len(self.assignments_map)
+        for day in self.__constraints.get_hard_constraints()["working days"]:
+            assignments_array.append(Assignment(week=week, name="Lunch", duration=self.__constraints.get_hard_constraints()["lunch time"][2], kind=kinds["LUNCH"]))
+            self.assignments_map.append((n, self.__constraints.get_hard_constraints()["lunch time"][2], day))
+            n += 1
+
+        count = 0
+
+        while(count < 4):
+            try:
+                # csp_schedule_assignment raises KeyboardInterrupt if the program took more then 0.5s
+                schedule = self.csp_schedule_assignment(week=week, SHUFFLE=SHUFFLE)
+                break
+            except KeyboardInterrupt:
+                # print("solution not found, trying again")
+                count+=1
+
+        if count == 4:
+            logging.debug("did not found a a solution, returning -100")
+            return -100
+
+        if schedule is None:
+            for a in self.get_assignments(week):
+                if a.get_kind() == consts.kinds["MEETING"]:
+                    pass
+                    # print(a.get_time(), a.get_day(), a.get_duration(), end=' - ')
+            # print("solution not found")
+            return -100
+
         for s in schedule.items():
             assignments_array[s[0][0]].set_time(s[1][0])
             assignments_array[s[0][0]].set_day(s[1][1])
             self.place_assignment(assignments_array[s[0][0]], week=week)
+
+        for a in self.get_assignments(week):
+                if a.get_kind() == consts.kinds["MEETING"]:
+                    pass
+                    # print(a.get_time(), a.get_day(), a.get_duration(), end=' - ')
         return self.__constraints.calculate_score(self.__schedule[week])
-        """
-            kinds = {"TASK": 0, "MEETING": 1, "MUST_BE_IN": 2}, every MEETING and MUST_BE_IN comes immediatly with time.
-        """
 
-    def place_assignment(self, assignment: Assignment, week: int):
-        if assignment.get_time() is None or assignment.get_day() is None:
-            raise ValueError("assignment cannot be placed")
-
-        # TODO need to check if slot is available
-
-        self.__schedule[week].append(assignment)
-
-    def csp_schedule_assignment(self, week):
+    @exit_after(0.015)
+    def csp_schedule_assignment(self, week, SHUFFLE):
         """
             in order to reduce memory and time, we get only array of durations and match them to the assignments by index.
             VARIABLES - self.assignments_map - [(0, duration), (1, duration), ...]
@@ -140,6 +216,8 @@ class User:
         self.times_domain = list(itertools.product(available_times,
                                                    self.get_constraints().get_hard_constraints()[
                                                        "working days"]))  # domain
+        if SHUFFLE:
+            random.shuffle(self.times_domain)
 
         # for t in self.assignments_map:
         #     print(t)
@@ -148,10 +226,11 @@ class User:
 
         return self.backtrack_search(week=week)
 
-    def backtrack_search(self, week, assigned_variables_dict: Dict[Tuple[int, Time], Time] = {}):
+    def backtrack_search(self, week, assigned_variables_dict: Dict[Tuple[int, Time], Tuple[Time, int]] = {}):
         """
             times_dict -
         """
+        # print(len(assigned_variables_dict))
         if len(assigned_variables_dict) == len(self.assignments_map):
             # every assignment has starting_time
             return assigned_variables_dict
@@ -161,9 +240,23 @@ class User:
         # print(assigned_variables_dict)
         unassigned_variables = [v for v in self.assignments_map if v not in assigned_variables_dict.keys()]
 
-        current_var = unassigned_variables[0]  # Chooses the first, can in the future choose a random value
+        # chose the variable with the largest duration
+        max_dur = Time()
+        current_var = unassigned_variables[0]
 
-        for time in self.times_domain:  # can iterate randomly on the time domain in order to make the back track random
+        for var in unassigned_variables:
+            if var[1] > max_dur:
+                max_dur = var[1]
+                current_var = var
+
+        if len(current_var) == 3:
+            DOMAIN = [t for t in self.times_domain if t[1] == current_var[2]]
+        else:
+            DOMAIN = self.times_domain
+
+        # current_var = unassigned_variables[0]  # Chooses the first, can in the future choose a random value
+
+        for time in DOMAIN:  # can iterate randomly on the time domain in order to make the back track random
             local_assigned_variables_dict = assigned_variables_dict.copy()
             local_assigned_variables_dict[current_var] = time
             if self.consistent(local_assigned_variables_dict, week=week):
@@ -174,7 +267,7 @@ class User:
 
         return None
 
-    def consistent(self, assigned_variables_dict: Dict[Tuple[int, Time], Time], week):
+    def consistent(self, assigned_variables_dict: Dict[Tuple[int, Time], Tuple[Time, int]], week):
         """
             need to check if the assignment is legal by all of the constraints
             need to take into considiration:
@@ -185,15 +278,52 @@ class User:
         for day in self.get_constraints().get_hard_constraints()["working days"]:
             intervals = [(x[1][0], x[0][1] + x[1][0]) for x in list(assigned_variables_dict.items()) if x[1][1] == day]
 
-            s = self.__schedule[week]
-            meetings_intervals = [(m.get_time(), m.get_time() + m.get_duration()) for m in self.__schedule[week] if
-                                  m.get_day() == day]
-            if Time.is_list_overlap(intervals=intervals + meetings_intervals):
+            # Lunch time:
+            lunch_start_time = self.__constraints.get_hard_constraints()["lunch time"][0]
+            lunch_end_time = self.__constraints.get_hard_constraints()["lunch time"][1]
+
+            lunches = [x for x in list(assigned_variables_dict.items()) if x[1][1] == day and len(x[0]) == 3]
+            if len(lunches) == 1:
+                lunch = lunches[0]
+                if lunch[1][0] < lunch_start_time or lunch[0][1] + lunch[1][0] > lunch_end_time:
+                    return False
+
+            # add breaks:
+            break_before_task = self.__constraints.get_hard_constraints()["break before task"]
+            break_after_task = self.__constraints.get_hard_constraints()["break after task"]
+            final_intervals_breaks = [(interval[0] - break_before_task, interval[1] + break_after_task) for interval in
+                                      intervals]
+
+            final_intervals = intervals
+
+            if not self.__constraints.get_hard_constraints()["overlap meeting task"]:
+                meetings_intervals = [(m.get_time(), m.get_time() + m.get_duration()) for m in self.__schedule[week] if
+                                      m.get_day() == day and m.get_kind() == consts.kinds["MEETING"]]
+                #add breaks:
+                break_before_meeting = self.__constraints.get_hard_constraints()["break before meeting"]
+                break_after_meeting = self.__constraints.get_hard_constraints()["break after meeting"]
+
+                meetings_intervals_breaks = [(interval[0] - break_before_meeting, interval[1] + break_after_meeting) for
+                                             interval in meetings_intervals]
+
+                final_intervals += meetings_intervals_breaks
+
+            if not self.__constraints.get_hard_constraints()["overlap must be task"]:
+                must_be_intervals = [(m.get_time(), m.get_time() + m.get_duration()) for m in self.__schedule[week] if
+                                     m.get_day() == day and m.get_kind() == consts.kinds["MUST_BE_IN"]]
+
+                break_before_must_be = self.__constraints.get_hard_constraints()["break before must be"]
+                break_after_must_be = self.__constraints.get_hard_constraints()["break after must be"]
+
+                must_be_intervals_breaks = [(interval[0] - break_before_must_be, interval[1] + break_after_must_be) for
+                                            interval in must_be_intervals]
+
+                final_intervals += must_be_intervals_breaks
+
+            if Time.is_list_overlap(intervals=final_intervals):
                 return False
 
-        # preform more many checks ....
-
-        for var in assigned_variables_dict:
-            pass
+            if Time.max_time(intervals) > self.get_constraints().get_hard_constraints()["end of the day"]:
+                return False
 
         return True

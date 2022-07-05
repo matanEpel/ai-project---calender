@@ -25,11 +25,6 @@ def gradient_solution(week, meetings, free_times, kind, users):
     return solver.solve()
 
 
-def search_solution(week, meetings, free_times, kind, users):
-    solver = Search(week, meetings, free_times, kind, users)
-    return solver.solve()
-
-
 class Manager:
     def __init__(self, type="gradient", kind="sum"):
         self.__type = type
@@ -74,8 +69,6 @@ class Manager:
             self.__users = genetic_solution(*self.get_data(week, self.__kind, self.__users))
         elif self.__type == "gradient":
             self.__users = gradient_solution(*self.get_data(week, self.__kind, self.__users))
-        elif self.__type == "search":
-            self.__users = search_solution(*self.get_data(week, self.__kind, self.__users))
 
     def schedule_week_user(self, week: int, user: User):
         """

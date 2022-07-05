@@ -97,7 +97,7 @@ class GradientDecent:
         print("score", final_score)
         return self.__users
 
-    def get_random_start_point(self, optional_slots):
+    def get_random_start_point(self, optional_slots, idx):
         slots = []
         for slots_of_day in optional_slots:
             available_slots = []

@@ -198,7 +198,7 @@ class User:
                     # print(a.get_time(), a.get_day(), a.get_duration(), end=' - ')
         return self.__constraints.calculate_score(self.__schedule[week])
 
-    @exit_after(0.5)
+    @exit_after(0.05)
     def csp_schedule_assignment(self, week, SHUFFLE):
         """
             in order to reduce memory and time, we get only array of durations and match them to the assignments by index.

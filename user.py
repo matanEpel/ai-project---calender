@@ -134,7 +134,7 @@ class User:
                 max_score = score_list[i]
                 max_index = i
 
-        self.user.__schedule = deepcopy(users_list[max_index].__schedule)
+        self.__schedule = deepcopy(users_list[max_index].__schedule)
         return max_score
 
 
@@ -172,7 +172,7 @@ class User:
                 schedule = self.csp_schedule_assignment(week=week, SHUFFLE=SHUFFLE)
                 break
             except KeyboardInterrupt:
-                print("solution not found, trying again")
+                # print("solution not found, trying again")
                 count+=1
 
         if count == 4:
@@ -199,7 +199,7 @@ class User:
                     # print(a.get_time(), a.get_day(), a.get_duration(), end=' - ')
         return self.__constraints.calculate_score(self.__schedule[week])
 
-    @exit_after(0.05)
+    @exit_after(0.015)
     def csp_schedule_assignment(self, week, SHUFFLE):
         """
             in order to reduce memory and time, we get only array of durations and match them to the assignments by index.

@@ -159,11 +159,11 @@ class User:
         self.assignments_map = list(enumerate(duration_array))  # map between assignments
 
         # add lunch times:
-        # n = len(self.assignments_map)
-        # for day in self.__constraints.get_hard_constraints()["working days"]:
-        #     assignments_array.append(Assignment(week=week, name="Lunch", duration=self.__constraints.get_hard_constraints()["lunch time"][2], kind=kinds["LUNCH"]))
-        #     self.assignments_map.append((n, self.__constraints.get_hard_constraints()["lunch time"][2], day))
-        #     n += 1
+        n = len(self.assignments_map)
+        for day in self.__constraints.get_hard_constraints()["working days"]:
+            assignments_array.append(Assignment(week=week, name="Lunch", duration=self.__constraints.get_hard_constraints()["lunch time"][2], kind=kinds["LUNCH"]))
+            self.assignments_map.append((n, self.__constraints.get_hard_constraints()["lunch time"][2], day))
+            n += 1
 
         count = 0
 

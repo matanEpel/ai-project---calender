@@ -3,7 +3,7 @@ from consts import *
 from time_ import Time
 
 
-def find_possible_slots(duration, time_slots_list, lunches):
+def find_possible_slots(duration, time_slots_list, lunches, must_be, consts):
     """
     finding all the time intervals of length duration which are possible in all the time slots in the list
     :param duration: the duration
@@ -11,15 +11,24 @@ def find_possible_slots(duration, time_slots_list, lunches):
     :return: [(day, x1, x2) - list of time intervals and their days]
     """
     free_slots = []
+    before_meeting = max([const.get_hard_constraints()["break before meeting"] for const in consts])
+    before_must_be = max([const.get_hard_constraints()["break before must be"] for const in consts])
+    after_meeting = max([const.get_hard_constraints()["break after meeting"] for const in consts])
+    after_must_be = max([const.get_hard_constraints()["break after must be"] for const in consts])
     for i in range((DAYS-2) * (HOURS-1) * QUARTERS):
         free = True
         for time_slot in time_slots_list:
             if not time_slot.check_all_available(1+i // (HOURS * QUARTERS), 1+(i % (HOURS * QUARTERS)) // QUARTERS,
                                                  i % QUARTERS, duration):
                 free = False
-            start_time = Time(h=1 + (i % (HOURS * QUARTERS)) // QUARTERS, m=(i % QUARTERS) * 15)
-            finish_time = start_time+duration
+            start_time = Time(h=1 + (i % (HOURS * QUARTERS)) // QUARTERS, m=(i % QUARTERS) * 15)-before_meeting
+            finish_time = start_time+duration+after_meeting
+            for start, end in must_be:
+                if Time.is_overlap(start_time, finish_time, start-before_must_be, end+after_must_be):
+                    free = False
             # consistent with lunch:
+            start_time = Time(h=1 + (i % (HOURS * QUARTERS)) // QUARTERS, m=(i % QUARTERS) * 15)
+            finish_time = start_time + duration
             for (start, finish, duration_lunch) in lunches:
                 if (start_time < start or duration_lunch > (start_time-start)) and (finish<finish_time or duration_lunch > finish-finish_time):
                     free = False

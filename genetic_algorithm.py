@@ -32,7 +32,11 @@ class GeneticAlgorithm:
         optional_slots = [[] for _ in range(len(self.__meetings))]  # optional slots for every meeting
         for i in self.__meetings.keys():
             time_slots = [self.__free_times[k]["free slots"] for k in self.__meetings[i]["participants"]]
-            optional_slots[i] += find_possible_slots(self.__meetings[i]["duration"], time_slots, self.__lunches)
+            must_be = [(ass.get_time(), ass.get_time() + ass.get_duration()) for u in self.__meetings[i]["participants"]
+                       for ass in
+                       self.__users[u].get_all_assignments() if ass.get_kind() == 2]
+            consts = [self.__users[u].get_constraints() for u in self.__meetings[i]["participants"]]
+            optional_slots[i] += find_possible_slots(self.__meetings[i]["duration"], time_slots, self.__lunches, must_be, consts)
         time_pool = [self.get_start_point(optional_slots) for _ in
                      range(self.__amount_of_starting_points)]  # [(day, time) - list of times for the meetings]
         for _ in range(self.__amount_of_epochs):
@@ -86,8 +90,27 @@ class GeneticAlgorithm:
             time = option[i]
             day = time[0]
             time_in_day = time[1]
+            end_in_day = time[3]
             if all([time_in_day != slot["start"] for slot in optional_slots[i] if slot["day"] == day]):
                 return False
+
+            const_in_meet = [self.__users[k].get_constraints().get_hard_constraints() for k in
+                             self.__meetings[i]["object"].get_participants()]
+            before_1 = max([c["break before meeting"] for c in const_in_meet])
+            after_1 = max([c["break after meeting"] for c in const_in_meet])
+            for j in range(i + 1, len(option)):
+                time2 = option[i]
+                day2 = time2[0]
+                time_in_day2 = time2[1]
+                end_in_day2 = time2[3]
+                const_in_meet = [self.__users[k].get_constraints().get_hard_constraints() for k in
+                                 self.__meetings[j]["object"].get_participants()]
+                before_2 = max([c["break before meeting"] for c in const_in_meet])
+                after_2 = max([c["break after meeting"] for c in const_in_meet])
+                if Time.is_overlap(time_in_day - before_1, end_in_day + after_1, time_in_day2 - before_2,
+                                   end_in_day2 + after_2) and day2 == day:
+                    return False
+
         return True
 
     def children(self, meetings_1, meetings_2, optional_slots):

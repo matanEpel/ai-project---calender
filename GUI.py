@@ -41,9 +41,9 @@ def default_users(manager):
     # a11 = Assignment(week=1, name="ex15", duration=Time(h=5), kind=kinds["MUST_BE_IN"], day=5, time=Time(h=6, m=0))
     # a11 = Assignment(week=1, name="ex16", duration=Time(h=5), kind=kinds["MUST_BE_IN"], day=5, time=Time(h=6, m=0))
     # a11 = Assignment(week=1, name="ex17", duration=Time(h=5), kind=kinds["MUST_BE_IN"], day=5, time=Time(h=6, m=0))
-    b2 = Assignment(week=1, name="m2", duration=Time(h=3), kind=kinds["MEETING"], participants=[ofir], day=1,
+    b2 = Assignment(week=1, name="m2", duration=Time(h=1), kind=kinds["MEETING"], participants=[ofir], day=1,
                     time=Time(h=8, m=0))
-    b3 = Assignment(week=1, name="m3", duration=Time(h=2), kind=kinds["MEETING"], participants=[ofir], day=2,
+    b3 = Assignment(week=1, name="m3", duration=Time(h=1), kind=kinds["MEETING"], participants=[ofir], day=2,
                     time=Time(h=10, m=0))
     b4 = Assignment(week=1, name="m4", duration=Time(h=2), kind=kinds["MEETING"], participants=[ofir], day=3,
                     time=Time(h=17, m=0))
@@ -55,7 +55,7 @@ def default_users(manager):
                     time=Time(h=14, m=30))
     mb1 = Assignment(week=1, name="mb1", duration=Time(h=2, m=30), kind=kinds["MUST_BE_IN"], day=1,
                      time=Time(h=9, m=30))
-    mb2 = Assignment(week=1, name="mb2", duration=Time(h=2), kind=kinds["MUST_BE_IN"], day=2, time=Time(h=6, m=0))
+    mb2 = Assignment(week=1, name="mb2", duration=Time(h=2), kind=kinds["MUST_BE_IN"], day=2, time=Time(h=17, m=0))
     mb3 = Assignment(week=1, name="mb3", duration=Time(h=2), kind=kinds["MUST_BE_IN"], day=1, time=Time(h=22, m=0))
 
     ofir.add_assignment(a1)
@@ -72,13 +72,15 @@ def default_users(manager):
     # ofir.add_assignment(a12)
     # ofir.add_assignment(a13)
     # ofir.add_assignment(a14)
+    ofir.add_assignment(mb1)
+    ofir.add_assignment(mb2)
     ofir.add_assignment(b1)
     ofir.add_assignment(b2)
     ofir.add_assignment(b3)
-    ofir.add_assignment(b4)
-    ofir.add_assignment(b5)
-    ofir.add_assignment(b6)
-    ofir.add_assignment(b7)
+    # ofir.add_assignment(b4)
+    # ofir.add_assignment(b5)
+    # ofir.add_assignment(b6)
+    # ofir.add_assignment(b7)
     # ofir.add_assignment(b4)
     # print(ofir.schedule_week(1))
     # print(ofir)

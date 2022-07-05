@@ -10,6 +10,7 @@ from time_slots import find_possible_slots
 
 class GradientDecent:
     def __init__(self, week, meetings, free_times, kind, users):
+
         self.__week = week
         self.__meetings = meetings
         self.__free_times = free_times
@@ -20,6 +21,7 @@ class GradientDecent:
             self.__mode = "HIGH_MEETINGS"
         else:
             self.__mode = "LOW_MEETINGS"
+
 
     def score(self, scores):
         if self.__kind == "sum":
@@ -74,10 +76,13 @@ class GradientDecent:
 
     def solve(self):
         # get all possible slots for each meeting:
-        optional_slots = [[] for _ in range(len(self.__meetings))]  # optional slots for every meeting
+        optional_slots = []  # optional slots for every meeting
         for i in self.__meetings.keys():
             time_slots = [self.__free_times[k]["free slots"] for k in self.__meetings[i]["participants"]]
-            optional_slots[i] += find_possible_slots(self.__meetings[i]["duration"], time_slots, self.__lunches)
+            must_be = [(ass.get_time(), ass.get_time() + ass.get_duration()) for u in self.__meetings[i]["participants"] for ass in
+             self.__users[u].get_all_assignments() if ass.get_kind() == 2]
+            consts = [self.__users[u].get_constraints() for u in self.__meetings[i]["participants"]]
+            optional_slots.append(find_possible_slots(self.__meetings[i]["duration"], time_slots, self.__lunches, must_be, consts))
 
         final_time_for_each_meeting = []
         final_score = -np.inf
@@ -114,8 +119,11 @@ class GradientDecent:
                     available_slots.append(curr_slot)
             slot = random.choice(available_slots)
             slots.append(slot)
+        slots = [(s["day"], s["start"]) for s in slots]
+        if self.is_consistent(slots, optional_slots):
+            return slots
 
-        return [(s["day"], s["start"]) for s in slots]
+        return self.get_random_start_point(optional_slots)
 
     def high_meetings_neighbors(self, time_for_each_meeting, optional_slots):
         all_options = []
@@ -133,13 +141,7 @@ class GradientDecent:
             for j in range(0,len(optional_slots[i]),2):
                 new_option = time_for_each_meeting[:i] + [(optional_slots[i][j]["day"], optional_slots[i][j]["start"])] + time_for_each_meeting[i + 1:]
                 if self.is_consistent(new_option, optional_slots):
-                    all_consistent = True
-                    for k in range(len(new_option)):
-                        for l in range(k + 1, len(new_option)):
-                            if new_option[k][0] == new_option[l][0] and Time.is_overlap(new_option[k][1],new_option[k][1]+self.__meetings[i]["duration"], new_option[l][1],new_option[l][1]+self.__meetings[l]["duration"]):
-                                all_consistent = False
-                    if all_consistent:
-                        all_options.append(new_option)
+                    all_options.append(new_option)
         if not all_options:
             return all_options
         random.shuffle(all_options)
@@ -163,6 +165,23 @@ class GradientDecent:
             time = option[i]
             day = time[0]
             time_in_day = time[1]
+            end_in_day = time_in_day+self.__meetings[i]["object"].get_duration()
             if all([time_in_day != slot["start"] for slot in optional_slots[i] if slot["day"] == day]):
                 return False
+
+            const_in_meet = [self.__users[k].get_constraints().get_hard_constraints() for k in self.__meetings[i]["participants"]]
+            before_1 = max([c["break before meeting"] for c in const_in_meet])
+            after_1 = max([c["break after meeting"] for c in const_in_meet])
+            for j in range(i+1, len(option)):
+                time2 = option[j]
+                day2 = time2[0]
+                time_in_day2 = time2[1]
+                end_in_day2 = time_in_day2+self.__meetings[j]["object"].get_duration()
+                const_in_meet = [self.__users[k].get_constraints().get_hard_constraints() for k in
+                                 self.__meetings[j]["participants"]]
+                before_2 = max([c["break before meeting"] for c in const_in_meet])
+                after_2 = max([c["break after meeting"] for c in const_in_meet])
+                if Time.is_overlap(time_in_day-before_1, end_in_day+after_1, time_in_day2-before_2, end_in_day2+after_2) and day2 == day:
+                    return False
+
         return True

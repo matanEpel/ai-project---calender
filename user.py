@@ -31,6 +31,11 @@ class User:
         self.__schedule = dict()
 
         self.__constraints = constraints
+        available_times = Time.get_range(self.get_constraints().get_hard_constraints()["start of the day"],
+                                         self.get_constraints().get_hard_constraints()["end of the day"])
+        self.times_domain = list(itertools.product(available_times,
+                                                   self.get_constraints().get_hard_constraints()[
+                                                       "working days"]))  # domain
 
     def set_name(self, name: str):
         self.__name = name
@@ -213,11 +218,7 @@ class User:
             CONSTRAINTS -
         """
         starting_times = list()  # variables
-        available_times = Time.get_range(self.get_constraints().get_hard_constraints()["start of the day"],
-                                         self.get_constraints().get_hard_constraints()["end of the day"])
-        self.times_domain = list(itertools.product(available_times,
-                                                   self.get_constraints().get_hard_constraints()[
-                                                       "working days"]))  # domain
+
         if SHUFFLE:
             random.shuffle(self.times_domain)
 
@@ -230,7 +231,7 @@ class User:
 
     def backtrack_search(self, week, assigned_variables_dict: Dict[Tuple[int, Time], Tuple[Time, int]] = {}):
         """
-            times_dict -
+            times_dict - {(index, duration): (start_time, day)}
         """
         # print(len(assigned_variables_dict))
         if len(assigned_variables_dict) == len(self.assignments_map):
@@ -261,7 +262,7 @@ class User:
         for time in DOMAIN:  # can iterate randomly on the time domain in order to make the back track random
             local_assigned_variables_dict = assigned_variables_dict.copy()
             local_assigned_variables_dict[current_var] = time
-            if self.consistent(local_assigned_variables_dict, week=week):
+            if self.consistent(local_assigned_variables_dict, week=week, day=time[1]):
                 # NEED TO WRITE self.consistent
                 result = self.backtrack_search(week=week, assigned_variables_dict=local_assigned_variables_dict)
                 if result is not None:
@@ -269,7 +270,7 @@ class User:
 
         return None
 
-    def consistent(self, assigned_variables_dict: Dict[Tuple[int, Time], Tuple[Time, int]], week):
+    def consistent(self, assigned_variables_dict: Dict[Tuple[int, Time], Tuple[Time, int]], week, day):
         """
             need to check if the assignment is legal by all of the constraints
             need to take into considiration:
@@ -277,55 +278,55 @@ class User:
             2. the assignements which already been asigned
             3. the MEETINGS and MUST BE events
         """
-        for day in self.get_constraints().get_hard_constraints()["working days"]:
-            intervals = [(x[1][0], x[0][1] + x[1][0]) for x in list(assigned_variables_dict.items()) if x[1][1] == day]
+        # for day in self.get_constraints().get_hard_constraints()["working days"]:
+        intervals = [(x[1][0], x[0][1] + x[1][0]) for x in list(assigned_variables_dict.items()) if x[1][1] == day]
 
-            # Lunch time:
-            lunch_start_time = self.__constraints.get_hard_constraints()["lunch time"][0]
-            lunch_end_time = self.__constraints.get_hard_constraints()["lunch time"][1]
+        # Lunch time:
+        lunch_start_time = self.__constraints.get_hard_constraints()["lunch time"][0]
+        lunch_end_time = self.__constraints.get_hard_constraints()["lunch time"][1]
 
-            lunches = [x for x in list(assigned_variables_dict.items()) if x[1][1] == day and len(x[0]) == 3]
-            if len(lunches) == 1:
-                lunch = lunches[0]
-                if lunch[1][0] < lunch_start_time or lunch[0][1] + lunch[1][0] > lunch_end_time:
-                    return False
-
-            # add breaks:
-            break_before_task = self.__constraints.get_hard_constraints()["break before task"]
-            break_after_task = self.__constraints.get_hard_constraints()["break after task"]
-            final_intervals_breaks = [(interval[0] - break_before_task, interval[1] + break_after_task) for interval in
-                                      intervals]
-
-            final_intervals = intervals
-
-            if not self.__constraints.get_hard_constraints()["overlap meeting task"]:
-                meetings_intervals = [(m.get_time(), m.get_time() + m.get_duration()) for m in self.__schedule[week] if
-                                      m.get_day() == day and m.get_kind() == consts.kinds["MEETING"]]
-                #add breaks:
-                break_before_meeting = self.__constraints.get_hard_constraints()["break before meeting"]
-                break_after_meeting = self.__constraints.get_hard_constraints()["break after meeting"]
-
-                meetings_intervals_breaks = [(interval[0] - break_before_meeting, interval[1] + break_after_meeting) for
-                                             interval in meetings_intervals]
-
-                final_intervals += meetings_intervals_breaks
-
-            if not self.__constraints.get_hard_constraints()["overlap must be task"]:
-                must_be_intervals = [(m.get_time(), m.get_time() + m.get_duration()) for m in self.__schedule[week] if
-                                     m.get_day() == day and m.get_kind() == consts.kinds["MUST_BE_IN"]]
-
-                break_before_must_be = self.__constraints.get_hard_constraints()["break before must be"]
-                break_after_must_be = self.__constraints.get_hard_constraints()["break after must be"]
-
-                must_be_intervals_breaks = [(interval[0] - break_before_must_be, interval[1] + break_after_must_be) for
-                                            interval in must_be_intervals]
-
-                final_intervals += must_be_intervals_breaks
-
-            if Time.is_list_overlap(intervals=final_intervals):
+        lunches = [x for x in list(assigned_variables_dict.items()) if x[1][1] == day and len(x[0]) == 3]
+        if len(lunches) == 1:
+            lunch = lunches[0]
+            if lunch[1][0] < lunch_start_time or lunch[0][1] + lunch[1][0] > lunch_end_time:
                 return False
 
-            if Time.max_time(intervals) > self.get_constraints().get_hard_constraints()["end of the day"]:
-                return False
+        # add breaks:
+        break_before_task = self.__constraints.get_hard_constraints()["break before task"]
+        break_after_task = self.__constraints.get_hard_constraints()["break after task"]
+        final_intervals_breaks = [(interval[0] - break_before_task, interval[1] + break_after_task) for interval in
+                                  intervals]
+
+        final_intervals = intervals
+
+        if not self.__constraints.get_hard_constraints()["overlap meeting task"]:
+            meetings_intervals = [(m.get_time(), m.get_time() + m.get_duration()) for m in self.__schedule[week] if
+                                  m.get_day() == day and m.get_kind() == consts.kinds["MEETING"]]
+            #add breaks:
+            break_before_meeting = self.__constraints.get_hard_constraints()["break before meeting"]
+            break_after_meeting = self.__constraints.get_hard_constraints()["break after meeting"]
+
+            meetings_intervals_breaks = [(interval[0] - break_before_meeting, interval[1] + break_after_meeting) for
+                                         interval in meetings_intervals]
+
+            final_intervals += meetings_intervals_breaks
+
+        if not self.__constraints.get_hard_constraints()["overlap must be task"]:
+            must_be_intervals = [(m.get_time(), m.get_time() + m.get_duration()) for m in self.__schedule[week] if
+                                 m.get_day() == day and m.get_kind() == consts.kinds["MUST_BE_IN"]]
+
+            break_before_must_be = self.__constraints.get_hard_constraints()["break before must be"]
+            break_after_must_be = self.__constraints.get_hard_constraints()["break after must be"]
+
+            must_be_intervals_breaks = [(interval[0] - break_before_must_be, interval[1] + break_after_must_be) for
+                                        interval in must_be_intervals]
+
+            final_intervals += must_be_intervals_breaks
+
+        if Time.is_list_overlap(intervals=final_intervals):
+            return False
+
+        if Time.max_time(intervals) > self.get_constraints().get_hard_constraints()["end of the day"]:
+            return False
 
         return True

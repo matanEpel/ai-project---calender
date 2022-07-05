@@ -26,6 +26,7 @@ def main_epel():
     a = find_possible_slots(Time(h=2, m=33), slots)
     print(a)
 
+
 def main_amit():
     """
         random staff for debuging

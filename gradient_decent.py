@@ -3,19 +3,22 @@ import random
 import numpy as np
 
 from copy import deepcopy
-from consts import EPOCHS
+from consts import EPOCHS, THRESHOLD_LOT_OF_MEETS
 from time_ import Time
 from time_slots import find_possible_slots
 
 
 class GradientDecent:
-    def __init__(self, week, meetings, free_times, kind, users, mode):
+    def __init__(self, week, meetings, free_times, kind, users):
         self.__week = week
         self.__meetings = meetings
         self.__free_times = free_times
         self.__kind = kind
         self.__users = users
-        self.__mode = mode
+        if len(self.__meetings) >= THRESHOLD_LOT_OF_MEETS:
+            self.__mode = "HIGH_MEETINGS"
+        else:
+            self.__mode = "LOW_MEETINGS"
 
     def score(self, scores):
         if self.__kind == "sum":

@@ -4,11 +4,60 @@ from PIL import ImageTk, Image
 import tkmacosx
 from assignment import Assignment
 from constraint import Constraints
-from consts import MIDDLE_OUT, MIDDLE_FIIL, DOWN_GUI, UP_GUI, TOP_FIIL, TOP_OUT, BUTTON_OUT, BUTTON_FILL, TITLE_COLOR
+from consts import MIDDLE_OUT, MIDDLE_FIIL, DOWN_GUI, UP_GUI, TOP_FIIL, TOP_OUT, BUTTON_OUT, BUTTON_FILL, TITLE_COLOR, \
+    kinds
 from manager import Manager
 from user import User
 from time_ import Time
 
+def default_users(manager):
+    c = Constraints()
+    # c.set_soft_constraint("meetings are close together", 1000)
+    c.set_soft_constraint("start the day late", -1)
+    ofir = User("Ofir", c)
+    matan = User("matan", c)
+    amit = User("amit", c)
+
+    a1 = Assignment(week=1, name="ex1", duration=Time(h=1), kind=kinds["TASK"])
+    a2 = Assignment(week=1, name="ex2", duration=Time(h=1), kind=kinds["TASK"])
+    a3 = Assignment(week=1, name="ex3", duration=Time(h=1), kind=kinds["TASK"])
+    a4 = Assignment(week=1, name="ex4", duration=Time(h=1), kind=kinds["TASK"])
+    a5 = Assignment(week=1, name="ex5", duration=Time(h=1), kind=kinds["TASK"])
+    a6 = Assignment(week=1, name="ex6", duration=Time(h=2), kind=kinds["TASK"])
+    a7 = Assignment(week=1, name="ex7", duration=Time(h=3), kind=kinds["TASK"])
+    a8 = Assignment(week=1, name="ex8", duration=Time(h=2), kind=kinds["TASK"])
+    a9 = Assignment(week=1, name="ex9", duration=Time(h=1), kind=kinds["TASK"])
+    a10 = Assignment(week=1, name="ex10", duration=Time(h=1), kind=kinds["TASK"])
+    a11 = Assignment(week=1, name="ex11", duration=Time(h=5), kind=kinds["TASK"])
+
+    b1 = Assignment(week=1, name="m1", duration=Time(h=2), kind=kinds["MEETING"], participants=[ofir], day=4,
+                    time=Time(h=11, m=45))
+    b2 = Assignment(week=1, name="m2", duration=Time(h=2), kind=kinds["MEETING"], participants=[ofir], day=5,
+                    time=Time(h=9, m=15))
+    b4 = Assignment(week=1, name="m3", duration=Time(h=2), kind=kinds["MEETING"], participants=[ofir], day=2,
+                    time=Time(h=14, m=30))
+    mb1 = Assignment(week=1, name="mb1", duration=Time(h=2, m=30), kind=kinds["MUST_BE_IN"], day=1,
+                     time=Time(h=9, m=30))
+    mb2 = Assignment(week=1, name="mb2", duration=Time(h=2), kind=kinds["MUST_BE_IN"], day=2, time=Time(h=10, m=30))
+    mb3 = Assignment(week=1, name="mb3", duration=Time(h=2), kind=kinds["MUST_BE_IN"], day=1, time=Time(h=13, m=15))
+
+    ofir.add_assignment(a1)
+    ofir.add_assignment(a2)
+    ofir.add_assignment(a3)
+    ofir.add_assignment(a4)
+    ofir.add_assignment(a5)
+    ofir.add_assignment(a6)
+    ofir.add_assignment(a7)
+    ofir.add_assignment(a8)
+    ofir.add_assignment(a9)
+    ofir.add_assignment(a10)
+    ofir.add_assignment(a11)
+    ofir.add_assignment(b1)
+    ofir.add_assignment(b2)
+    # ofir.add_assignment(b4)
+    # print(ofir.schedule_week(1))
+    # print(ofir)
+    manager.add_user(ofir)
 
 def roundPolygon(canvas, x, y, sharpness, **kwargs):
     # The sharpness here is just how close the sub-points
@@ -54,6 +103,7 @@ def roundPolygon(canvas, x, y, sharpness, **kwargs):
 class App:
     def __init__(self, root):
         self.__manager = Manager()
+        default_users(self.__manager)
         # setting title
         self.__root = root
         root.title("calender")
@@ -159,30 +209,32 @@ class App:
             for ele in root.winfo_children():
                 ele.destroy()
             self.add_menu()
-            panel = Label(root, text=bamb.get() + "'s assignments", font=('calibre', 30), bg=TITLE_COLOR, justify='center', fg="white")
-            panel.place(x=0, y=0, width=600)
-
             user = None
             name = bamb.get()
             for u in self.__manager.get_users():
                 if u.get_name() == name:
                     user = u
             week = int(week_var.get())
-            i = 0
-            for ass in user.get_assignments(week):
-                if ass.get_time():
-                    hour = str(ass.get_time().get_hours())
-                    minute = str(ass.get_time().get_minutes())
-                    panel = Label(root, text="name: " + ass.get_name() + ", duration: " + str(
-                        round(float(ass.get_duration()))) + ", start time: " + hour + ":" + minute,
-                                  font=('calibre', 20), bg='white', justify='center')
-                    panel.place(x=0, y=100 + i * 50, width=600)
-                else:
-                    panel = Label(root, text="name: " + ass.get_name() + ", duration: " + str(
-                        float(ass.get_duration())) + ", start time hasn't determined yet", font=('calibre', 20),
-                                  bg='white', justify='center')
-                    panel.place(x=0, y=100 + i * 50, width=600)
-                i += 1
+            if not user.get_assignments(week)[0].get_time():
+                canvas = Canvas(root, width=610, height=500, bg="black")
+                roundPolygon(canvas, [220, 420, 420, 220], [10, 10, 450, 450], 8, width=5,
+                             outline=TOP_OUT,
+                             fill=TOP_FIIL)
+                canvas.place(x=-10, y=40)
+                panel = Label(root, text=bamb.get() + "'s assignments - haven't scheduled yet :)", font=('calibre', 30), bg=TITLE_COLOR, justify='center', fg="white")
+                panel.place(x=0, y=0, width=600)
+
+                i = 0
+                count = 0
+                for ass in user.get_assignments(week):
+                    count += 1
+                    panel = Label(root, text=str(count) + ". " + ass.get_name() + ", duration: " + str(
+                        str(ass.get_duration())), font=('calibre', 15),
+                                  bg=TOP_FIIL, justify='center')
+                    panel.place(x=235, y=70 + i * 30)
+                    i += 1
+            else:
+                self.calender_page(user)
 
         submit = tkmacosx.Button(root, text="GO!", command=submit_func, bd=3, font=('calibre', 13), highlightbackground=BUTTON_FILL)
         submit.config(bg=BUTTON_FILL)
@@ -611,6 +663,9 @@ class App:
         submit.place(x=225, y=380, width=90, height=30)
 
         # sub_btn = tk.Button(root, text='Submit', command=submit)
+
+    def calender_page(self, user):
+        pass
 
 
 if __name__ == "__main__":

@@ -124,16 +124,25 @@ class Time:
             intervals - list of tuples that stands for init time and duration
         """
         #TODO i think this algorithm can be improved using a data structure like tims_slots
-        for i in range(len(intervals)):
-            for j in range(len(intervals)):
-                if i == j:
-                    continue
-                l1 = intervals[i]
-                l2 = intervals[j]
-                if Time.is_overlap(l1[0], l1[1], l2[0], l2[1]):
-                    return True
+
+        # for i in range(len(intervals)):
+        #     for j in range(len(intervals)):
+        #         if i == j:
+        #             continue
+        #         l1 = intervals[i]
+        #         l2 = intervals[j]
+        #         if Time.is_overlap(l1[0], l1[1], l2[0], l2[1]):
+        #             return True
+        #
+        # return False
+
+        intervals = sorted(intervals, key=lambda x: x[0])
+        for i in range(len(intervals) - 1):
+            if intervals[i][1] > intervals[i + 1][0]:
+                return True
 
         return False
+
 
     @staticmethod
     def max_time(intervals: list[Tuple[Time, Time]]) -> Time:

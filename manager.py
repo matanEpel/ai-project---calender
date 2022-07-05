@@ -65,6 +65,10 @@ class Manager:
         :return:
         """
         print("sdkfjsdkfjdskf")
+        # DEBUG
+        # for u in self.__users:
+        #     u.schedule_week_with_optimal(week)
+        # return
         if self.__type == "genetic":
             self.__users = genetic_solution(*self.get_data(week, self.__kind, self.__users))
         elif self.__type == "gradient":

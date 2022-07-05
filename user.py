@@ -125,27 +125,17 @@ class User:
 
         self.__schedule[week].append(assignment)
 
-    def schedule_week_with_vary_constraints(self, week: int, SHUFFLE=True):
-        users_list = list()
-        for i in range(4):
-            for j in range(4):
-                new_user = deepcopy(self)
-                new_user.__constraints.get_hard_constraints()["start of the day"] =\
-                    self.__constraints.get_hard_constraints() + Time(h=i)
-                new_user.__constraints.get_hard_constraints()["end of the day"] = \
-                    self.__constraints.get_hard_constraints() - Time(h=j)
-                users_list.append(new_user)
+    def schedule_week_with_optimal(self, week: int, SHUFFLE=True):
 
-        score_list = [u.schedule_week(week=week, SHUFFLE=SHUFFLE) for u in users_list]
+        max_score = -np.inf
+        schedule = self.__schedule
+        for i in range(10):
+            new_score = self.schedule_week(week=week, SHUFFLE=SHUFFLE)
+            if  new_score > max_score:
+                max_score = new_score
+                schedule = deepcopy(self.__schedule)
 
-        max_score = -101
-        max_index = 0
-        for i in range(len(score_list)):
-            if score_list[i] > max_score:
-                max_score = score_list[i]
-                max_index = i
-
-        self.__schedule = deepcopy(users_list[max_index].__schedule)
+        self.__schedule = schedule
         return max_score
 
 
@@ -169,11 +159,11 @@ class User:
         self.assignments_map = list(enumerate(duration_array))  # map between assignments
 
         # add lunch times:
-        n = len(self.assignments_map)
-        for day in self.__constraints.get_hard_constraints()["working days"]:
-            assignments_array.append(Assignment(week=week, name="Lunch", duration=self.__constraints.get_hard_constraints()["lunch time"][2], kind=kinds["LUNCH"]))
-            self.assignments_map.append((n, self.__constraints.get_hard_constraints()["lunch time"][2], day))
-            n += 1
+        # n = len(self.assignments_map)
+        # for day in self.__constraints.get_hard_constraints()["working days"]:
+        #     assignments_array.append(Assignment(week=week, name="Lunch", duration=self.__constraints.get_hard_constraints()["lunch time"][2], kind=kinds["LUNCH"]))
+        #     self.assignments_map.append((n, self.__constraints.get_hard_constraints()["lunch time"][2], day))
+        #     n += 1
 
         count = 0
 

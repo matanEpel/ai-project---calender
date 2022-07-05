@@ -18,10 +18,10 @@ def find_possible_slots(duration, time_slots_list, lunches):
                                                  i % QUARTERS, duration):
                 free = False
             start_time = Time(h=1 + (i % (HOURS * QUARTERS)) // QUARTERS, m=(i % QUARTERS) * 15)
-            finish_time = Time(h=1+(i % (HOURS * QUARTERS)) // QUARTERS)
+            finish_time = start_time+duration
             # consistent with lunch:
             for (start, finish, duration_lunch) in lunches:
-                if (start_time < start or duration_lunch < (start_time-start)) and (finish<finish_time or duration_lunch < finish-finish_time):
+                if (start_time < start or duration_lunch > (start_time-start)) and (finish<finish_time or duration_lunch > finish-finish_time):
                     free = False
 
         if free:

@@ -43,7 +43,7 @@ class GradientDecent:
             for i in range(len(self.__meetings)):
                 self.__meetings[i]["object"].set_day(time_for_each_meeting[i][0])
                 self.__meetings[i]["object"].set_time(time_for_each_meeting[i][1])
-            scores = [user.schedule_week(self.__week) for user in self.__users]
+            scores = [user.schedule_week_with_optimal(self.__week) for user in self.__users]
             max = self.score(scores)
             new_times = time_for_each_meeting
             for_final_users = deepcopy(self.__users)
@@ -55,10 +55,11 @@ class GradientDecent:
                 for i in range(len(self.__meetings)):
                     self.__meetings[i]["object"].set_day(new_times_for_each_meeting[i][0])
                     self.__meetings[i]["object"].set_time(new_times_for_each_meeting[i][1])
-                scores = [user.schedule_week(self.__week) for user in self.__users]
+                scores = [user.schedule_week_with_optimal(self.__week) for user in self.__users]
                 if self.score(scores) > max:
                     for_final_users = deepcopy(self.__users)
-                    max = self.score(scores)
+                    max -= max
+                    max += self.score(scores)
                     # print(max)
 
                     new_times = new_times_for_each_meeting
@@ -66,6 +67,7 @@ class GradientDecent:
             prev_score = new_score
             new_score = max
             if new_score > prev_score:
+                print(new_score)
                 curr_final_users = for_final_users
                 time_for_each_meeting = new_times
         return new_score, prev_score, curr_final_users
@@ -127,18 +129,21 @@ class GradientDecent:
 
     def low_meetings_neighbors(self, time_for_each_meeting, optional_slots):
         all_options = []
-        for i in range(len(time_for_each_meeting)):
-            for j in range(len(optional_slots[i])):
+        for i in range(0,len(time_for_each_meeting)):
+            for j in range(0,len(optional_slots[i]),2):
                 new_option = time_for_each_meeting[:i] + [(optional_slots[i][j]["day"], optional_slots[i][j]["start"])] + time_for_each_meeting[i + 1:]
                 if self.is_consistent(new_option, optional_slots):
                     all_consistent = True
-                    for i in range(len(new_option)):
-                        for j in range(i + 1, len(new_option)):
-                            if new_option[i][0] == new_option[j][0] and Time.is_overlap(new_option[i][1],new_option[i][1]+self.__meetings[i]["duration"], new_option[j][1],new_option[j][1]+self.__meetings[j]["duration"]):
+                    for k in range(len(new_option)):
+                        for l in range(k + 1, len(new_option)):
+                            if new_option[k][0] == new_option[l][0] and Time.is_overlap(new_option[k][1],new_option[k][1]+self.__meetings[i]["duration"], new_option[l][1],new_option[l][1]+self.__meetings[l]["duration"]):
                                 all_consistent = False
                     if all_consistent:
                         all_options.append(new_option)
-        return all_options
+        if not all_options:
+            return all_options
+        random.shuffle(all_options)
+        return all_options[:len(all_options)]
 
     def get_neighbor_times(self, optional_slots, time_for_each_meeting):
         """

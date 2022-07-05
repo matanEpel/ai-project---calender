@@ -4,9 +4,52 @@ from PIL import ImageTk, Image
 
 from assignment import Assignment
 from constraint import Constraints
+from consts import MIDDLE_OUT, MIDDLE_FIIL, DOWN_GUI, UP_GUI, TOP_FIIL, TOP_OUT, BUTTON_OUT, BUTTON_FILL
 from manager import Manager
 from user import User
 from time_ import Time
+
+
+def roundPolygon(canvas, x, y, sharpness, **kwargs):
+    # The sharpness here is just how close the sub-points
+    # are going to be to the vertex. The more the sharpness,
+    # the more the sub-points will be closer to the vertex.
+    # (This is not normalized)
+    if sharpness < 2:
+        sharpness = 2
+
+    ratioMultiplier = sharpness - 1
+    ratioDividend = sharpness
+
+    # Array to store the points
+    points = []
+
+    # Iterate over the x points
+    for i in range(len(x)):
+        # Set vertex
+        points.append(x[i])
+        points.append(y[i])
+
+        # If it's not the last point
+        if i != (len(x) - 1):
+            # Insert submultiples points. The more the sharpness, the more these points will be
+            # closer to the vertex.
+            points.append((ratioMultiplier * x[i] + x[i + 1]) / ratioDividend)
+            points.append((ratioMultiplier * y[i] + y[i + 1]) / ratioDividend)
+            points.append((ratioMultiplier * x[i + 1] + x[i]) / ratioDividend)
+            points.append((ratioMultiplier * y[i + 1] + y[i]) / ratioDividend)
+        else:
+            # Insert submultiples points.
+            points.append((ratioMultiplier * x[i] + x[0]) / ratioDividend)
+            points.append((ratioMultiplier * y[i] + y[0]) / ratioDividend)
+            points.append((ratioMultiplier * x[0] + x[i]) / ratioDividend)
+            points.append((ratioMultiplier * y[0] + y[i]) / ratioDividend)
+            # Close the polygon
+            points.append(x[0])
+            points.append(y[0])
+
+    return canvas.create_polygon(points, **kwargs, smooth=TRUE)
+
 
 class App:
     def __init__(self, root):
@@ -68,7 +111,13 @@ class App:
         for ele in root.winfo_children():
             ele.destroy()
         self.add_menu()
-        panel = Label(root, text="All users", font=('calibre', 80), bg='white', justify='center')
+
+        canvas = Canvas(root, width=600, height=500)
+        roundPolygon(canvas, [90, 505, 505, 90], [80, 80, 200, 200], 10,
+                     width=5, outline=TOP_OUT, fill=TOP_FIIL)
+        canvas.place(x=0, y=0)
+
+        panel = Label(root, text="All users", font=('calibre', 30), bg='white', justify='center')
         panel.place(x=0, y=0, width=600)
 
         users = {}
@@ -76,20 +125,25 @@ class App:
             users[u.get_name()] = u
 
         bamb = StringVar(root)
-        bamb.set("CHOOSE THE USER YOU WANT TO LOOK AT")
+        bamb.set("none")
+        Label(root, text="The user you want to look at:", font=('calibre', 25), bg=TOP_FIIL, justify='center').place(x=100, y=100)
         w = OptionMenu(root, bamb, "none", *(users.keys()))
-        w.place(x=150, y=100)
+        w.config(bg=TOP_FIIL)
+        w.place(x=430, y=108)
 
         week_var = StringVar(root)
-        week_var.set("CHOOSE THE WEEK YOU WANT TO LOOK AT")
+        Label(root, text="The week you want to look at:", font=('calibre', 25), bg=TOP_FIIL, justify='center').place(x=100, y=150)
         weeks = set()
         for u in self.__manager.get_users():
             for ass in u.get_all_assignments():
                 weeks.add(ass.get_week())
-        w = OptionMenu(root, week_var, 1, *(weeks))
-        w.place(x=150, y=150)
+        week_var.set("none")
+        w = OptionMenu(root, week_var, "none", *(weeks))
+        w.config(bg=TOP_FIIL)
+        w.place(x=430, y=158)
 
         def submit_func():
+            # TODO: look good
             if bamb.get() == "none" or bamb.get() == "CHOOSE THE USER YOU WANT TO LOOK AT":
                 self.home()
                 return
@@ -110,41 +164,53 @@ class App:
                 if ass.get_time():
                     hour = str(ass.get_time().get_hours())
                     minute = str(ass.get_time().get_minutes())
-                    panel = Label(root, text="name: " + ass.get_name() + ", duration: " + str(round(float(ass.get_duration()))) + ", start time: " + hour+":"+minute, font=('calibre', 20), bg='white', justify='center')
-                    panel.place(x=0, y=100+i*50, width=600)
+                    panel = Label(root, text="name: " + ass.get_name() + ", duration: " + str(
+                        round(float(ass.get_duration()))) + ", start time: " + hour + ":" + minute,
+                                  font=('calibre', 20), bg='white', justify='center')
+                    panel.place(x=0, y=100 + i * 50, width=600)
                 else:
                     panel = Label(root, text="name: " + ass.get_name() + ", duration: " + str(
                         float(ass.get_duration())) + ", start time hasn't determined yet", font=('calibre', 20),
                                   bg='white', justify='center')
-                    panel.place(x=0, y=100+i * 50, width=600)
+                    panel.place(x=0, y=100 + i * 50, width=600)
                 i += 1
 
         submit = Button(root, text="GO!", command=submit_func, bd=3, font=('calibre', 25), bg='white')
-        submit.place(x=225, y=210, width=150, height=70)
+        submit.place(x=100, y=300, width=150, height=70)
 
         def schedule():
             for week in weeks:
                 print("week " + str(week) + " was scheduled!")
                 self.__manager.schedule_week(week)
+
+
         submit = Button(root, text="SCHEDULE!", command=schedule, bd=3, font=('calibre', 25), bg='white')
-        submit.place(x=225, y=310, width=150, height=70)
+        submit.place(x=350, y=300, width=150, height=70)
 
     def add_assignment(self):
         for ele in root.winfo_children():
             ele.destroy()
         self.add_menu()
-        panel = Label(root, text="add assignment to user", font=('calibre', 60), bg='white', justify='center')
+
+        canvas = Canvas(root, width=600, height=500)
+        roundPolygon(canvas, [140, 460, 460, 140], [160, 160, 290, 290], 10,
+                     width=5, outline="#82B366", fill="#D5E8D4")
+        canvas.place(x=0, y=0)
+
+        panel = Label(root, text="Add assignment to user", font=('calibre', 30), bg='white', justify='center')
         panel.place(x=0, y=0, width=600)
 
         name_var = tk.StringVar()
+        e1 = tk.Entry(root, textvariable=name_var, bd=0, font=('calibre', 25), justify='center', bg="#D5E8D4",
+                      highlightbackground="black", highlightthickness=2)
+        e1.place(x=155, y=220, width=290, height=50)
 
-        e1 = tk.Entry(root, textvariable=name_var, bd=3, font=('calibre', 25), justify='center')
-        e1.place(x=150, y=250, width=300, height=50)
+        panel = Label(root, text="enter user name:", font=('calibre', 30), bg="#D5E8D4")
+        panel.place(x=180, y=170)
 
-        panel = Label(root, text="enter user name:", font=('calibre', 30), bg='white')
-        panel.place(x=180, y=200)
 
         def submit_func():
+            #TODO: look good
             name = name_var.get()
             for ele in root.winfo_children():
                 ele.destroy()
@@ -187,37 +253,47 @@ class App:
                             user = u
 
                     partici = []
+                    print(partici)
                     for part in ass_part_var.get().split(", "):
                         curr_user = None
                         for u in self.__manager.get_users():
                             if u.get_name() == part:
                                 curr_user = u
-                        partici.append(curr_user)
-                    assignment = Assignment(int(ass_week_var.get()), ass_name_var.get(), int(ass_length_var.get()), participants=partici)
+                        if curr_user:
+                            partici.append(curr_user)
+                    assignment = Assignment(int(ass_week_var.get()), ass_name_var.get(), int(ass_length_var.get()),
+                                            participants=partici)
                     for part in partici:
                         part.add_assignment(assignment)
                     user.add_assignment(assignment)
                 self.home()
+
             submit = Button(root, text="Submit", command=submit_func_ass, bd=3, font=('calibre', 25), bg='white')
             submit.place(x=225, y=410, width=150, height=70)
 
+        photo = PhotoImage(file=r"resources/all.png")
         submit = Button(root, text="Submit", command=submit_func, bd=3, font=('calibre', 25), bg='white')
-        submit.place(x=225, y=310, width=150, height=70)
+        submit.place(x=225, y=380, width=150, height=70)
 
     def specific_user(self):
         for ele in root.winfo_children():
             ele.destroy()
         self.add_menu()
-        panel = Label(root, text="Edit\\add user", font=('calibre', 80), bg='white', justify='center')
+
+        canvas = Canvas(root, width=600, height=500)
+        roundPolygon(canvas, [140, 460, 460, 140], [160, 160, 290, 290], 10,
+                     width=5, outline="#82B366", fill="#D5E8D4")
+        canvas.place(x=0, y=0)
+
+        panel = Label(root, text="Edit\\add user", font=('calibre', 30), bg='white', justify='center')
         panel.place(x=0, y=0, width=600)
 
         name_var = tk.StringVar()
+        e1 = tk.Entry(root, textvariable=name_var, bd=0,font=('calibre', 25), justify='center', bg="#D5E8D4", highlightbackground="black", highlightthickness=2)
+        e1.place(x=155, y=220, width=290, height=50)
 
-        e1 = tk.Entry(root, textvariable=name_var, bd=3, font=('calibre', 25), justify='center')
-        e1.place(x=150, y=250, width=300, height=50)
-
-        panel = Label(root, text="enter user name:", font=('calibre', 30), bg='white')
-        panel.place(x=180, y=200)
+        panel = Label(root, text="enter user name:", font=('calibre', 30), bg="#D5E8D4")
+        panel.place(x=180, y=170)
 
         def submit_func():
             name = name_var.get()
@@ -233,147 +309,193 @@ class App:
                 ele.destroy()
             self.add_menu()
 
-            panel = Label(root, text="Edit\\create " + name + "'s data", font=('calibre', 50), justify='center')
+            canvas = Canvas(root, width=600, height=500)
+            roundPolygon(canvas, [170, 440, 440, 170], [340 - DOWN_GUI, 340 - DOWN_GUI, 425 - DOWN_GUI, 425 - DOWN_GUI],
+                         10, width=5, outline="#82B366", fill="#D5E8D4")
+            roundPolygon(canvas, [50, 560, 560, 50], [190 - DOWN_GUI, 190 - DOWN_GUI, 320 - DOWN_GUI, 320 - DOWN_GUI],
+                         10, width=5, outline=MIDDLE_OUT, fill=MIDDLE_FIIL)
+            roundPolygon(canvas, [10, 590, 590, 10], [60 - UP_GUI, 60 - UP_GUI, 220 - UP_GUI, 220 - UP_GUI], 10,
+                         width=5, outline=TOP_OUT, fill=TOP_FIIL)
+            roundPolygon(canvas, [15, 150, 15], [400, 445, 490], 8, width=5, outline=BUTTON_OUT, fill=BUTTON_FILL)
+            roundPolygon(canvas, [445 + 15, 445 + 150, 445 + 15], [400, 445, 490], 8, width=5, outline=BUTTON_OUT,
+                         fill=BUTTON_FILL)
+            canvas.place(x=0, y=0)
+
+            panel = Label(root, text="Edit\\create " + name + "'s data", font=('calibre', 30), justify='center')
             panel.place(x=0, y=0, width=600)
             print(name)
 
-            olm = tk.IntVar()
-            c1 = tk.Checkbutton(root, text='overlapping meetings', variable=olm, onvalue=1, offvalue=0,
-                                font=('calibre', 18))
-            c1.place(x=0, y=200)
-
-            olt = tk.IntVar()
-            c1 = tk.Checkbutton(root, text='overlapping tasks', variable=olt, onvalue=1, offvalue=0,
-                                font=('calibre', 18))
-            c1.place(x=0, y=225)
-
-            olmb = tk.IntVar()
-            c1 = tk.Checkbutton(root, text='overlapping must be', variable=olmb, onvalue=1, offvalue=0,
-                                font=('calibre', 18))
-            c1.place(x=0, y=250)
-
             olmt = tk.IntVar()
-            c1 = tk.Checkbutton(root, text='overlap meeting task', variable=olmt, onvalue=1, offvalue=0,
-                                font=('calibre', 18))
-            c1.place(x=0, y=275)
-
-            olmmb = tk.IntVar()
-            c1 = tk.Checkbutton(root, text='overlap meeting must be', variable=olmmb, onvalue=1, offvalue=0,
-                                font=('calibre', 18))
-            c1.place(x=0, y=300)
+            c1 = tk.Checkbutton(root, text='overlap meeting and task', variable=olmt, onvalue=1, offvalue=0,
+                                font=('calibre', 18), bg="#D5E8D4")
+            c1.place(x=190, y=350 - DOWN_GUI)
 
             olmbt = tk.IntVar()
-            c1 = tk.Checkbutton(root, text='overlap must be task', variable=olmbt, onvalue=1, offvalue=0,
-                                font=('calibre', 18))
-            c1.place(x=0, y=325)
+            c1 = tk.Checkbutton(root, text='overlap must be and task', variable=olmbt, onvalue=1, offvalue=0,
+                                font=('calibre', 18), bg="#D5E8D4")
+            c1.place(x=190, y=390 - DOWN_GUI)
 
-            mbimb = tk.IntVar()
-            c1 = tk.Checkbutton(root, text='must be is must be', variable=mbimb, onvalue=1, offvalue=0,
-                                font=('calibre', 18))
-            c1.place(x=0, y=350)
+            panel = Label(root, text="lunch start hour", font=('calibre', 15), justify='center', bg=MIDDLE_FIIL)
+            panel.place(x=60, y=200 - DOWN_GUI)
+            lst = IntVar(root)
+            w = OptionMenu(root, lst, 10, 11, 12, 13, 14, 15)
+            w.config(bg=MIDDLE_FIIL)
+            w.place(x=100, y=225 - DOWN_GUI)
 
-            bbm = StringVar(root)
-            bbm.set("break before meeting")  # default value
+            panel = Label(root, text="lunch finish hour", font=('calibre', 15), justify='center', bg=MIDDLE_FIIL)
+            panel.place(x=240, y=200 - DOWN_GUI)
+            lft = IntVar(root)
+            w = OptionMenu(root, lft, 11, 12, 13, 14, 15, 16, 17)
+            w.config(bg=MIDDLE_FIIL)
+            w.place(x=280, y=225 - DOWN_GUI)
+
+            panel = Label(root, text="lunch duration", font=('calibre', 15), justify='center', bg=MIDDLE_FIIL)
+            panel.place(x=445, y=200 - DOWN_GUI)
+            ld = IntVar(root)
+            w = OptionMenu(root, ld, 10, 15, 20, 30, 45, 60)
+            w.config(bg=MIDDLE_FIIL)
+            w.place(x=480, y=225 - DOWN_GUI)
+
+            panel = Label(root, text="break...", font=('calibre', 15), justify='center', bg=TOP_FIIL)
+            panel.place(x=20, y=40 - DOWN_GUI - UP_GUI)
+            panel = Label(root, text="before", font=('calibre', 15), justify='center', bg=TOP_FIIL)
+            panel.place(x=80, y=40 - DOWN_GUI - UP_GUI)
+            panel = Label(root, text="after", font=('calibre', 15), justify='center', bg=TOP_FIIL)
+            panel.place(x=150, y=40 - DOWN_GUI - UP_GUI)
+            panel = Label(root, text="meeting", font=('calibre', 15), justify='center', bg=TOP_FIIL)
+            panel.place(x=20, y=80 - DOWN_GUI - UP_GUI)
+            panel = Label(root, text="task", font=('calibre', 15), justify='center', bg=TOP_FIIL)
+            panel.place(x=20, y=120 - DOWN_GUI - UP_GUI)
+            panel = Label(root, text="must be", font=('calibre', 15), justify='center', bg=TOP_FIIL)
+            panel.place(x=20, y=160 - DOWN_GUI - UP_GUI)
+
+            bbm = IntVar(root)
+            bbm.set(0)
             w = OptionMenu(root, bbm, 0, 5, 10, 15, 20)
-            w.place(x=0, y=80)
+            w.config(bg=TOP_FIIL)
+            w.place(x=80, y=80 - DOWN_GUI - UP_GUI)
 
-            bbt = StringVar(root)
-            bbt.set("break before task")  # default value
+            bbt = IntVar(root)
+            bbt.set(0)
             w = OptionMenu(root, bbt, 0, 5, 10, 15, 20)
-            w.place(x=0, y=120)
+            w.config(bg=TOP_FIIL)
+            w.place(x=80, y=120 - DOWN_GUI - UP_GUI)
 
-            bbmb = StringVar(root)
-            bbmb.set("break before must be")  # default value
+            bbmb = IntVar(root)
+            bbmb.set(0)
             w = OptionMenu(root, bbmb, 0, 5, 10, 15, 20)
-            w.place(x=0, y=160)
+            w.config(bg=TOP_FIIL)
+            w.place(x=80, y=160 - DOWN_GUI - UP_GUI)
 
-            bam = StringVar(root)
-            bam.set("break after meeting")  # default value
+            bam = IntVar(root)
+            bam.set(0)
             w = OptionMenu(root, bam, 0, 5, 10, 15, 20)
-            w.place(x=200, y=80)
+            w.config(bg=TOP_FIIL)
+            w.place(x=150, y=80 - DOWN_GUI - UP_GUI)
 
-            bat = StringVar(root)
-            bat.set("break after task")  # default value
+            bat = IntVar(root)
+            bat.set(0)
             w = OptionMenu(root, bat, 0, 5, 10, 15, 20)
-            w.place(x=200, y=120)
+            w.config(bg=TOP_FIIL)
+            w.place(x=150, y=120 - DOWN_GUI - UP_GUI)
 
-            bamb = StringVar(root)
-            bamb.set("break after must be")  # default value
+            bamb = IntVar(root)
+            bamb.set(0)
             w = OptionMenu(root, bamb, 0, 5, 10, 15, 20)
-            w.place(x=200, y=160)
+            w.config(bg=TOP_FIIL)
+            w.place(x=150, y=160 - DOWN_GUI - UP_GUI)
 
-            sotd = StringVar(root)
-            sotd.set("start of the day")  # default value
+            panel = Label(root, text="start of the day:", font=('calibre', 15), justify='center', bg=TOP_FIIL)
+            panel.place(x=230, y=40 - DOWN_GUI - UP_GUI)
+            sotd = IntVar(root)
+            sotd.set(8)  # default value
             w = OptionMenu(root, sotd, 6, 7, 8, 9, 10, 11, 12)
-            w.place(x=400, y=80)
+            w.config(bg=TOP_FIIL)
+            w.place(x=350, y=40 - DOWN_GUI - UP_GUI)
 
-            eotd = StringVar(root)
-            eotd.set("end of the day")  # default value
+            panel = Label(root, text="end of the day:", font=('calibre', 15), justify='center', bg=TOP_FIIL)
+            panel.place(x=420, y=40 - DOWN_GUI - UP_GUI)
+            eotd = IntVar(root)
+            eotd.set(22)  # default value
             w = OptionMenu(root, eotd, 16, 17, 18, 19, 20, 21, 22, 23, 24)
-            w.place(x=400, y=120)
+            w.config(bg=TOP_FIIL)
+            w.place(x=535, y=40 - DOWN_GUI - UP_GUI)
 
             sd = tk.IntVar()
             c1 = tk.Checkbutton(root, text='1', variable=sd, onvalue=1, offvalue=0,
-                                font=('calibre', 14))
-            c1.place(x=380, y=180)
+                                font=('calibre', 14), bg=MIDDLE_FIIL)
+            c1.place(x=160, y=290 - DOWN_GUI)
 
             md = tk.IntVar()
             c1 = tk.Checkbutton(root, text='2', variable=md, onvalue=1, offvalue=0,
-                                font=('calibre', 14))
-            c1.place(x=420, y=180)
+                                font=('calibre', 14), bg=MIDDLE_FIIL)
+            c1.place(x=220, y=290 - DOWN_GUI)
 
             tud = tk.IntVar()
             c1 = tk.Checkbutton(root, text='3', variable=tud, onvalue=1, offvalue=0,
-                                font=('calibre', 14))
-            c1.place(x=460, y=180)
+                                font=('calibre', 14), bg=MIDDLE_FIIL)
+            c1.place(x=280, y=290 - DOWN_GUI)
 
             wd = tk.IntVar()
             c1 = tk.Checkbutton(root, text='4', variable=wd, onvalue=1, offvalue=0,
-                                font=('calibre', 14))
-            c1.place(x=500, y=180)
+                                font=('calibre', 14), bg=MIDDLE_FIIL)
+            c1.place(x=340, y=290 - DOWN_GUI)
 
             thd = tk.IntVar()
             c1 = tk.Checkbutton(root, text='5', variable=thd, onvalue=1, offvalue=0,
-                                font=('calibre', 14))
-            c1.place(x=540, y=180)
+                                font=('calibre', 14), bg=MIDDLE_FIIL)
+            c1.place(x=400, y=290 - DOWN_GUI)
 
-            Label(root,
-                  text="Working days:", font=('calibre', 14)).place(x=430,
-                                                                    y=155)
+            Label(root, text="Working days:", font=('calibre', 14), bg=MIDDLE_FIIL).place(x=250, y=260 - DOWN_GUI)
 
             mact = StringVar(root)
-            mact.set("meetings are close together")  # default value
+            mact.set(1)
+            Label(root, text="meets\nclose\ntogether", font=('calibre', 14), bg=TOP_FIIL).place(x=240,
+                                                                                                y=90 - DOWN_GUI - UP_GUI)
+            # mact.set("meetings are close together")  # default value
             w = OptionMenu(root, mact, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
-            w.place(x=300, y=230)
+            w.config(bg=TOP_FIIL)
+            w.place(x=250, y=160 - DOWN_GUI - UP_GUI)
 
             tact = StringVar(root)
-            tact.set("tasks are close together")  # default value
+            tact.set(1)
+            Label(root, text="tasks\nclose\ntogether", font=('calibre', 14), bg=TOP_FIIL).place(x=310,
+                                                                                                y=90 - DOWN_GUI - UP_GUI)
+            # tact.set("tasks are close together")  # default value
             w = OptionMenu(root, tact, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
-            w.place(x=300, y=260)
+            w.config(bg=TOP_FIIL)
+            w.place(x=320, y=160 - DOWN_GUI - UP_GUI)
 
             bac = StringVar(root)
-            bac.set("breaks are continuous")  # default value
+            bac.set(1)
+            Label(root, text="breaks\nare\ncontinuous", font=('calibre', 14), bg=TOP_FIIL).place(x=375,
+                                                                                                 y=90 - DOWN_GUI - UP_GUI)
+            # bac.set("breaks are continuous")  # default value
             w = OptionMenu(root, bac, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
-            w.place(x=300, y=290)
+            w.config(bg=TOP_FIIL)
+            w.place(x=390, y=160 - DOWN_GUI - UP_GUI)
 
             fde = StringVar(root)
-            fde.set("finish the day early")  # default value
+            fde.set(1)
+            # fde.set("finish the day early")  # default value
+            Label(root, text="finish\nday\nearly", font=('calibre', 14), bg=TOP_FIIL).place(x=460,
+                                                                                            y=90 - DOWN_GUI - UP_GUI)
             w = OptionMenu(root, fde, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
-            w.place(x=300, y=320)
+            w.config(bg=TOP_FIIL)
+            w.place(x=460, y=160 - DOWN_GUI - UP_GUI)
 
             stdl = StringVar(root)
-            stdl.set("start the day late")  # default value
+            stdl.set(1)
+            # stdl.set("start the day late")  # default value
+            Label(root, text="start\nday\nlate", font=('calibre', 14), bg=TOP_FIIL).place(x=530,
+                                                                                          y=90 - DOWN_GUI - UP_GUI)
             w = OptionMenu(root, stdl, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
-            w.place(x=300, y=350)
+            w.config(bg=TOP_FIIL)
+            w.place(x=530, y=160 - DOWN_GUI - UP_GUI)
 
             def default():
-                olm.set(0)
-                olt.set(0)
-                olmb.set(0)
                 olmt.set(0)
-                olmmb.set(0)
                 olmbt.set(0)
-                mbimb.set(1)
                 bbm.set(10)
                 bbt.set(10)
                 bbmb.set(10)
@@ -389,18 +511,17 @@ class App:
                 thd.set(1)
                 mact.set(1)
                 tact.set(1)
+                ld.set(30)
+                lft.set(12)
+                lst.set(14)
                 bac.set(1)
                 fde.set(1)
                 stdl.set(1)
+
             def submit_user():
                 constraints = Constraints()
-                constraints.set_hard_constraint("overlapping meetings", olm.get())
-                constraints.set_hard_constraint("overlapping tasks", olt.get())
-                constraints.set_hard_constraint("overlapping must be", olmb.get())
                 constraints.set_hard_constraint("overlap meeting task", olmt.get())
-                constraints.set_hard_constraint("overlap meeting must be", olmmb.get())
                 constraints.set_hard_constraint("overlap must be task", olmbt.get())
-                constraints.set_hard_constraint("must be is must be", mbimb.get())
                 constraints.set_hard_constraint("break before meeting", Time(m=int(bbm.get())))
                 constraints.set_hard_constraint("break before task", Time(m=int(bbt.get())))
                 constraints.set_hard_constraint("break before must be", Time(m=int(bbmb.get())))
@@ -409,6 +530,7 @@ class App:
                 constraints.set_hard_constraint("break after must be", Time(m=int(bamb.get())))
                 constraints.set_hard_constraint("start of the day", Time(h=int(sotd.get())))
                 constraints.set_hard_constraint("end of the day", Time(h=int(eotd.get())))
+                constraints.set_hard_constraint("lunch time", (Time(h=lst.get()), Time(h=lft.get()), Time(m=ld.get())))
                 days = []
                 if int(sd.get()):
                     days.append(1)
@@ -430,14 +552,17 @@ class App:
                 self.__manager.add_user(new_user)
                 self.home()
 
-            submit = Button(root, text="Submit", command=submit_user, bd=3, font=('calibre', 25), bg='white')
-            submit.place(x=225, y=410, width=150, height=70)
+            submit = Button(root, text="Submit", command=submit_user, bd=3, font=('calibre', 20),
+                            highlightbackground='black', relief=FLAT)
+            submit.place(x=450, y=410, width=120, height=70)
 
-            submit = Button(root, text="default", command=default, bd=3, font=('calibre', 25), bg='white')
-            submit.place(x=25, y=410, width=150, height=70)
+            submit = Button(root, text="default", command=default, bd=3, font=('calibre', 20),
+                            highlightbackground='black', relief=FLAT)
+            submit.config(bg=BUTTON_FILL)
+            submit.place(x=5, y=410, width=120, height=70)
 
         submit = Button(root, text="Submit", command=submit_func, bd=3, font=('calibre', 25), bg='white')
-        submit.place(x=225, y=310, width=150, height=70)
+        submit.place(x=225, y=380, width=150, height=70)
 
         # sub_btn = tk.Button(root, text='Submit', command=submit)
 

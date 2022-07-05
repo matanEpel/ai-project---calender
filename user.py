@@ -126,12 +126,19 @@ class User:
 
         schedule = self.csp_schedule_assignment(week=week, SHUFFLE=SHUFFLE)
         if schedule is None:
+            for a in self.get_assignments(week):
+                if a.get_kind() == consts.kinds["MEETING"]:
+                    print(a.get_time(), a.get_day(), a.get_duration(), end=' - ')
             print("solution not found")
             return -100
         for s in schedule.items():
             assignments_array[s[0][0]].set_time(s[1][0])
             assignments_array[s[0][0]].set_day(s[1][1])
             self.place_assignment(assignments_array[s[0][0]], week=week)
+        for a in self.get_assignments(week):
+                if a.get_kind() == consts.kinds["MEETING"]:
+                    print(a.get_time(), a.get_day(), a.get_duration(), end=' - ')
+        print("solution was found")
         return self.__constraints.calculate_score(self.__schedule[week])
         """
             kinds = {"TASK": 0, "MEETING": 1, "MUST_BE_IN": 2}, every MEETING and MUST_BE_IN comes immediatly with time.

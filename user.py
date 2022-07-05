@@ -165,6 +165,7 @@ class User:
             n += 1
 
         count = 0
+
         while(count < 4):
             try:
                 # csp_schedule_assignment raises KeyboardInterrupt if the program took more then 0.5s

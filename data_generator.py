@@ -97,4 +97,4 @@ def write_to_excel(n):
     workbook.close()
 
 
-write_to_excel(50000)
+write_to_excel(500000)

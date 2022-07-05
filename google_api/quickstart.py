@@ -10,10 +10,10 @@ from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
 # If modifying these scopes, delete the file token.json.
-SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
+SCOPES = ['https://www.googleapis.com/auth/calendar.readonly', 'https://www.googleapis.com/auth/calendar.events']
 
 
-def main():
+def export():
     """Shows basic usage of the Google Calendar API.
     Prints the start and name of the next 10 events on the user's calendar.
     """
@@ -74,7 +74,6 @@ def main():
             },
         }
 
-
         service.events().insert(calendarId='primary', body=event).execute()
 
         print("added event")
@@ -93,4 +92,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    export()

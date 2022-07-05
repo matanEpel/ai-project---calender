@@ -19,3 +19,5 @@ Learn about %SP_MU_CO_TO
 Ex# - %CN
 Study %CN_MU_CO
 Plan trip to %CO
+Do homework
+Doing homework

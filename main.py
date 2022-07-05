@@ -71,7 +71,7 @@ def main_amit():
     # manager.schedule_week(1)
     # for u in manager.get_users():
     #     print(u)
-    # print(ofir)
+    print(ofir)
     #print(ofir.get_schedule(1))
 
 

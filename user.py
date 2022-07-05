@@ -104,6 +104,14 @@ class User:
 
         return output
 
+    def place_assignment(self, assignment: Assignment, week: int):
+        if assignment.get_time() is None or assignment.get_day() is None:
+            raise ValueError("assignment cannot be placed")
+
+        # TODO need to check if slot is available
+
+        self.__schedule[week].append(assignment)
+
     def schedule_week(self, week: int, SHUFFLE=True):
         """
             schedule the tasks of a specific user in specific week
@@ -124,17 +132,27 @@ class User:
 
         self.assignments_map = list(enumerate(duration_array))  # map between assignments
 
+        # add lunch times:
+        n = len(self.assignments_map)
+        for day in self.__constraints.get_hard_constraints()["working days"]:
+            assignments_array.append(Assignment(week=week, name="Lunch", duration=self.__constraints.get_hard_constraints()["lunch time"][2], kind=kinds["LUNCH"]))
+            self.assignments_map.append((n, self.__constraints.get_hard_constraints()["lunch time"][2], day))
+            n += 1
+
         schedule = self.csp_schedule_assignment(week=week, SHUFFLE=SHUFFLE)
+
         if schedule is None:
             for a in self.get_assignments(week):
                 if a.get_kind() == consts.kinds["MEETING"]:
                     print(a.get_time(), a.get_day(), a.get_duration(), end=' - ')
             print("solution not found")
             return -100
+
         for s in schedule.items():
             assignments_array[s[0][0]].set_time(s[1][0])
             assignments_array[s[0][0]].set_day(s[1][1])
             self.place_assignment(assignments_array[s[0][0]], week=week)
+
         for a in self.get_assignments(week):
                 if a.get_kind() == consts.kinds["MEETING"]:
                     print(a.get_time(), a.get_day(), a.get_duration(), end=' - ')
@@ -144,13 +162,6 @@ class User:
             kinds = {"TASK": 0, "MEETING": 1, "MUST_BE_IN": 2}, every MEETING and MUST_BE_IN comes immediatly with time.
         """
 
-    def place_assignment(self, assignment: Assignment, week: int):
-        if assignment.get_time() is None or assignment.get_day() is None:
-            raise ValueError("assignment cannot be placed")
-
-        # TODO need to check if slot is available
-
-        self.__schedule[week].append(assignment)
 
     def csp_schedule_assignment(self, week, SHUFFLE):
         """
@@ -197,9 +208,14 @@ class User:
                 max_dur = var[1]
                 current_var = var
 
+        if len(current_var) == 3:
+            DOMAIN = [t for t in self.times_domain if t[1] == current_var[2]]
+        else:
+            DOMAIN = self.times_domain
+
         # current_var = unassigned_variables[0]  # Chooses the first, can in the future choose a random value
 
-        for time in self.times_domain:  # can iterate randomly on the time domain in order to make the back track random
+        for time in DOMAIN:  # can iterate randomly on the time domain in order to make the back track random
             local_assigned_variables_dict = assigned_variables_dict.copy()
             local_assigned_variables_dict[current_var] = time
             if self.consistent(local_assigned_variables_dict, week=week):
@@ -221,8 +237,18 @@ class User:
         for day in self.get_constraints().get_hard_constraints()["working days"]:
             intervals = [(x[1][0], x[0][1] + x[1][0]) for x in list(assigned_variables_dict.items()) if x[1][1] == day]
 
-            must_be_intervals = [(m.get_time(), m.get_time() + m.get_duration()) for m in self.__schedule[week] if
-                                  m.get_day() == day and m.get_kind() == consts.kinds["MUST_BE_IN"]]
+            # Lunch time:
+            lunch_start_time = self.__constraints.get_hard_constraints()["lunch time"][0]
+            lunch_end_time = self.__constraints.get_hard_constraints()["lunch time"][1]
+
+            lunches = [x for x in list(assigned_variables_dict.items()) if x[1][1] == day and len(x[0]) == 3]
+            if len(lunches) == 1:
+                lunch = lunches[0]
+                if lunch[1][0] < lunch_start_time or lunch[0][1] + lunch[1][0] > lunch_end_time:
+                    return False
+
+
+
             # add breaks:
             break_before_task = self.__constraints.get_hard_constraints()["break before task"]
             break_after_task = self.__constraints.get_hard_constraints()["break after task"]
@@ -234,26 +260,26 @@ class User:
             if not self.__constraints.get_hard_constraints()["overlap meeting task"]:
                 meetings_intervals = [(m.get_time(), m.get_time() + m.get_duration()) for m in self.__schedule[week] if
                                       m.get_day() == day and m.get_kind() == consts.kinds["MEETING"]]
-                final_intervals += meetings_intervals
                 #add breaks:
                 break_before_meeting = self.__constraints.get_hard_constraints()["break before meeting"]
                 break_after_meeting = self.__constraints.get_hard_constraints()["break after meeting"]
+
                 meetings_intervals_breaks = [(interval[0] - break_before_meeting, interval[1] + break_after_meeting) for
                                              interval in meetings_intervals]
 
-                final_intervals_breaks += meetings_intervals_breaks
+                final_intervals += meetings_intervals_breaks
 
             if not self.__constraints.get_hard_constraints()["overlap must be task"]:
                 must_be_intervals = [(m.get_time(), m.get_time() + m.get_duration()) for m in self.__schedule[week] if
                                      m.get_day() == day and m.get_kind() == consts.kinds["MUST_BE_IN"]]
-                final_intervals += must_be_intervals
 
                 break_before_must_be = self.__constraints.get_hard_constraints()["break before must be"]
                 break_after_must_be = self.__constraints.get_hard_constraints()["break after must be"]
+
                 must_be_intervals_breaks = [(interval[0] - break_before_must_be, interval[1] + break_after_must_be) for
                                             interval in must_be_intervals]
 
-                final_intervals_breaks += must_be_intervals_breaks
+                final_intervals += must_be_intervals_breaks
 
             if Time.is_list_overlap(intervals=final_intervals):
                 return False

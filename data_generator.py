@@ -52,6 +52,8 @@ def handle_line(line):
         line = line.replace("$", generate_name(), 1)
     while line.count("%") > 0:
         line = handle_percentage(line)
+    while line.count("#") > 0:
+        line = line.replace("#", str(random.randint(1, 15)))
     return line
 
 
@@ -79,7 +81,7 @@ def generate_data():
 
 
 def write_to_excel(n):
-    workbook = xlsxwriter.Workbook('generated_data.xlsx')
+    workbook = xlsxwriter.Workbook('generated_data2.xlsx')
     worksheet = workbook.add_worksheet()
 
     worksheet.write(0, 0, "TYPE")
@@ -97,4 +99,4 @@ def write_to_excel(n):
     workbook.close()
 
 
-write_to_excel(500000)
+write_to_excel(50000)

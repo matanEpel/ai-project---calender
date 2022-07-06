@@ -1,11 +1,9 @@
 Work
 Read Emails
 Reply to Emails
-Talk to $
-Talk to $ about %
-Talk to $ and $ about %
-Meet with $
 Clear Inbox
+Do stuff
+Do %
 Message $ about %
 Email $ about %
 Email $
@@ -14,10 +12,14 @@ Email $ and $ about %
 Think about %
 Learn about %SP_MU_CO_TO
 %SP
-%SP with $
-%SP with $, $, $
 Ex# - %CN
+%CN - Ex#
+Ex#
+Exercise # - %CN
+Exercise # in %CN
+Tell $ about %
+Tell $ about %
 Study %CN_MU_CO
 Plan trip to %CO
 Do homework
-Doing homework
+%

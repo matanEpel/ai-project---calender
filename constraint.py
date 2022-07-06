@@ -80,11 +80,23 @@ class Constraints:
                                          (week_schedule[day][i].get_duration() + week_schedule[day][i].get_time())
                     continuous_breaks_in_day = np.max([time.get_hours() + time.get_minutes()/60, continuous_breaks_in_day])
             continuous_breaks += continuous_breaks_in_day
-        score = start_late*self.__soft_constraints["start the day late"]
-        score += finish_early*self.__soft_constraints["finish the day early"]
-        score += close_meetings*self.__soft_constraints["meetings are close together"]
-        score += close_tasks*self.__soft_constraints["tasks are close together"]
-        score += continuous_breaks*self.__soft_constraints["breaks are continuous"]
+        start_late_max = len(self.__hard_constraints["working days"])*(self.__hard_constraints["end of the day"]-self.__hard_constraints["start of the day"]).get_hours()
+        hours = 0
+        minutes = 0
+        for day in week_schedule:
+            for a in week_schedule[day]:
+                hours += a.get_duration().get_hours()
+                minutes += a.get_duration().get_minutes()
+        start_late_max -= hours + minutes//60
+        end_early_max = start_late_max
+        continuous_breaks_max = start_late_max
+        close_meetings_max = (len([a for day in week_schedule for a in week_schedule[day] if a.get_kind() == kinds["MEETING"]])-1)
+        close_tasks_max = (len([a for day in week_schedule for a in week_schedule[day] if a.get_kind() == kinds["TASK"]]) - 1)
+        score = start_late/start_late_max*self.__soft_constraints["start the day late"]
+        score += finish_early/end_early_max*self.__soft_constraints["finish the day early"]
+        score += close_meetings/close_meetings_max*self.__soft_constraints["meetings are close together"]
+        score += close_tasks/close_tasks_max*self.__soft_constraints["tasks are close together"]
+        score += continuous_breaks/continuous_breaks_max*self.__soft_constraints["breaks are continuous"]
         score /= (sum([np.abs(self.__soft_constraints[c]) for c in self.__soft_constraints]))
         # print(" | ".join([", ".join([str(a) for a in week_schedule[i]]) for i in week_schedule]), score)
         return score

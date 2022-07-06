@@ -19,7 +19,7 @@ def default_users(manager):
     c = Constraints()
     c.set_soft_constraint("meetings are close together", 1000)
     c2 = Constraints()
-    c2.set_soft_constraint("finish the day early", 100)
+    # c2.set_soft_constraint("finish the day early", 100)
     # c.set_soft_constraint("meetings are close together", 100)
     # c.set_soft_constraint("start the day late", 200)
     # c.set_soft_constraint("breaks are continuous", -100)

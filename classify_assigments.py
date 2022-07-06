@@ -70,7 +70,13 @@ class LogReg(LearningModel):
 
     def classify(self, str):
         p = self.model.predict([str])
-        return p[0]
+        if p[0] == "TASK":
+            return 0
+        if p[0] == "MEETING":
+            return 1
+        if p[0] == "MUST_BE_IN":
+            return 2
+
 
 
 class NN(LearningModel):
@@ -153,11 +159,11 @@ class NN(LearningModel):
         preds = self.model.predict(x_pred)
         classification = np.argmax(preds)
         if classification == 0:
-            return "MEETING"
+            return 1
         if classification == 1:
-            return "MUST_BE_IN"
+            return 2
         if classification == 2:
-            return "TASK"
+            return 0
 
 class CNN(LearningModel):
 
@@ -238,11 +244,11 @@ class CNN(LearningModel):
         preds = self.model.predict(x_pred)
         classification = np.argmax(preds)
         if classification == 0:
-            return "MEETING"
+            return 1
         if classification == 1:
-            return "MUST_BE_IN"
+            return 2
         if classification == 2:
-            return "TASK"
+            return 0
 
 
 def classify_assignments_continuous(cls):

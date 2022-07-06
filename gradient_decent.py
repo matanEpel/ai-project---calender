@@ -30,7 +30,7 @@ class GradientDecent:
             """
             maximizing the equality == minimizing the std
             """
-            return -np.std(np.array(scores))
+            return np.average(scores) / max([0.25, np.std(scores)])
 
     def solve_epoch(self, optional_slots, num):
         max_iterations = 2*len(self.__meetings)

@@ -1,6 +1,7 @@
 from consts import *
 from datetime import datetime, timedelta
-from classify_assigments import classify_assignments, NN
+# TODO: return
+# from classify_assigments import classify_assignments, NN
 
 
 # TODO: implement language processing model

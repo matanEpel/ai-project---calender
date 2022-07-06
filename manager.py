@@ -15,20 +15,21 @@ def get_users(meetings):
     return users
 
 
-def genetic_solution(week, meetings, free_times, kind, users):
+def genetic_solution(week, meetings, free_times, kind, users, mode):
     solver = GeneticAlgorithm(week, meetings, free_times, kind, users)
     return solver.solve()
 
 
-def gradient_solution(week, meetings, free_times, kind, users):
-    solver = GradientDecent(week, meetings, free_times, kind, users)
+def gradient_solution(week, meetings, free_times, kind, users, mode):
+    solver = GradientDecent(week, meetings, free_times, kind, users, mode)
     return solver.solve()
 
 
 class Manager:
-    def __init__(self, type="genetic", kind="sum"):
+    def __init__(self, type="genetic", kind="sum", grad_type="low"):
         self.__type = type
         self.__kind = kind
+        self.__grad_type = grad_type
         self.__users = []
 
     def __repr__(self):
@@ -50,6 +51,9 @@ class Manager:
     def set_kind_of_optimization(self, kind):
         self.__kind = kind
 
+    def set_gradient_type(self, grad_type):
+        self.__grad_type = grad_type
+
     def schedule_week(self, week):
         """
         schedules the week of all the users together - uses three different algorithms:
@@ -70,9 +74,9 @@ class Manager:
         #     u.schedule_week_with_optimal(week)
         # return
         if self.__type == "genetic":
-            self.__users = genetic_solution(*self.get_data(week, self.__kind, self.__users))
+            self.__users = genetic_solution(*self.get_data(week, self.__kind, self.__users, self.__grad_type))
         elif self.__type == "gradient":
-            self.__users = gradient_solution(*self.get_data(week, self.__kind, self.__users))
+            self.__users = gradient_solution(*self.get_data(week, self.__kind, self.__users, self.__grad_type))
 
     def schedule_week_user(self, week: int, user: User):
         """
@@ -83,7 +87,7 @@ class Manager:
         # need to iterate over ~20 options with different BLOCKS in order to get different results and choose the best one.
         return user.schedule_week(week)
 
-    def get_data(self, week, kind, users):
+    def get_data(self, week, kind, users, grad_type):
         meetings = {}
         free_times = []
         data_slots_dict = {}
@@ -116,7 +120,7 @@ class Manager:
                     for i in range(int(duration.get_hours() * 4 + duration.get_minutes() // 15)):
                         free_slots.set_unavailable(day + (hour * QUARTERS + quarter + i) // (QUARTERS * HOURS),
                                                    hour + (quarter + i) // QUARTERS, (quarter + i) % QUARTERS)
-            for day in range(1, DAYS + 1-2):
+            for day in range(1, DAYS + 1 - 2):
                 for i in range(
                         (-1 + user.get_constraints().get_hard_constraints()["start of the day"].get_hours()) * 4):
                     free_slots.set_unavailable(day, 1 + i // QUARTERS, i % QUARTERS)
@@ -136,4 +140,4 @@ class Manager:
         dict of the free times and the user of each idx
         idx: user, its free times
         """
-        return week, meetings, data_slots_dict, kind, users
+        return week, meetings, data_slots_dict, kind, users, grad_type

@@ -17,30 +17,30 @@ from time_ import Time
 SCOPES = ['https://www.googleapis.com/auth/calendar.readonly', 'https://www.googleapis.com/auth/calendar.events']
 
 
-def export(assignments):
+def export(assignments, user):
     """Shows basic usage of the Google Calendar API.
     Prints the start and name of the next 10 events on the user's calendar.
     """
 
-    evs = [assignment_to_event(ass) for ass in assignments]
+    evs = [assignment_to_event(ass, user) for ass in assignments]
 
     creds = None
     # cc
     # The file token.json stores the user's access and refresh tokens, and is
     # created automatically when the authorization flow completes for the first
     # time.
-    if os.path.exists('token.json'):
-        creds = Credentials.from_authorized_user_file('token.json', SCOPES)
+    if os.path.exists('google_api/token.json'):
+        creds = Credentials.from_authorized_user_file('google_api/token.json', SCOPES)
     # If there are no (valid) credentials available, let the user log in.
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
         else:
             flow = InstalledAppFlow.from_client_secrets_file(
-                'credentials.json', SCOPES)
+                'google_api/credentials.json', SCOPES)
             creds = flow.run_local_server(port=0)
         # Save the credentials for the next run
-        with open('token.json', 'w') as token:
+        with open('google_api/token.json', 'w') as token:
             token.write(creds.to_json())
 
     try:
@@ -61,7 +61,7 @@ def export(assignments):
         print('An error occurred: %s' % error)
 
 
-def assignment_to_event(ass: Assignment):
+def assignment_to_event(ass: Assignment, user):
     summary = ass.get_name()
     start, end = ass.to_datetime_time()
     participants = ass.get_participants()
@@ -78,10 +78,12 @@ def assignment_to_event(ass: Assignment):
         },
     }
 
+    event['attendees'] = []
+    event['attendees'].append({'email': user.get_name() + "@gmail.com"})
     if participants:
-        event['attendees'] = []
         for participant in participants:
-            event['attendees'].append({'email':participant + "@gmail.com"})
+            if participant != user:
+                event['attendees'].append({'email':participant.get_name() + "@gmail.com"})
     return event
 
 if __name__ == '__main__':

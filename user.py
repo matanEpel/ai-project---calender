@@ -149,7 +149,7 @@ class User:
 
             return constraints.get_score()
         """
-
+        self.__schedule[week] = list()
         for a in self.get_assignments(week):
             if a.get_kind() == consts.kinds["MEETING"] or a.get_kind() == consts.kinds["MUST_BE_IN"]:
                 self.place_assignment(a, week)

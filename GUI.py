@@ -6,7 +6,8 @@ import tkmacosx
 from assignment import Assignment
 from constraint import Constraints
 from consts import MIDDLE_OUT, MIDDLE_FIIL, DOWN_GUI, UP_GUI, TOP_FIIL, TOP_OUT, BUTTON_OUT, BUTTON_FILL, TITLE_COLOR, \
-    kinds
+    kinds, EXPORT_COLOR
+from quickstart import export
 from manager import Manager
 from user import User
 from time_ import Time
@@ -20,9 +21,9 @@ def default_users(manager):
     # c.set_soft_constraint("meetings are close together", 100)
     # c.set_soft_constraint("start the day late", 200)
     # c.set_soft_constraint("breaks are continuous", -100)
-    ofir = User("Ofir", c)
-    matan = User("matan", c2)
-    amit = User("amit", c)
+    ofir = User("Ofir_fake", c)
+    matan = User("matan_fake", c2)
+    amit = User("amit_fake", c)
 
     a1 = Assignment(week=1, name="ex1", duration=Time(h=1), kind=kinds["TASK"], day=3,time=Time(h=10, m=30))
     a2 = Assignment(week=1, name="ex2", duration=Time(h=1), kind=kinds["TASK"], day=3,time=Time(h=12, m=30))
@@ -32,34 +33,20 @@ def default_users(manager):
     a6 = Assignment(week=1, name="ex6", duration=Time(h=2), kind=kinds["TASK"], day=4, time=Time(h=20, m=30))
     a7 = Assignment(week=1, name="ex7", duration=Time(h=1), kind=kinds["TASK"], day=4, time=Time(h=22, m=30))
     a8 = Assignment(week=1, name="ex8", duration=Time(h=2), kind=kinds["TASK"], day=4, time=Time(h=13, m=30))
-    a9 = Assignment(week=1, name="ex9", duration=Time(h=1), kind=kinds["TASK"], day=5, time=Time(h=10, m=30))
-    a10 = Assignment(week=1, name="ex10", duration=Time(h=1), kind=kinds["TASK"], day=5, time=Time(h=12, m=30))
-    a11 = Assignment(week=1, name="ex11", duration=Time(h=5), kind=kinds["TASK"], day=5, time=Time(h=13, m=30))
-
     b1 = Assignment(week=1, name="m1", duration=Time(h=2), kind=kinds["MEETING"], participants=[ofir], day=4,
                     time=Time(h=19, m=15))
-    a12 = Assignment(week=1, name="ex12", duration=Time(h=5), kind=kinds["MUST_BE_IN"], day=1, time=Time(h=6, m=0))
-    a13 = Assignment(week=1, name="ex13", duration=Time(h=1), kind=kinds["MUST_BE_IN"], day=1, time=Time(h=11, m=0))
-    # a14 = Assignment(week=1, name="ex14", duration=Time(h=2), kind=kinds["LUNCH"], day=1, time=Time(h=12, m=30))
-    # a11 = Assignment(week=1, name="ex15", duration=Time(h=5), kind=kinds["MUST_BE_IN"], day=5, time=Time(h=6, m=0))
-    # a11 = Assignment(week=1, name="ex16", duration=Time(h=5), kind=kinds["MUST_BE_IN"], day=5, time=Time(h=6, m=0))
-    # a11 = Assignment(week=1, name="ex17", duration=Time(h=5), kind=kinds["MUST_BE_IN"], day=5, time=Time(h=6, m=0))
-    b2 = Assignment(week=1, name="m2", duration=Time(h=1), kind=kinds["MEETING"], participants=[ofir], day=3,
+    b2 = Assignment(week=1, name="m2", duration=Time(h=1), kind=kinds["MEETING"], participants=[ofir, matan], day=3,
                     time=Time(h=21, m=0))
-    b3 = Assignment(week=1, name="m3", duration=Time(h=1), kind=kinds["MEETING"], participants=[ofir], day=3,
+    b3 = Assignment(week=1, name="m3", duration=Time(h=1), kind=kinds["MEETING"], participants=[ofir, matan], day=3,
                     time=Time(h=15, m=0))
-    b4 = Assignment(week=1, name="m4", duration=Time(h=2), kind=kinds["MEETING"], participants=[ofir], day=3,
+    b4 = Assignment(week=1, name="m4", duration=Time(h=2), kind=kinds["MEETING"], participants=[ofir, matan], day=3,
                     time=Time(h=17, m=0))
-    b5 = Assignment(week=1, name="m5", duration=Time(h=2), kind=kinds["MEETING"], participants=[ofir], day=4,
+    b5 = Assignment(week=1, name="m5", duration=Time(h=2), kind=kinds["MEETING"], participants=[ofir, matan], day=4,
                     time=Time(h=15, m=0))
-    b6 = Assignment(week=1, name="m6", duration=Time(h=2), kind=kinds["MEETING"], participants=[ofir], day=5,
-                    time=Time(h=10, m=0))
-    b7 = Assignment(week=1, name="m7", duration=Time(h=2), kind=kinds["MEETING"], participants=[ofir], day=5,
-                    time=Time(h=14, m=30))
     mb1 = Assignment(week=1, name="mb1", duration=Time(h=2, m=30), kind=kinds["MUST_BE_IN"], day=1,
                      time=Time(h=9, m=30))
     mb2 = Assignment(week=1, name="mb2", duration=Time(h=2), kind=kinds["MUST_BE_IN"], day=2, time=Time(h=17, m=0))
-    mb3 = Assignment(week=1, name="mb3", duration=Time(h=2), kind=kinds["MUST_BE_IN"], day=1, time=Time(h=22, m=0))
+    mb3 = Assignment(week=1, name="mb3", duration=Time(h=2), kind=kinds["MUST_BE_IN"], day=3, time=Time(h=19, m=0))
 
     ofir.add_assignment(a1)
     ofir.add_assignment(a2)
@@ -69,9 +56,14 @@ def default_users(manager):
     ofir.add_assignment(a6)
     ofir.add_assignment(a7)
     ofir.add_assignment(a8)
-    ofir.add_assignment(a9)
-    ofir.add_assignment(a10)
-    ofir.add_assignment(a11)
+    ofir.add_assignment(b1)
+    ofir.add_assignment(b2)
+    ofir.add_assignment(b3)
+    ofir.add_assignment(b4)
+    ofir.add_assignment(b5)
+    ofir.add_assignment(mb1)
+    ofir.add_assignment(mb2)
+    ofir.add_assignment(mb3)
 
     matan.add_assignment(deepcopy(a1))
     matan.add_assignment(deepcopy(a2))
@@ -79,27 +71,16 @@ def default_users(manager):
     matan.add_assignment(deepcopy(a4))
     matan.add_assignment(deepcopy(a5))
     matan.add_assignment(deepcopy(a6))
-    # ofir.add_assignment(a12)
-    # ofir.add_assignment(a13)
-    # ofir.add_assignment(a14)
-    # ofir.add_assignment(mb1)
-    # ofir.add_assignment(mb2)
-    ofir.add_assignment(b1)
-    ofir.add_assignment(b2)
-    ofir.add_assignment(b3)
-    ofir.add_assignment(b4)
-    ofir.add_assignment(b5)
-    ofir.add_assignment(b6)
+    matan.add_assignment(deepcopy(a7))
+    matan.add_assignment(deepcopy(a8))
     matan.add_assignment(b1)
     matan.add_assignment(b2)
     matan.add_assignment(b3)
     matan.add_assignment(b4)
     matan.add_assignment(b5)
-    matan.add_assignment(b6)
-    # ofir.add_assignment(b7)
-    # ofir.add_assignment(b4)
-    # print(ofir.schedule_week(1))
-    # print(ofir)
+    matan.add_assignment(mb1)
+    matan.add_assignment(mb2)
+    matan.add_assignment(mb3)
     manager.add_user(ofir)
     manager.add_user(matan)
 
@@ -291,6 +272,18 @@ class App:
 
         def schedule():
             # TODO: look good
+            type_of_alg = "gradient"
+            if gen.get() == 1:
+                type_of_alg = "genetic"# grad or genetic
+            opt_kind = "equal"
+            if sum.get() == 1:
+                opt_kind = "sum"# sum or nash
+            grad_type = "HIGH_MEETINGS"
+            if neigh.get() == 1:
+                grad_type = "LOW_MEETINGS"# low or high
+            self.__manager.set_type(type_of_alg)
+            self.__manager.set_kind_of_optimization(opt_kind)
+            self.__manager.set_gradient_type(grad_type)
             for week in weeks:
                 print("week " + str(week) + " was scheduled!")
                 self.__manager.schedule_week(week)
@@ -299,6 +292,38 @@ class App:
                                  highlightbackground=BUTTON_FILL)
         submit.config(bg=BUTTON_FILL)
         submit.place(x=370, y=310, width=78, height=30)
+
+        gen = tk.IntVar()
+        gen.set(1)
+        c1 = tk.Checkbutton(root, text='genetic solution', variable=gen, onvalue=1, offvalue=0,
+                            font=('calibre', 15), bg="black", fg="white")
+        c1.place(x=20, y=420)
+
+        c1 = tk.Checkbutton(root, text='gradient decent solution', variable=gen, onvalue=0, offvalue=1,
+                            font=('calibre', 15), bg="black", fg="white")
+        c1.place(x=20, y=450)
+
+
+        sum = tk.IntVar()
+        sum.set(1)
+        c1 = tk.Checkbutton(root, text='maximizing on sum', variable=sum, onvalue=1, offvalue=0,
+                            font=('calibre', 15), bg="black", fg="white")
+        c1.place(x=250, y=420)
+
+        c1 = tk.Checkbutton(root, text='maximizing on nash', variable=sum, onvalue=0, offvalue=1,
+                            font=('calibre', 15), bg="black", fg="white")
+        c1.place(x=250, y=450)
+
+
+        neigh = tk.IntVar()
+        neigh.set(1)
+        c1 = tk.Checkbutton(root, text='low neighbors', variable=neigh, onvalue=1, offvalue=0,
+                            font=('calibre', 15), bg="black", fg="white")
+        c1.place(x=460, y=420)
+
+        c1 = tk.Checkbutton(root, text='high neighbors', variable=neigh, onvalue=0, offvalue=1,
+                            font=('calibre', 15), bg="black", fg="white")
+        c1.place(x=460, y=450)
 
     def add_assignment(self):
         for ele in root.winfo_children():
@@ -734,6 +759,8 @@ class App:
         for ele in root.winfo_children():
             ele.destroy()
         self.add_menu()
+        def export_func():
+            export(user.get_schedule(week), user)
         canvas = Canvas(root, width=610, height=500, bg="black")
         canvas.create_line(20, 105, 600, 105,  fill="#C8C9C9", dash=(5,5))
         canvas.create_line(80 + 40, 60, 80 + 40, 490, fill="white")
@@ -798,6 +825,11 @@ class App:
                     y = 100+(start_quarters-22)*5
                     Label(root, text=name, font=('calibre', 8), bg=fill,
                           fg="black").place(x=x, y=y+5, height=8)
+
+        submit = tkmacosx.Button(root, text="export", command=export_func, bd=3, font=('calibre', 15),
+                                 highlightbackground=EXPORT_COLOR)
+        submit.config(bg=EXPORT_COLOR)
+        submit.place(x=510, y=10, height=24, width = 60)
 
 
 if __name__ == "__main__":

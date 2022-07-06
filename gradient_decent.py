@@ -9,7 +9,7 @@ from time_slots import find_possible_slots
 
 
 class GradientDecent:
-    def __init__(self, week, meetings, free_times, kind, users):
+    def __init__(self, week, meetings, free_times, kind, users, mode):
 
         self.__week = week
         self.__meetings = meetings
@@ -17,10 +17,10 @@ class GradientDecent:
         self.__kind = kind
         self.__users = users
         self.__lunches = [u.get_constraints().get_hard_constraints()["lunch time"] for u in self.__users]
-        if len(self.__meetings) >= THRESHOLD_LOT_OF_MEETS:
-            self.__mode = "HIGH_MEETINGS"
-        else:
-            self.__mode = "LOW_MEETINGS"
+        # if len(self.__meetings) >= THRESHOLD_LOT_OF_MEETS:
+        #     self.__mode = "HIGH_MEETINGS"
+        # self.__mode = "LOW_MEETINGS"
+        self.__mode = mode
 
 
     def score(self, scores):

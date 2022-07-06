@@ -170,14 +170,14 @@ class CNN(LearningModel):
     def __init__(self):
         super().__init__()
         if os.path.exists(CNN_MODEL):
-            self.model = load_model(NN_MODEL)
+            self.model = load_model(CNN_MODEL)
             # loading
             with open(CNN_TOKENIZER, 'rb') as handle:
                 self.tokenize = pickle.load(handle)
         else:
             self.tokenize = None
             self.encoder = None
-        self.max_tokens = 100
+        self.max_tokens = 1000
         self.num_classes = 3
 
     def has_model(self):
@@ -207,12 +207,12 @@ class CNN(LearningModel):
 
     def train_and_evaluate(self):
         self.df = pd.read_excel(DATASET)
-        self.df.drop(columns=['LABEL'])
+        self.df.drop(columns=['TYPE'])
         self.df = self.df[pd.notnull(self.df['TITLE'])]
         my_tags = ['TASK', 'MEETING', 'MUST_BE_IN']
 
         X = self.df['TITLE']
-        y = self.df['TYPE']
+        y = self.df['LABEL'].astype(float)
         X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=0.8)
 
         self.tokenize = text.Tokenizer()
@@ -220,10 +220,10 @@ class CNN(LearningModel):
 
         x_train = pad_sequences(self.tokenize.texts_to_sequences(X_train), maxlen=self.max_tokens, padding="post",
                                      truncating="post", value=0.)
-        x_test = pad_sequences(self.tokenize.texts_to_sequences(X_train), maxlen=self.max_tokens, padding="post", truncating="post", value=0.)
+        x_test = pad_sequences(self.tokenize.texts_to_sequences(X_test), maxlen=self.max_tokens, padding="post", truncating="post", value=0.)
 
         self.build_model()
-        batch_size = 32
+        batch_size = 100
         epochs = 2
         history = self.model.fit(x_train, y_train,
                                  batch_size=batch_size,
@@ -243,13 +243,7 @@ class CNN(LearningModel):
                                      truncating="post", value=0.)
         preds = self.model.predict(x_pred)
         classification = np.argmax(preds)
-        if classification == 0:
-            return 1
-        if classification == 1:
-            return 2
-        if classification == 2:
-            return 0
-
+        return classification
 
 def classify_assignments_continuous(cls):
     learning_model = cls()

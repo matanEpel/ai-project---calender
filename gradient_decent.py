@@ -125,6 +125,7 @@ class GradientDecent:
 
         return self.get_random_start_point(optional_slots)
 
+
     def high_meetings_neighbors(self, time_for_each_meeting, optional_slots):
         all_options = []
         for i in range(len(time_for_each_meeting)):

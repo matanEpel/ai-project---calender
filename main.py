@@ -71,13 +71,13 @@ def main_amit():
     ofir.add_assignment(b1)
     ofir.add_assignment(b2)
     # ofir.add_assignment(b4)
-    # print(ofir.schedule_week(1))
+    print(ofir.schedule_week(1))
     # print(ofir)
-    manager = Manager()
-    manager.add_user(ofir)
-    manager.schedule_week(1)
-    for u in manager.get_users():
-        print(u)
+    # manager = Manager()
+    # manager.add_user(ofir)
+    # # manager.schedule_week(1)
+    # for u in manager.get_users():
+    #     print(u)
     # print(ofir)
     #print(ofir.get_schedule(1))
 

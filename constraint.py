@@ -13,7 +13,7 @@ class Constraints:
         self.__hard_constraints = dict()
         self.__hard_constraints["overlap meeting task"] = False
         self.__hard_constraints["overlap must be task"] = False
-        self.__hard_constraints["lunch time"] = (Time(h=12),Time(h=15),Time(m=30)) # range for launch and time of launch
+        self.__hard_constraints["lunch time"] = (Time(h=11),Time(h=16),Time(h=0,m=30)) # range for launch and time of launch
         self.__hard_constraints["break before meeting"] = Time() # done
         self.__hard_constraints["break before task"] = Time() # done
         self.__hard_constraints["break before must be"] = Time() # done
@@ -85,6 +85,6 @@ class Constraints:
         score += close_meetings*self.__soft_constraints["meetings are close together"]
         score += close_tasks*self.__soft_constraints["tasks are close together"]
         score += continuous_breaks*self.__soft_constraints["breaks are continuous"]
-        score /= (sum([self.__soft_constraints[c] for c in self.__soft_constraints]))
+        score /= (sum([np.abs(self.__soft_constraints[c]) for c in self.__soft_constraints]))
         # print(" | ".join([", ".join([str(a) for a in week_schedule[i]]) for i in week_schedule]), score)
         return score

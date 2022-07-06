@@ -479,6 +479,8 @@ class App:
                             if part != user:
                                 part.add_assignment(assignment)
                         user.add_assignment(assignment)
+                else:
+                    messagebox.showinfo("ERROR", "you have entered a wrong user name!")
                 self.home()
 
             submit = tkmacosx.Button(root, text="Submit", command=submit_func_ass, bd=3, font=('calibre', 25),

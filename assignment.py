@@ -1,6 +1,6 @@
 from consts import *
 from datetime import datetime, timedelta
-
+from classify_assigments import classify_assignments, NN
 
 
 # TODO: implement language processing model
@@ -13,8 +13,8 @@ def generate_kind(name):
     Sets the kind to the output of the model.
     :return: none
     """
-
-    return kinds["MEETING"]
+    return 0
+    return classify_assignments(NN, name)
 
 
 class Assignment:

@@ -269,4 +269,5 @@ def classify_assignments(cls, name):
         model.train_and_evaluate()
     return model.classify(name)
 
-classify_assignments_continuous(NN)
+print(classify_assignments(NN, "ehy"))
+# classify_assignments_continuous(NN)

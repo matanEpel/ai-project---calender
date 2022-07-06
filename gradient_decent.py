@@ -9,7 +9,7 @@ from time_slots import find_possible_slots
 
 
 class GradientDecent:
-    def __init__(self, week, meetings, free_times, kind, users, mode):
+    def __init__(self, week, meetings, free_times, kind, users, mode, weights):
 
         self.__week = week
         self.__meetings = meetings
@@ -21,11 +21,11 @@ class GradientDecent:
         #     self.__mode = "HIGH_MEETINGS"
         # self.__mode = "LOW_MEETINGS"
         self.__mode = mode
-
+        self.__weights = weights
 
     def score(self, scores):
         if self.__kind == "sum":
-            return sum(scores)
+            return sum([scores[i] * self.__weights[i] for i in range(len(self.__weights))])
         elif self.__kind == "equal":
             """
             maximizing the equality == minimizing the std

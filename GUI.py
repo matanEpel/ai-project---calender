@@ -81,8 +81,8 @@ def default_users(manager):
     matan.add_assignment(mb1)
     matan.add_assignment(mb2)
     matan.add_assignment(mb3)
-    manager.add_user(ofir)
-    manager.add_user(matan)
+    manager.add_user(ofir, 100)
+    manager.add_user(matan, 1)
 
 
 def roundPolygon(canvas, x, y, sharpness, **kwargs):
@@ -464,7 +464,7 @@ class App:
                      fill=BUTTON_FILL)
         canvas.place(x=0 - 10, y=0)
 
-        panel = Label(root, text="Edit\\add user", font=('calibre', 30), bg=TITLE_COLOR, justify='center', fg="white")
+        panel = Label(root, text="Edit\\add worker or manager", font=('calibre', 30), bg=TITLE_COLOR, justify='center', fg="white")
         panel.place(x=0, y=0, width=600)
 
         name_var = tk.StringVar()
@@ -735,7 +735,11 @@ class App:
                 constraints.set_soft_constraint("finish the day early", int(fde.get()))
                 constraints.set_soft_constraint("start the day late", int(stdl.get()))
                 new_user = User(name, constraints)
-                self.__manager.add_user(new_user)
+                if worker.get() == 1:
+                    weight = 1
+                else:
+                    weight = 2
+                self.__manager.add_user(new_user, weight)
                 self.home()
 
             submit = tkmacosx.Button(root, text="Submit", command=submit_user, bd=3, font=('calibre', 20),
@@ -747,6 +751,16 @@ class App:
                                      highlightbackground=BUTTON_FILL, relief=FLAT)
             submit.config(bg=BUTTON_FILL)
             submit.place(x=25, y=430, width=70, height=30)
+
+        worker = tk.IntVar()
+        worker.set(1)
+        c1 = tk.Checkbutton(root, text='Worker', variable=worker, onvalue=1, offvalue=0,
+                            font=('calibre', 20), bg="black", fg="white")
+        c1.place(x=250, y=70)
+
+        c1 = tk.Checkbutton(root, text='Manager', variable=worker, onvalue=0, offvalue=1,
+                            font=('calibre', 20), bg="black", fg="white")
+        c1.place(x=250, y=110)
 
         submit = tkmacosx.Button(root, text="Submit", command=submit_func, bd=3, font=('calibre', 25),
                                  highlightbackground=BUTTON_FILL)

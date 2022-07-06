@@ -9,7 +9,7 @@ from time_slots import find_possible_slots
 
 
 class GeneticAlgorithm:
-    def __init__(self, week, meetings, free_times, kind, users):
+    def __init__(self, week, meetings, free_times, kind, users, weights):
         self.__amount_of_epochs = GENETIC_EPOCHS
         self.__week = week
         self.__meetings = meetings
@@ -18,10 +18,11 @@ class GeneticAlgorithm:
         self.__users = users
         self.__lunches = [u.get_constraints().get_hard_constraints()["lunch time"] for u in self.__users]
         self.__amount_of_starting_points = AMOUNT_STARTING_POINTS
+        self.__weights = weights
 
     def score(self, scores):
         if self.__kind == "sum":
-            return sum(scores)
+            return sum([scores[i]*self.__weights[i] for i in range(len(self.__weights))])
         elif self.__kind == "equal":
             """
             maximizing the equality == minimizing the std

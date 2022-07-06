@@ -15,13 +15,13 @@ def get_users(meetings):
     return users
 
 
-def genetic_solution(week, meetings, free_times, kind, users, mode):
-    solver = GeneticAlgorithm(week, meetings, free_times, kind, users)
+def genetic_solution(week, meetings, free_times, kind, users, mode, weights):
+    solver = GeneticAlgorithm(week, meetings, free_times, kind, users, weights)
     return solver.solve()
 
 
-def gradient_solution(week, meetings, free_times, kind, users, mode):
-    solver = GradientDecent(week, meetings, free_times, kind, users, mode)
+def gradient_solution(week, meetings, free_times, kind, users, mode, weights):
+    solver = GradientDecent(week, meetings, free_times, kind, users, mode, weights)
     return solver.solve()
 
 
@@ -31,6 +31,7 @@ class Manager:
         self.__kind = kind
         self.__grad_type = grad_type
         self.__users = []
+        self.__weights = []
 
     def __repr__(self):
         return "Manager with " + str(len(self.__users)) + " users: " + "\n".join([u.get_name() for u in self.__users])
@@ -38,8 +39,9 @@ class Manager:
     def get_users(self):
         return self.__users
 
-    def add_user(self, user: User):
+    def add_user(self, user: User, weight):
         self.__users.append(user)
+        self.__weights.append(weight)
 
     def del_user(self, user: User):
         if user in self.__users:
@@ -140,4 +142,4 @@ class Manager:
         dict of the free times and the user of each idx
         idx: user, its free times
         """
-        return week, meetings, data_slots_dict, kind, users, grad_type
+        return week, meetings, data_slots_dict, kind, users, grad_type, self.__weights

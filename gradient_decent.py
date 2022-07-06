@@ -161,6 +161,7 @@ class GradientDecent:
             return self.low_meetings_neighbors(time_for_each_meeting, optional_slots)
 
     def is_consistent(self, option, optional_slots):
+
         for i in range(len(option)):
             time = option[i]
             day = time[0]

@@ -152,6 +152,14 @@ class User:
             if a.get_kind() == consts.kinds["MEETING"] or a.get_kind() == consts.kinds["MUST_BE_IN"]:
                 self.place_assignment(a, week)
 
+        # check if meeting and must be in represents legal assignment
+        for day in self.__constraints.get_hard_constraints()["working days"]:
+            intervals = [(a.get_time(), a.get_time() + a.get_duration()) for a in self.__schedule if a.get_day() == day]
+            if Time.is_list_overlap(intervals=intervals):
+                return False
+
+
+
         # schedule the assignments
         assignments_array = [a for a in self.get_assignments(week) if a.get_kind() == consts.kinds["TASK"]]
         duration_array = [a.get_duration() for a in assignments_array]

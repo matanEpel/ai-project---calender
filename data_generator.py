@@ -86,16 +86,14 @@ def write_to_excel(n):
 
     worksheet.write(0, 0, "TYPE")
     worksheet.write(0, 1, "TITLE")
-    worksheet.write(0, 2, "LENGTH")
-    worksheet.write(0, 3, "LABEL")
+    worksheet.write(0, 2, "LABEL")
 
     for i in tqdm(range(1, n)):
-        k = random.choice(list(kinds.keys()))
+        k = random.choice(['TASK', 'MEETING', 'MUST_BE_IN'])
         j = kinds[k]
         worksheet.write(i, 0, k)
         worksheet.write(i, 1, generate_title(j))
-        worksheet.write(i, 2, generate_length(j))
-        worksheet.write(i, 3, j)
+        worksheet.write(i, 2, j)
     workbook.close()
 
 

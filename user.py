@@ -157,9 +157,9 @@ class User:
 
         # check if meeting and must be in represents legal assignment
         for day in self.__constraints.get_hard_constraints()["working days"]:
-            intervals = [(a.get_time(), a.get_time() + a.get_duration()) for a in self.__schedule if a.get_day() == day]
+            intervals = [(a.get_time(), a.get_time() + a.get_duration()) for a in self.__schedule[week] if a.get_day() == day]
             if Time.is_list_overlap(intervals=intervals):
-                return False
+                return -100
 
 
 

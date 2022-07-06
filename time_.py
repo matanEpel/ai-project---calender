@@ -1,5 +1,5 @@
 from __future__ import annotations
-
+import numpy as np
 from copy import deepcopy
 from typing import Tuple
 
@@ -30,7 +30,7 @@ class Time:
     def __add__(self, other):
         hours = self.get_hours() + other.get_hours()
         minutes = self.get_minutes() + other.get_minutes()
-        q, r = divmod(minutes, 60)
+        q, r =  divmod(minutes, 60)
         return Time(hours + q, r)
 
     def __sub__(self, other):
@@ -119,7 +119,7 @@ class Time:
         return x1 < y2 and y1 < x2
 
     @staticmethod
-    def is_list_overlap(intervals: list[Tuple[Time, Time]]) -> bool:
+    def is_list_overlap(intervals: list[Tuple[Time, Time]], s1: Time = None, s2: Time = None) -> bool:
         """
             intervals - list of tuples that stands for init time and duration
         """
@@ -143,6 +143,16 @@ class Time:
 
         return False
 
+        # d = DaySlots(s1, s2)
+        # for interval in intervals:
+        #     if d.mark_slot(interval[0], interval[1]):
+        #         return True
+        #
+        # return False
+
+
+
+
 
     @staticmethod
     def max_time(intervals: list[Tuple[Time, Time]]) -> Time:
@@ -155,7 +165,36 @@ class Time:
         return max_end_time
 
 
-
+# class DaySlots:
+#     """
+#     Object which defines the available time slots in a day
+#     """
+#
+#     def __init__(self, s1: Time, s2: Time):
+#         self.s1 = s1
+#         self.s2 = s2
+#         delta = s2 - s1
+#         self.n = int(delta.get_hours() * 4 + (delta.get_minutes() / 15))
+#         print(self.n)
+#         self.__slots = np.zeros(self.n)
+#
+#     def mark_slot(self, start_time: Time, duration: Time):
+#         start_index = self.get_index(start_time)
+#         end_index = start_index + self.get_range(duration)
+#         for i in range(self.get_index(start_time), end_index):
+#             if self.__slots[i] == 1:
+#                 return True
+#             self.__slots[i] = 1
+#
+#         print(self.__slots)
+#         return False
+#
+#     def get_index(self, time: Time):
+#         delta = time - self.s1
+#         return int(delta.get_hours() * 4 + (delta.get_minutes() / 15))
+#
+#     def get_range(self, time: Time):
+#         return int(time.get_hours() * 4 + time.get_minutes() / 15)
 
 
 if __name__ == "__main__":

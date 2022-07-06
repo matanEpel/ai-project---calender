@@ -255,11 +255,14 @@ class User:
         for time in DOMAIN:  # can iterate randomly on the time domain in order to make the back track random
             local_assigned_variables_dict = assigned_variables_dict.copy()
             local_assigned_variables_dict[current_var] = time
+            # assigned_variables_dict[current_var] = time //TODO check if we wont copy the results will be same
             if self.consistent(local_assigned_variables_dict, week=week, day=time[1]):
                 # NEED TO WRITE self.consistent
                 result = self.backtrack_search(week=week, assigned_variables_dict=local_assigned_variables_dict)
                 if result is not None:
                     return result
+            # else:
+            #     del assigned_variables_dict[current_var]
 
         return None
 
@@ -292,6 +295,9 @@ class User:
 
         final_intervals = intervals
 
+        if Time.max_time(intervals) > self.get_constraints().get_hard_constraints()["end of the day"]:
+            return False
+
         if not self.__constraints.get_hard_constraints()["overlap meeting task"]:
             meetings_intervals = [(m.get_time(), m.get_time() + m.get_duration()) for m in self.__schedule[week] if
                                   m.get_day() == day and m.get_kind() == consts.kinds["MEETING"]]
@@ -319,7 +325,5 @@ class User:
         if Time.is_list_overlap(intervals=final_intervals):
             return False
 
-        if Time.max_time(intervals) > self.get_constraints().get_hard_constraints()["end of the day"]:
-            return False
 
         return True

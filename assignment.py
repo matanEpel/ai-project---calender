@@ -7,14 +7,14 @@ from datetime import datetime, timedelta
 from time_ import *
 
 
-def generate_kind(name, time):
+def generate_kind(name):
     """
     Generates a kind based on language processing model.
     Sets the kind to the output of the model.
     :return: none
     """
 
-    return kinds["TASK"]
+    return kinds["MEETING"]
 
 
 class Assignment:
@@ -31,7 +31,7 @@ class Assignment:
             participants = []
         if not kind:
             # if kind was not given - we generate it based on the assignment name
-            kind = generate_kind(name, duration)
+            kind = generate_kind(name)
         self.__week = week
         self.__name = name
         self.__kind = kind

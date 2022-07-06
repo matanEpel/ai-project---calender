@@ -1,9 +1,11 @@
 import tkinter as tk
 from copy import deepcopy
 from tkinter import *
+from tkinter import messagebox
+
 from PIL import ImageTk, Image
 import tkmacosx
-from assignment import Assignment
+from assignment import Assignment, generate_kind
 from constraint import Constraints
 from consts import MIDDLE_OUT, MIDDLE_FIIL, DOWN_GUI, UP_GUI, TOP_FIIL, TOP_OUT, BUTTON_OUT, BUTTON_FILL, TITLE_COLOR, \
     kinds, EXPORT_COLOR
@@ -368,12 +370,9 @@ class App:
             roundPolygon(canvas, [60 + 260 + 10, 280 + 260 + 10, 280 + 260 + 10, 60 + 260 + 10],
                          [120 - C_H, 120 - C_H, 340 - C_H, 340 - C_H], 10,
                          width=5, outline=MIDDLE_OUT, fill=MIDDLE_FIIL)
-            WIDTH = 215
-            HEIGHT = 69
-            roundPolygon(canvas, [15 + WIDTH, 150 + WIDTH + 10, 15 + WIDTH],
-                         [280 + HEIGHT - 10, 325 + HEIGHT, 370 + HEIGHT + 10], 8, width=5,
-                         outline=BUTTON_OUT,
-                         fill=BUTTON_FILL)
+            DOWN = 210
+            roundPolygon(canvas, [120, 460+40, 460 + 40, 120], [DOWN+140, DOWN+140, DOWN+250, DOWN+250], 10,
+                         width=5, outline="#82B366", fill="#D5E8D4")
             canvas.place(x=-10, y=0)
 
             panel = Label(root, text="Assignment metadata", font=('calibre', 30), justify='center', bg=TITLE_COLOR,
@@ -412,6 +411,30 @@ class App:
             panel = Label(root, text="participants:", font=('calibre', 20), bg=MIDDLE_FIIL)
             panel.place(x=380, y=230 - C_H)
 
+            start_time = tk.StringVar()
+            e1 = tk.Entry(root, textvariable=start_time, bd=0, font=('calibre', 20), justify='center', bg="#D5E8D4",
+                          highlightbackground="black", highlightthickness=2)
+            e1.place(x=100+20, y=400, width=100, height=50)
+
+            panel = Label(root, text="start time:", font=('calibre', 20), bg="#D5E8D4")
+            panel.place(x=100+20, y=360)
+
+            finish_time = tk.StringVar()
+            e1 = tk.Entry(root, textvariable=finish_time, bd=0, font=('calibre', 20), justify='center', bg="#D5E8D4",
+                          highlightbackground="black", highlightthickness=2)
+            e1.place(x=250, y=400, width=100, height=50)
+
+            panel = Label(root, text="finish time:", font=('calibre', 20), bg="#D5E8D4")
+            panel.place(x=250, y=360)
+
+            day_must_be = tk.StringVar()
+            e1 = tk.Entry(root, textvariable=day_must_be, bd=0, font=('calibre', 20), justify='center', bg="#D5E8D4",
+                          highlightbackground="black", highlightthickness=2)
+            e1.place(x=400-20, y=400, width=100, height=50)
+
+            panel = Label(root, text="day:", font=('calibre', 20), bg="#D5E8D4")
+            panel.place(x=425-20, y=360)
+
             def submit_func_ass():
                 print(1)
                 if name in [u.get_name() for u in self.__manager.get_users()]:
@@ -432,15 +455,36 @@ class App:
                     minutes = int(ass_length_var.get())
                     assignment = Assignment(int(ass_week_var.get()), ass_name_var.get(), Time(h=minutes//60,m=minutes%60),
                                             participants=partici)
-                    for part in partici:
-                        part.add_assignment(assignment)
-                    user.add_assignment(assignment)
+
+                    add = True
+                    if assignment.get_kind() != kinds["TASK"]:
+                        if assignment.get_kind() == kinds["MEETING"]:
+                            if len(partici) == 0:
+                                messagebox.showinfo("ERROR", "you have entered a meeting but no participants were "
+                                                             "added!")
+                                add = False
+                        elif assignment.get_kind() == kinds["MUST_BE_IN"]:
+                            if len(day_must_be.get()) == 0 or len(start_time.get()) == 0 or len(finish_time.get()) == 0:
+                                messagebox.showinfo("ERROR", "you have entered a must be but no time was given!")
+                                add = False
+                            else:
+                                start = Time(h=int(start_time.get().split(":")[0]), m=int(start_time.get().split(":")[1]))
+                                end = Time(h=int(finish_time.get().split(":")[0]), m=int(finish_time.get().split(":")[1]))
+                                day = int(day_must_be.get())
+                                assignment.set_day(day)
+                                assignment.set_time(start)
+                                assignment.set_duration(end-start)
+                    if add:
+                        for part in partici:
+                            if part != user:
+                                part.add_assignment(assignment)
+                        user.add_assignment(assignment)
                 self.home()
 
             submit = tkmacosx.Button(root, text="Submit", command=submit_func_ass, bd=3, font=('calibre', 25),
                                      highlightbackground=BUTTON_FILL)
             submit.config(bg=BUTTON_FILL)
-            submit.place(x=225, y=380, width=90, height=30)
+            submit.place(x=250, y=50, width=100, height=30)
 
         photo = PhotoImage(file=r"resources/all.png")
         submit = tkmacosx.Button(root, text="Submit", command=submit_func, bd=3, font=('calibre', 25),

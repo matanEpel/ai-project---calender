@@ -150,7 +150,6 @@ class User:
             return constraints.get_score()
         """
 
-        self.__schedule[week] = list()
         for a in self.get_assignments(week):
             if a.get_kind() == consts.kinds["MEETING"] or a.get_kind() == consts.kinds["MUST_BE_IN"]:
                 self.place_assignment(a, week)
@@ -159,7 +158,7 @@ class User:
         for day in self.__constraints.get_hard_constraints()["working days"]:
             intervals = [(a.get_time(), a.get_time() + a.get_duration()) for a in self.__schedule[week] if a.get_day() == day]
             if Time.is_list_overlap(intervals=intervals):
-                return -100
+                return -np.inf
 
 
 
@@ -188,7 +187,7 @@ class User:
                 count+=1
 
         if count == 4:
-            logging.debug("did not found a a solution, returning -100")
+            logging.debug("did not found a a solution, returning -inf")
             return -np.inf
 
         if schedule is None:

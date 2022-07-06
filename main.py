@@ -82,8 +82,6 @@ def main_amit():
     #print(ofir.get_schedule(1))
 
 
-
-
 if __name__ == '__main__':
     main_amit()
     # main_epel()

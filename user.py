@@ -125,11 +125,10 @@ class User:
 
         self.__schedule[week].append(assignment)
 
-    def schedule_week_with_optimal(self, week: int, SHUFFLE=True):
-
+    def schedule_week_with_optimal(self, week: int, SHUFFLE=True, n=10):
         max_score = -np.inf
         schedule = self.__schedule
-        for i in range(10):
+        for i in range(n):
             new_score = self.schedule_week(week=week, SHUFFLE=SHUFFLE)
             if new_score == -np.inf:
                 return max_score

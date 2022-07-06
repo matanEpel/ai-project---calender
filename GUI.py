@@ -13,9 +13,9 @@ from time_ import Time
 
 def default_users(manager):
     c = Constraints()
-    c.set_soft_constraint("meetings are close together", 10000)
+    # c.set_soft_constraint("meetings are close together", 1000)
     # c.set_soft_constraint("meetings are close together", 100)
-    c.set_soft_constraint("start the day late", 3000)
+    c.set_soft_constraint("start the day late", 200)
     # c.set_soft_constraint("breaks are continuous", -100)
     ofir = User("Ofir", c)
     matan = User("matan", c)
@@ -79,7 +79,7 @@ def default_users(manager):
     ofir.add_assignment(b3)
     ofir.add_assignment(b4)
     ofir.add_assignment(b5)
-    # ofir.add_assignment(b6)
+    ofir.add_assignment(b6)
     # ofir.add_assignment(b7)
     # ofir.add_assignment(b4)
     # print(ofir.schedule_week(1))

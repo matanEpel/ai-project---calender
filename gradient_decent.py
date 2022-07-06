@@ -22,6 +22,10 @@ class GradientDecent:
         # self.__mode = "LOW_MEETINGS"
         self.__mode = mode
         self.__weights = weights
+        self.__epochs_amount = EPOCHS
+
+    def set_eochs(self, amount):
+        self.__epochs_amount = amount
 
     def score(self, scores):
         if self.__kind == "sum":
@@ -91,11 +95,11 @@ class GradientDecent:
 
         # in case of a lot of meetings the neighbors are pretty random so we want a lot of epochs:
         # in case of low meetings we are checking all the neighbors of someone so it's pretty
-        epochs_amount = EPOCHS
+
         if self.__mode == "LOW_MEETINGS":
             epochs_amount = EPOCHS//10
         # trying X different starting points:
-        for _ in range(epochs_amount):
+        for _ in range(self.__epochs_amount):
             # get random starting point:
             new_score, prev_score, curr_final_users = self.solve_epoch(optional_slots, _)
             if np.max([new_score, prev_score]) > final_score:
@@ -104,7 +108,7 @@ class GradientDecent:
                 print(final_score)
         self.__users = final_users
         print("score", final_score)
-        return self.__users
+        return self.__users, final_score
 
     def get_random_start_point(self, optional_slots):
         slots = []

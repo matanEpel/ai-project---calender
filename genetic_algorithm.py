@@ -10,7 +10,6 @@ from time_slots import find_possible_slots
 
 class GeneticAlgorithm:
     def __init__(self, week, meetings, free_times, kind, users, weights):
-        self.__amount_of_epochs = GENETIC_EPOCHS
         self.__week = week
         self.__meetings = meetings
         self.__free_times = free_times
@@ -19,6 +18,10 @@ class GeneticAlgorithm:
         self.__lunches = [u.get_constraints().get_hard_constraints()["lunch time"] for u in self.__users]
         self.__amount_of_starting_points = AMOUNT_STARTING_POINTS
         self.__weights = weights
+        self.__epochs_amount = GENETIC_EPOCHS
+
+    def set_eochs(self, amount):
+        self.__epochs_amount = amount
 
     def score(self, scores):
         if self.__kind == "sum":
@@ -40,7 +43,7 @@ class GeneticAlgorithm:
             optional_slots[i] += find_possible_slots(self.__meetings[i]["duration"], time_slots, self.__lunches, must_be, consts)
         time_pool = [self.get_start_point(optional_slots) for _ in
                      range(self.__amount_of_starting_points)]  # [(day, time) - list of times for the meetings]
-        for _ in range(self.__amount_of_epochs):
+        for _ in range(self.__epochs_amount):
             print(_)
             solutions = []
             for i in range(len(time_pool)):
@@ -49,13 +52,13 @@ class GeneticAlgorithm:
                 for j in range(len(new_times_for_each_meeting)):
                     self.__meetings[j]["object"].set_day(new_times_for_each_meeting[j][0])
                     self.__meetings[j]["object"].set_time(new_times_for_each_meeting[j][1])
-                scores = [user.schedule_week(self.__week) for user in self.__users]
+                scores = [user.schedule_week_with_optimal(self.__week) for user in self.__users]
                 solutions.append({"meetings": new_times_for_each_meeting, "users": deepcopy(self.__users),
                                   "score": self.score(scores)})
-            if _ == self.__amount_of_epochs - 1:
+            if _ == self.__epochs_amount - 1:
                 best = max(solutions, key=lambda s: s["score"])
                 max_users = best["users"]
-                return max_users
+                return max_users, best["score"]
             else:
                 remaining_solutions = sorted(solutions, key=lambda s: s["score"], reverse=True)
                 remaining_solutions = remaining_solutions[:self.__amount_of_starting_points]

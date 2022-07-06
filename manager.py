@@ -15,13 +15,15 @@ def get_users(meetings):
     return users
 
 
-def genetic_solution(week, meetings, free_times, kind, users, mode, weights):
+def genetic_solution(week, meetings, free_times, kind, users, mode, weights, epochs):
     solver = GeneticAlgorithm(week, meetings, free_times, kind, users, weights)
+    solver.set_eochs(epochs)
     return solver.solve()
 
 
-def gradient_solution(week, meetings, free_times, kind, users, mode, weights):
+def gradient_solution(week, meetings, free_times, kind, users, mode, weights, epochs):
     solver = GradientDecent(week, meetings, free_times, kind, users, mode, weights)
+    solver.set_eochs(epochs)
     return solver.solve()
 
 
@@ -32,10 +34,13 @@ class Manager:
         self.__grad_type = grad_type
         self.__users = []
         self.__weights = []
+        self.__epochs = EPOCHS
 
     def __repr__(self):
         return "Manager with " + str(len(self.__users)) + " users: " + "\n".join([u.get_name() for u in self.__users])
 
+    def set_epochs(self, amount):
+        self.__epochs = amount
     def get_users(self):
         return self.__users
 
@@ -76,9 +81,10 @@ class Manager:
         #     u.schedule_week_with_optimal(week)
         # return
         if self.__type == "genetic":
-            self.__users = genetic_solution(*self.get_data(week, self.__kind, self.__users, self.__grad_type))
+            self.__users, score = genetic_solution(*self.get_data(week, self.__kind, self.__users, self.__grad_type))
         elif self.__type == "gradient":
-            self.__users = gradient_solution(*self.get_data(week, self.__kind, self.__users, self.__grad_type))
+            self.__users, score = gradient_solution(*self.get_data(week, self.__kind, self.__users, self.__grad_type))
+        return score
 
     def schedule_week_user(self, week: int, user: User):
         """
@@ -142,4 +148,4 @@ class Manager:
         dict of the free times and the user of each idx
         idx: user, its free times
         """
-        return week, meetings, data_slots_dict, kind, users, grad_type, self.__weights
+        return week, meetings, data_slots_dict, kind, users, grad_type, self.__weights, self.__epochs

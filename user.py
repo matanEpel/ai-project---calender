@@ -289,6 +289,9 @@ class User:
 
         final_intervals = intervals
 
+        if Time.max_time(intervals) > self.get_constraints().get_hard_constraints()["end of the day"]:
+            return False
+
         if not self.__constraints.get_hard_constraints()["overlap meeting task"]:
             meetings_intervals = [(m.get_time(), m.get_time() + m.get_duration()) for m in self.__schedule[week] if
                                   m.get_day() == day and m.get_kind() == consts.kinds["MEETING"]]
@@ -316,7 +319,5 @@ class User:
         if Time.is_list_overlap(intervals=final_intervals):
             return False
 
-        if Time.max_time(intervals) > self.get_constraints().get_hard_constraints()["end of the day"]:
-            return False
 
         return True

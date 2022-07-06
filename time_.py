@@ -30,7 +30,7 @@ class Time:
     def __add__(self, other):
         hours = self.get_hours() + other.get_hours()
         minutes = self.get_minutes() + other.get_minutes()
-        q, r = divmod(minutes, 60)
+        q, r =  divmod(minutes, 60)
         return Time(hours + q, r)
 
     def __sub__(self, other):

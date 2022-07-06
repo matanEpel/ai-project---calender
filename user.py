@@ -252,11 +252,14 @@ class User:
         for time in DOMAIN:  # can iterate randomly on the time domain in order to make the back track random
             local_assigned_variables_dict = assigned_variables_dict.copy()
             local_assigned_variables_dict[current_var] = time
+            # assigned_variables_dict[current_var] = time //TODO check if we wont copy the results will be same
             if self.consistent(local_assigned_variables_dict, week=week, day=time[1]):
                 # NEED TO WRITE self.consistent
                 result = self.backtrack_search(week=week, assigned_variables_dict=local_assigned_variables_dict)
                 if result is not None:
                     return result
+            # else:
+            #     del assigned_variables_dict[current_var]
 
         return None
 

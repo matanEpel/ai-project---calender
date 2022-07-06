@@ -1,4 +1,5 @@
 import tkinter as tk
+from copy import deepcopy
 from tkinter import *
 from PIL import ImageTk, Image
 import tkmacosx
@@ -13,12 +14,14 @@ from time_ import Time
 
 def default_users(manager):
     c = Constraints()
-    c.set_soft_constraint("meetings are close together", 10000)
+    c.set_soft_constraint("meetings are close together", 1000)
+    c2 = Constraints()
+    c2.set_soft_constraint("finish the day early", 100)
     # c.set_soft_constraint("meetings are close together", 100)
-    # c.set_soft_constraint("start the day late", 100)
+    # c.set_soft_constraint("start the day late", 200)
     # c.set_soft_constraint("breaks are continuous", -100)
     ofir = User("Ofir", c)
-    matan = User("matan", c)
+    matan = User("matan", c2)
     amit = User("amit", c)
 
     a1 = Assignment(week=1, name="ex1", duration=Time(h=1), kind=kinds["TASK"], day=3,time=Time(h=10, m=30))
@@ -33,18 +36,18 @@ def default_users(manager):
     a10 = Assignment(week=1, name="ex10", duration=Time(h=1), kind=kinds["TASK"], day=5, time=Time(h=12, m=30))
     a11 = Assignment(week=1, name="ex11", duration=Time(h=5), kind=kinds["TASK"], day=5, time=Time(h=13, m=30))
 
-    b1 = Assignment(week=1, name="m1", duration=Time(h=2), kind=kinds["MEETING"], participants=[ofir], day=1,
-                    time=Time(h=16, m=0))
+    b1 = Assignment(week=1, name="m1", duration=Time(h=2), kind=kinds["MEETING"], participants=[ofir], day=4,
+                    time=Time(h=19, m=15))
     a12 = Assignment(week=1, name="ex12", duration=Time(h=5), kind=kinds["MUST_BE_IN"], day=1, time=Time(h=6, m=0))
     a13 = Assignment(week=1, name="ex13", duration=Time(h=1), kind=kinds["MUST_BE_IN"], day=1, time=Time(h=11, m=0))
     # a14 = Assignment(week=1, name="ex14", duration=Time(h=2), kind=kinds["LUNCH"], day=1, time=Time(h=12, m=30))
     # a11 = Assignment(week=1, name="ex15", duration=Time(h=5), kind=kinds["MUST_BE_IN"], day=5, time=Time(h=6, m=0))
     # a11 = Assignment(week=1, name="ex16", duration=Time(h=5), kind=kinds["MUST_BE_IN"], day=5, time=Time(h=6, m=0))
     # a11 = Assignment(week=1, name="ex17", duration=Time(h=5), kind=kinds["MUST_BE_IN"], day=5, time=Time(h=6, m=0))
-    b2 = Assignment(week=1, name="m2", duration=Time(h=1), kind=kinds["MEETING"], participants=[ofir], day=1,
-                    time=Time(h=8, m=0))
-    b3 = Assignment(week=1, name="m3", duration=Time(h=1), kind=kinds["MEETING"], participants=[ofir], day=2,
-                    time=Time(h=10, m=0))
+    b2 = Assignment(week=1, name="m2", duration=Time(h=1), kind=kinds["MEETING"], participants=[ofir], day=3,
+                    time=Time(h=21, m=0))
+    b3 = Assignment(week=1, name="m3", duration=Time(h=1), kind=kinds["MEETING"], participants=[ofir], day=3,
+                    time=Time(h=15, m=0))
     b4 = Assignment(week=1, name="m4", duration=Time(h=2), kind=kinds["MEETING"], participants=[ofir], day=3,
                     time=Time(h=17, m=0))
     b5 = Assignment(week=1, name="m5", duration=Time(h=2), kind=kinds["MEETING"], participants=[ofir], day=4,
@@ -64,27 +67,41 @@ def default_users(manager):
     ofir.add_assignment(a4)
     ofir.add_assignment(a5)
     ofir.add_assignment(a6)
-    # ofir.add_assignment(a7)
-    # ofir.add_assignment(a8)
-    # ofir.add_assignment(a9)
-    # ofir.add_assignment(a10)
-    # ofir.add_assignment(a11)
+    ofir.add_assignment(a7)
+    ofir.add_assignment(a8)
+    ofir.add_assignment(a9)
+    ofir.add_assignment(a10)
+    ofir.add_assignment(a11)
+
+    matan.add_assignment(deepcopy(a1))
+    matan.add_assignment(deepcopy(a2))
+    matan.add_assignment(deepcopy(a3))
+    matan.add_assignment(deepcopy(a4))
+    matan.add_assignment(deepcopy(a5))
+    matan.add_assignment(deepcopy(a6))
     # ofir.add_assignment(a12)
     # ofir.add_assignment(a13)
     # ofir.add_assignment(a14)
-    ofir.add_assignment(mb1)
-    ofir.add_assignment(mb2)
+    # ofir.add_assignment(mb1)
+    # ofir.add_assignment(mb2)
     ofir.add_assignment(b1)
     ofir.add_assignment(b2)
     ofir.add_assignment(b3)
-    # ofir.add_assignment(b4)
-    # ofir.add_assignment(b5)
-    # ofir.add_assignment(b6)
+    ofir.add_assignment(b4)
+    ofir.add_assignment(b5)
+    ofir.add_assignment(b6)
+    matan.add_assignment(b1)
+    matan.add_assignment(b2)
+    matan.add_assignment(b3)
+    matan.add_assignment(b4)
+    matan.add_assignment(b5)
+    matan.add_assignment(b6)
     # ofir.add_assignment(b7)
     # ofir.add_assignment(b4)
     # print(ofir.schedule_week(1))
     # print(ofir)
     manager.add_user(ofir)
+    manager.add_user(matan)
 
 
 def roundPolygon(canvas, x, y, sharpness, **kwargs):

@@ -86,29 +86,28 @@ class GeneticAlgorithm:
         return self.mutation(children, optional_slots)
 
     def is_consistent(self, option, optional_slots):
+
         for i in range(len(option)):
             time = option[i]
             day = time[0]
             time_in_day = time[1]
-            end_in_day = time[3]
+            end_in_day = time_in_day+self.__meetings[i]["object"].get_duration()
             if all([time_in_day != slot["start"] for slot in optional_slots[i] if slot["day"] == day]):
                 return False
 
-            const_in_meet = [self.__users[k].get_constraints().get_hard_constraints() for k in
-                             self.__meetings[i]["object"].get_participants()]
+            const_in_meet = [self.__users[k].get_constraints().get_hard_constraints() for k in self.__meetings[i]["participants"]]
             before_1 = max([c["break before meeting"] for c in const_in_meet])
             after_1 = max([c["break after meeting"] for c in const_in_meet])
-            for j in range(i + 1, len(option)):
-                time2 = option[i]
+            for j in range(i+1, len(option)):
+                time2 = option[j]
                 day2 = time2[0]
                 time_in_day2 = time2[1]
-                end_in_day2 = time2[3]
+                end_in_day2 = time_in_day2+self.__meetings[j]["object"].get_duration()
                 const_in_meet = [self.__users[k].get_constraints().get_hard_constraints() for k in
-                                 self.__meetings[j]["object"].get_participants()]
+                                 self.__meetings[j]["participants"]]
                 before_2 = max([c["break before meeting"] for c in const_in_meet])
                 after_2 = max([c["break after meeting"] for c in const_in_meet])
-                if Time.is_overlap(time_in_day - before_1, end_in_day + after_1, time_in_day2 - before_2,
-                                   end_in_day2 + after_2) and day2 == day:
+                if Time.is_overlap(time_in_day-before_1, end_in_day+after_1, time_in_day2-before_2, end_in_day2+after_2) and day2 == day:
                     return False
 
         return True
@@ -148,14 +147,17 @@ class GeneticAlgorithm:
         final = []
 
         for child in childrens:
-            idx = random.choice(list(range(len(child))))
-            durations = []
-            for i in self.__meetings:
-                if i != idx:
-                    durations.append(self.__meetings[i])
-            durations = [m["object"].get_duration() for m in durations]
-            new_loc = self.get_random_point(optional_slots, idx, child[:idx] + child[idx + 1:], durations)
-            if new_loc:
-                final.append(child[:idx] + [(new_loc["day"], new_loc["start"])] + child[idx + 1:])
+            child_mutation = None
+            while not child_mutation or not self.is_consistent(child_mutation, optional_slots):
+                idx = random.choice(list(range(len(child))))
+                durations = []
+                for i in self.__meetings:
+                    if i != idx:
+                        durations.append(self.__meetings[i])
+                durations = [m["object"].get_duration() for m in durations]
+                new_loc = self.get_random_point(optional_slots, idx, child[:idx] + child[idx + 1:], durations)
+                if new_loc:
+                    child_mutation = child[:idx] + [(new_loc["day"], new_loc["start"])] + child[idx + 1:]
+            final.append(child_mutation)
 
         return final

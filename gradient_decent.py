@@ -3,7 +3,7 @@ import random
 import numpy as np
 
 from copy import deepcopy
-from consts import EPOCHS, THRESHOLD_LOT_OF_MEETS
+from consts import EPOCHS, THRESHOLD_LOT_OF_MEETS, MIN_DIFFERENCE
 from time_ import Time
 from time_slots import find_possible_slots
 
@@ -33,6 +33,7 @@ class GradientDecent:
             return -np.std(np.array(scores))
 
     def solve_epoch(self, optional_slots, num):
+        max_iterations = 2*len(self.__meetings)
         time_for_each_meeting = self.get_random_start_point(
             optional_slots)  # [(day, time) - list of times for the meetings]
         prev_score = -np.inf
@@ -40,7 +41,7 @@ class GradientDecent:
         # doing the gradient decent part
         curr_final_users = deepcopy(self.__users)
         count_in = 0
-        while new_score > prev_score or new_score == -np.inf:
+        while count_in < max_iterations and (new_score-prev_score > MIN_DIFFERENCE or new_score == -np.inf):
             count_in += 1
             for i in range(len(self.__meetings)):
                 self.__meetings[i]["object"].set_day(time_for_each_meeting[i][0])
@@ -125,6 +126,7 @@ class GradientDecent:
 
         return self.get_random_start_point(optional_slots)
 
+
     def high_meetings_neighbors(self, time_for_each_meeting, optional_slots):
         all_options = []
         for i in range(len(time_for_each_meeting)):
@@ -161,6 +163,7 @@ class GradientDecent:
             return self.low_meetings_neighbors(time_for_each_meeting, optional_slots)
 
     def is_consistent(self, option, optional_slots):
+
         for i in range(len(option)):
             time = option[i]
             day = time[0]

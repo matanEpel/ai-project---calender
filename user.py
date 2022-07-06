@@ -131,6 +131,9 @@ class User:
         schedule = self.__schedule
         for i in range(10):
             new_score = self.schedule_week(week=week, SHUFFLE=SHUFFLE)
+            if new_score == -np.inf:
+                return max_score
+            self.__schedule = schedule
             if  new_score > max_score:
                 max_score = new_score
                 schedule = deepcopy(self.__schedule)

@@ -1,4 +1,5 @@
 import tkinter as tk
+from copy import deepcopy
 from tkinter import *
 from PIL import ImageTk, Image
 from assignment import Assignment
@@ -62,14 +63,21 @@ def default_users(manager):
     ofir.add_assignment(a1)
     ofir.add_assignment(a2)
     ofir.add_assignment(a3)
-    # ofir.add_assignment(a4)
-    # ofir.add_assignment(a5)
-    # ofir.add_assignment(a6)
-    # ofir.add_assignment(a7)
-    # ofir.add_assignment(a8)
-    # ofir.add_assignment(a9)
-    # ofir.add_assignment(a10)
-    # ofir.add_assignment(a11)
+    ofir.add_assignment(a4)
+    ofir.add_assignment(a5)
+    ofir.add_assignment(a6)
+    ofir.add_assignment(a7)
+    ofir.add_assignment(a8)
+    ofir.add_assignment(a9)
+    ofir.add_assignment(a10)
+    ofir.add_assignment(a11)
+
+    matan.add_assignment(deepcopy(a1))
+    matan.add_assignment(deepcopy(a2))
+    matan.add_assignment(deepcopy(a3))
+    matan.add_assignment(deepcopy(a4))
+    matan.add_assignment(deepcopy(a5))
+    matan.add_assignment(deepcopy(a6))
     # ofir.add_assignment(a12)
     # ofir.add_assignment(a13)
     # ofir.add_assignment(a14)

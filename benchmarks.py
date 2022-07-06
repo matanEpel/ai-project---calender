@@ -64,6 +64,30 @@ def create_score(kind, grad_kind, manager, week, epochs):
     plt.ylabel("score")
     plt.show()
 
+
+def create_graph_grad(manager):
+    manager.set_type("gradient")
+    manager.set_gradient_type("HIGH_MEETINGS")
+    # manager.set_epochs(5)
+    # manager.schedule_week(1)
+    dist_from_start = [1, 2, 3, 4, 5]
+    epoch_1 = [1.0337975547181826, 1.2709904089171502, 1.2709904089171502, 1.2709904089171502, 1.2709904089171502]  # these are the prints from manager.schedule_week(1)
+    epoch_2 = [1.02621679129132, 1.177323309389699,1.2791288322353713,1.2791288322353713,1.2791288322353713]  # we have 5 epochs so 5 graphs
+    epoch_3 = [1.010132703995185, 1.2310085056599, 1.2554289546793669, 1.2831073761876413, 1.2831073761876413]
+    epoch_4 = [1.0293847189239755, 1.2073508783693905, 1.266572257766962, 1.266572257766962, 1.266572257766962]
+    epoch_5 = [1.0259728736940579, 1.2315123741487253, 1.4135945953460378, 1.4728839840419385, 1.4728839840419385]
+    plt.plot(dist_from_start, [round(a, 2) for a in epoch_1])
+    plt.plot(dist_from_start, [round(a, 2) for a in epoch_2])
+    plt.plot(dist_from_start, [round(a, 2) for a in epoch_3])
+    plt.plot(dist_from_start, [round(a, 2) for a in epoch_4])
+    plt.plot(dist_from_start, [round(a, 2) for a in epoch_5])
+    plt.title("score by distance from start point - 5 different runs")
+    plt.xlabel("distance from start")
+    plt.ylabel("score")
+    plt.show()
+
+
+
 def test_task_assignments():
     c = Constraints()
     c.set_soft_constraint("tasks are close together", 1000)
@@ -119,14 +143,17 @@ def test_task_assignments():
 
 def main():
     # meetings benchmarks:
-    # manager = Manager()
-    # default_users(manager)
-    # create_score("genetic", "LOW_MEETINGS", manager, 1, [i for i in range(1,20)])
-    # create_score("gradient", "LOW_MEETINGS", manager, 1, [i*10 for i in range(1,20)])
-    # create_score("gradient", "HIGH_MEETINGS", manager, 1, [i for i in range(1,20)])
-    pass
+    manager = Manager()
+    default_users(manager)
+    create_score("genetic", "LOW_MEETINGS", manager, 1, [i for i in range(1,20)])
+    create_score("gradient", "LOW_MEETINGS", manager, 1, [i*10 for i in range(1,20)])
+    create_score("gradient", "HIGH_MEETINGS", manager, 1, [i for i in range(1,20)])
 
+    # create_score("genetic", "LOW_MEETINGS", manager, 1, [i for i in range(1,20)])
+    # create_score("gradient", "LOW_MEETINGS", manager, 1, [i for i in range(1,10)])
+    # create_score("gradient", "HIGH_MEETINGS", manager, 1, [i*10 for i in range(1,10)])
+    create_graph_grad(manager)
 
 
 if __name__ == '__main__':
-    test_task_assignments()
+    main()

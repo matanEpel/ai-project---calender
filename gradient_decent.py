@@ -56,7 +56,7 @@ class GradientDecent:
             for_final_users = deepcopy(self.__users)
             count_for = 0
             for new_times_for_each_meeting in self.get_neighbor_times(optional_slots, time_for_each_meeting):
-                print(num, count_in, count_for)
+                # print(num, count_in, count_for)
                 count_for += 1
                 # print(new_times_for_each_meeting)
                 for i in range(len(self.__meetings)):
@@ -100,6 +100,7 @@ class GradientDecent:
             epochs_amount = EPOCHS//10
         # trying X different starting points:
         for _ in range(self.__epochs_amount):
+            print(_)
             # get random starting point:
             new_score, prev_score, curr_final_users = self.solve_epoch(optional_slots, _)
             if np.max([new_score, prev_score]) > final_score:

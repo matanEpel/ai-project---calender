@@ -1,22 +1,68 @@
 import os
 import pickle
 
-import keras
 import numpy as np
 import pandas as pd
 from keras import utils
 from keras.layers import Dense, Activation, Dropout
-from keras.models import Sequential
+from keras.models import Sequential, load_model
 from keras.preprocessing import text
+from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
+from sklearn.metrics import accuracy_score, classification_report
 from sklearn.model_selection import train_test_split
+from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import LabelEncoder
+from sklearn.linear_model import LogisticRegression
+
+
+class LogReg:
+    def __init__(self):
+        if os.path.exists('logreg_model'):
+            self.model = load_model('logreg_model')
+        else:
+            self.model = None
+        self.df = None
+
+    def has_model(self):
+        return self.model is not None
+
+    def train_and_evaluate(self):
+        self.df = pd.read_excel('generated_data.xlsx')
+        self.df.drop(columns=['LABEL'])
+        self.df = self.df[pd.notnull(self.df['TITLE'])]
+        my_tags = ['TASK', 'MEETING', 'MUST_BE_IN']
+
+        X = self.df['TITLE']
+        y = self.df['TYPE']
+        X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=0.8)
+        logreg = Pipeline([('vect', CountVectorizer()),
+                           ('tfidf', TfidfTransformer()),
+                           ('clf', LogisticRegression(n_jobs=1, C=1e5)),
+                           ])
+        logreg.fit(X_train, y_train)
+
+        y_pred = logreg.predict(X_test)
+        self.model = logreg
+        self.model.save('logreg_model')
+
+        print('accuracy %s' % accuracy_score(y_pred, y_test))
+        print(classification_report(y_test, y_pred, target_names=my_tags))
+
+    def classify(self, str):
+        p = self.model.predict(str)
+        if p == 0:
+            return "TASK"
+        if p == 1:
+            return "MEETING"
+        if p == 2:
+            return "MUST_BE_IN"
 
 
 class NN:
 
     def __init__(self):
         if os.path.exists('saved_model'):
-            self.model = keras.models.load_model('saved_model')
+            self.model = load_model('saved_model')
             # loading
             with open('tokenizer.pickle', 'rb') as handle:
                 self.tokenize = pickle.load(handle)
@@ -27,7 +73,8 @@ class NN:
             self.tokenize = None
             self.encoder = None
         self.max_words = 1000
-        self.df = pd.read_excel('generated_data.xlsx')
+        self.df = None
+        self.num_classes = 3
 
     def has_model(self):
         return self.model is not None
@@ -46,6 +93,7 @@ class NN:
                            metrics=['accuracy'])
 
     def train_and_evaluate(self):
+        self.df = pd.read_excel('generated_data.xlsx')
         self.df.drop(columns=['LABEL'])
         self.df = self.df[pd.notnull(self.df['TITLE'])]
         my_tags = ['TASK', 'MEETING', 'MUST_BE_IN']
@@ -88,35 +136,43 @@ class NN:
         print('Test accuracy:', score[1])
 
     def classify(self, str):
-        self.num_classes = 3
         x_pred = self.tokenize.texts_to_matrix([str])
-
-        y_pred = utils.np_utils.to_categorical(self.encoder.transform(["TASK"]), self.num_classes)
-        score = self.model.evaluate(x_pred, y_pred,
-                                    batch_size=1, verbose=0)
-        task_pr = score[1]
-
-        y_pred = utils.np_utils.to_categorical(self.encoder.transform(["MEETING"]), self.num_classes)
-        score = self.model.evaluate(x_pred, y_pred,
-                                    batch_size=1, verbose=0)
-        meet_pr = score[1]
-
-        y_pred = utils.np_utils.to_categorical(self.encoder.transform(["MUST_BE_IN"]), self.num_classes)
-        score = self.model.evaluate(x_pred, y_pred,
-                                    batch_size=1, verbose=0)
-        must_pr = score[1]
-
-        if task_pr == 1.0:
+        preds = self.model.predict(x_pred)
+        classification = np.argmax(preds)
+        if classification == 0:
+            return "MEETING"
+        if classification == 1:
+            return "MUST_BE_IN"
+        if classification == 2:
             return "TASK"
 
-        if meet_pr == 1.0:
-            return "MEETING"
+        #
+        # y_pred = utils.np_utils.to_categorical(self.encoder.transform(["TASK"]), self.num_classes)
+        # score = self.model.evaluate(x_pred, y_pred,
+        #                             batch_size=1, verbose=0)
+        # task_pr = score[1]
+        #
+        # y_pred = utils.np_utils.to_categorical(self.encoder.transform(["MEETING"]), self.num_classes)
+        # score = self.model.evaluate(x_pred, y_pred,
+        #                             batch_size=1, verbose=0)
+        # meet_pr = score[1]
+        #
+        # y_pred = utils.np_+utils.to_categorical(self.encoder.transform(["MUST_BE_IN"]), self.num_classes)
+        # score = self.model.evaluate(x_pred, y_pred,
+        #                             batch_size=1, verbose=0)
+        # must_pr = score[1]
+        #
+        # if task_pr == 1.0:
+        #     return "TASK"
+        #
+        # if meet_pr == 1.0:
+        #     return "MEETING"
+        #
+        # if must_pr == 1.0:
+        #     return "MUST_BE_IN"
 
-        if must_pr == 1.0:
-            return "MUST_BE_IN"
 
-
-def classify_assignments():
+def classify_assignments_continuous():
     nn = NN()
     if not nn.has_model():
         nn.train_and_evaluate()
@@ -127,4 +183,11 @@ def classify_assignments():
         print(nn.classify(inp))
         print()
 
-classify_assignments()
+
+def classify_assignments(cls, name):
+    model = cls()
+    if not model.has_model():
+        model.train_and_evaluate()
+    return model.classify(name)
+
+print(classify_assignments(NN, "Football Game"))

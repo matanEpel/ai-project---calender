@@ -1,7 +1,6 @@
 import tkinter as tk
 from tkinter import *
 from PIL import ImageTk, Image
-import tkmacosx
 from assignment import Assignment
 from constraint import Constraints
 from consts import MIDDLE_OUT, MIDDLE_FIIL, DOWN_GUI, UP_GUI, TOP_FIIL, TOP_OUT, BUTTON_OUT, BUTTON_FILL, TITLE_COLOR, \

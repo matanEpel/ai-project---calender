@@ -754,6 +754,7 @@ class App:
 
         worker = tk.IntVar()
         worker.set(1)
+
         c1 = tk.Checkbutton(root, text='Worker', variable=worker, onvalue=1, offvalue=0,
                             font=('calibre', 20), bg="black", fg="white")
         c1.place(x=250, y=70)

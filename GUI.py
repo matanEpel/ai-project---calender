@@ -17,6 +17,34 @@ from time_ import Time
 
 def default_users(manager):
     c = Constraints()
+    # c.set_soft_constraint("tasks are close together", 1000)
+    c.set_soft_constraint("start the day late", 1000)
+    u = User("User", c)
+
+    assignment1 = Assignment(week=1, name="ex1", duration=Time(h=1, m=30), kind=kinds["TASK"])
+    assignment2 = Assignment(week=1, name="ex2", duration=Time(h=2), kind=kinds["TASK"])
+    assignment3 = Assignment(week=1, name="ex3", duration=Time(h=2), kind=kinds["TASK"])
+    assignment4 = Assignment(week=1, name="ex4", duration=Time(h=3), kind=kinds["TASK"])
+    assignment5 = Assignment(week=1, name="ex5", duration=Time(h=2), kind=kinds["TASK"])
+    assignment6 = Assignment(week=1, name="ex6", duration=Time(h=1, m=30), kind=kinds["TASK"])
+    assignment7 = Assignment(week=1, name="ex7", duration=Time(h=2), kind=kinds["TASK"])
+    assignment8 = Assignment(week=1, name="ex8", duration=Time(h=2), kind=kinds["TASK"])
+    assignment9 = Assignment(week=1, name="ex9", duration=Time(h=3), kind=kinds["TASK"])
+    assignment10 = Assignment(week=1, name="ex10", duration=Time(h=2), kind=kinds["TASK"])
+    mustbe1 = Assignment(week=1, name="mb1", duration=Time(m=30), kind=kinds["MUST_BE_IN"], time=Time(h=11), day=1)
+    mustbe2 = Assignment(week=1, name="mb2", duration=Time(h=1, m=15), kind=kinds["MUST_BE_IN"], time=Time(h=15), day=2)
+    mustbe3 = Assignment(week=1, name="mb3", duration=Time(h=2), kind=kinds["MUST_BE_IN"], time=Time(h=18), day=3)
+    mustbe4 = Assignment(week=1, name="mb4", duration=Time(h=3, m=15), kind=kinds["MUST_BE_IN"], time=Time(h=9), day=4)
+    mustbe5 = Assignment(week=1, name="mb5", duration=Time(m=15), kind=kinds["MUST_BE_IN"], time=Time(h=11), day=5)
+
+    ass_list = [assignment1, assignment2, assignment3, assignment4, assignment5, assignment6, assignment7,
+                assignment8, assignment9, assignment10, mustbe1, mustbe2, mustbe3, mustbe4, mustbe5]
+
+    for a in ass_list:
+        u.add_assignment(a)
+    manager.add_user(u,1)
+    return
+    c = Constraints()
     c.set_soft_constraint("meetings are close together", 1000)
     c2 = Constraints()
     # c2.set_soft_constraint("finish the day early", 100)

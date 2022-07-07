@@ -1,5 +1,5 @@
 from copy import deepcopy
-
+import time
 from assignment import Assignment
 from constraint import Constraints
 from consts import kinds, EPOCHS
@@ -49,7 +49,35 @@ def default_users(manager):
     manager.add_user(matan, 1)
 
 
+def default_users2(manager):
+    c = Constraints()
+    c.set_soft_constraint("meetings are close together", 1000)
+    c2 = Constraints()
+    c2.set_soft_constraint("start the day late", 1000)
+    ofir = User("Ophir", c)
+    matan = User("Matan", c2)
 
+    assignment = Assignment(week=1, name="ex1", duration=Time(h=1), kind=kinds["TASK"])
+    assignment2 = Assignment(week=1, name="ex2", duration=Time(h=1), kind=kinds["TASK"])
+    assignment3 = Assignment(week=1, name="ex3", duration=Time(h=1), kind=kinds["TASK"])
+    assignment4 = Assignment(week=1, name="ex4", duration=Time(h=1), kind=kinds["TASK"])
+    assignment5 = Assignment(week=1, name="ex4", duration=Time(h=1), kind=kinds["TASK"])
+    meeting = Assignment(week=1, name="m2", duration=Time(h=1), kind=kinds["MEETING"], participants=[ofir, matan])
+
+    ofir.add_assignment(assignment)
+    ofir.add_assignment(assignment2)
+    ofir.add_assignment(assignment3)
+    ofir.add_assignment(assignment4)
+    ofir.add_assignment(assignment5)
+    ofir.add_assignment(meeting)
+    matan.add_assignment(deepcopy(assignment))
+    matan.add_assignment(deepcopy(assignment2))
+    matan.add_assignment(deepcopy(assignment3))
+    matan.add_assignment(deepcopy(assignment4))
+    matan.add_assignment(deepcopy(assignment5))
+    manager.add_user(ofir, 1)
+    manager.add_user(matan, 1)
+    return ofir, matan
 def create_score(kind, grad_kind, manager, week, epochs):
     scores = []
     manager.set_type(kind)
@@ -67,9 +95,9 @@ def create_score(kind, grad_kind, manager, week, epochs):
 
 def create_graph_grad(manager):
     manager.set_type("gradient")
-    manager.set_gradient_type("HIGH_MEETINGS")
-    # manager.set_epochs(5)
-    # manager.schedule_week(1)
+    manager.set_gradient_type("LOW_MEETINGS")
+    manager.set_epochs(50)
+    manager.schedule_week(1)
     dist_from_start = [1, 2, 3, 4, 5]
     epoch_1 = [1.0337975547181826, 1.2709904089171502, 1.2709904089171502, 1.2709904089171502, 1.2709904089171502]  # these are the prints from manager.schedule_week(1)
     epoch_2 = [1.02621679129132, 1.177323309389699,1.2791288322353713,1.2791288322353713,1.2791288322353713]  # we have 5 epochs so 5 graphs
@@ -141,18 +169,67 @@ def test_task_assignments():
 
 
 
+def test_running_times_grad(manager):
+    times = []
+    manager.set_type("gradient")
+    manager.set_gradient_type("LOW_MEETINGS")
+    manager.set_epochs(1)
+    ofir, matan = default_users2(manager)
+    meeting = Assignment(week=1, name="m2", duration=Time(h=1), kind=kinds["MEETING"], participants=[ofir, matan])
+    for i in range(10):
+        print(i, "----------")
+        new = deepcopy(meeting)
+        new.set_name("m"+str(3+i))
+        manager.get_users()[0].add_assignment(new)
+
+        start = time.time()
+        manager.schedule_week(1)
+        end = time.time()
+        times.append(end-start)
+    plt.plot(list(range(1,11)), times)
+    plt.title("gradient ascent running times as function of meetings")
+    plt.xlabel("meetings")
+    plt.ylabel("running time [s]")
+    plt.show()
+
+def test_running_times_gen(manager):
+    times = []
+    manager.set_type("genetic")
+    manager.set_gradient_type("LOW_MEETINGS")
+    manager.set_epochs(3)
+    ofir, matan = default_users2(manager)
+    meeting = Assignment(week=1, name="m2", duration=Time(h=1), kind=kinds["MEETING"], participants=[ofir, matan])
+    for i in range(10):
+        print(i, "----------")
+        new = deepcopy(meeting)
+        new.set_name("m"+str(3+i))
+        manager.get_users()[0].add_assignment(new)
+
+        start = time.time()
+        manager.schedule_week(1)
+        end = time.time()
+        times.append(end-start)
+    plt.plot(list(range(1,11)), times)
+    plt.title("gradient ascent running times as function of meetings")
+    plt.xlabel("meetings")
+    plt.ylabel("running time [s]")
+    plt.show()
+
+
 def main():
+    # get out of documentation in order to run the needed benchmark
     # meetings benchmarks:
     manager = Manager()
-    default_users(manager)
-    create_score("genetic", "LOW_MEETINGS", manager, 1, [i for i in range(1,20)])
-    create_score("gradient", "LOW_MEETINGS", manager, 1, [i*10 for i in range(1,20)])
-    create_score("gradient", "HIGH_MEETINGS", manager, 1, [i for i in range(1,20)])
+    # default_users(manager)
+    # create_score("genetic", "LOW_MEETINGS", manager, 1, [i for i in range(1,20)])
 
     # create_score("genetic", "LOW_MEETINGS", manager, 1, [i for i in range(1,20)])
     # create_score("gradient", "LOW_MEETINGS", manager, 1, [i for i in range(1,10)])
+
     # create_score("gradient", "HIGH_MEETINGS", manager, 1, [i*10 for i in range(1,10)])
-    create_graph_grad(manager)
+    # create_graph_grad(manager)
+
+    test_running_times_gen(manager)
 
 
 if __name__ == '__main__':

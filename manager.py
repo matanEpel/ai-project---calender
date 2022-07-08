@@ -87,9 +87,11 @@ class Manager:
         #     u.schedule_week_with_optimal(week)
         # return
         if self.__type == "genetic":
+            self.__epochs = GENETIC_EPOCHS
             self.__users, score = genetic_solution(*self.get_data(week, self.__kind, self.__users, self.__grad_type),
                                                    self.__start_point)
         elif self.__type == "gradient":
+            self.__epochs = EPOCHS
             self.__users, score = gradient_solution(*self.get_data(week, self.__kind, self.__users, self.__grad_type))
         return score
 

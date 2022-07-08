@@ -30,7 +30,7 @@ class GeneticAlgorithm:
             """
             maximizing the equality == minimizing the std
             """
-            return np.average(scores)/max([0.25, np.std(scores)])
+            return np.average(scores)/max([0.1, np.std(scores)])
 
     def solve(self):
         optional_slots = [[] for _ in range(len(self.__meetings))]  # optional slots for every meeting

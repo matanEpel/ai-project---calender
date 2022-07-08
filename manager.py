@@ -15,8 +15,9 @@ def get_users(meetings):
     return users
 
 
-def genetic_solution(week, meetings, free_times, kind, users, mode, weights, epochs):
+def genetic_solution(week, meetings, free_times, kind, users, mode, weights, epochs, start_point):
     solver = GeneticAlgorithm(week, meetings, free_times, kind, users, weights)
+    solver.set_start_points(start_point)
     solver.set_eochs(epochs)
     return solver.solve()
 
@@ -35,12 +36,17 @@ class Manager:
         self.__users = []
         self.__weights = []
         self.__epochs = EPOCHS
+        self.__start_point = AMOUNT_STARTING_POINTS
 
     def __repr__(self):
         return "Manager with " + str(len(self.__users)) + " users: " + "\n".join([u.get_name() for u in self.__users])
 
+    def set_genetic_start_point(self, point):
+        self.__start_point = point
+
     def set_epochs(self, amount):
         self.__epochs = amount
+
     def get_users(self):
         return self.__users
 
@@ -81,7 +87,8 @@ class Manager:
         #     u.schedule_week_with_optimal(week)
         # return
         if self.__type == "genetic":
-            self.__users, score = genetic_solution(*self.get_data(week, self.__kind, self.__users, self.__grad_type))
+            self.__users, score = genetic_solution(*self.get_data(week, self.__kind, self.__users, self.__grad_type),
+                                                   self.__start_point)
         elif self.__type == "gradient":
             self.__users, score = gradient_solution(*self.get_data(week, self.__kind, self.__users, self.__grad_type))
         return score

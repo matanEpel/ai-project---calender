@@ -8,6 +8,7 @@ from time_ import Time
 from user import User
 import matplotlib.pyplot as plt
 
+
 def default_users(manager):
     c = Constraints()
     c.set_soft_constraint("meetings are close together", 1000)
@@ -63,6 +64,10 @@ def default_users2(manager):
     assignment4 = Assignment(week=1, name="ex4", duration=Time(h=1), kind=kinds["TASK"])
     assignment5 = Assignment(week=1, name="ex4", duration=Time(h=1), kind=kinds["TASK"])
     meeting = Assignment(week=1, name="m2", duration=Time(h=1), kind=kinds["MEETING"], participants=[ofir, matan])
+    meeting2 = Assignment(week=1, name="m3", duration=Time(h=1), kind=kinds["MEETING"], participants=[ofir, matan])
+    meeting3 = Assignment(week=1, name="m4", duration=Time(h=1), kind=kinds["MEETING"], participants=[ofir, matan])
+    meeting4 = Assignment(week=1, name="m5", duration=Time(h=1), kind=kinds["MEETING"], participants=[ofir, matan])
+    # for the genetic first test - remove 4 meetings
 
     ofir.add_assignment(assignment)
     ofir.add_assignment(assignment2)
@@ -70,6 +75,9 @@ def default_users2(manager):
     ofir.add_assignment(assignment4)
     ofir.add_assignment(assignment5)
     ofir.add_assignment(meeting)
+    ofir.add_assignment(meeting2)
+    ofir.add_assignment(meeting3)
+    ofir.add_assignment(meeting4)
     matan.add_assignment(deepcopy(assignment))
     matan.add_assignment(deepcopy(assignment2))
     matan.add_assignment(deepcopy(assignment3))
@@ -78,6 +86,8 @@ def default_users2(manager):
     manager.add_user(ofir, 1)
     manager.add_user(matan, 1)
     return ofir, matan
+
+
 def create_score(kind, grad_kind, manager, week, epochs):
     scores = []
     manager.set_type(kind)
@@ -99,8 +109,10 @@ def create_graph_grad(manager):
     manager.set_epochs(50)
     manager.schedule_week(1)
     dist_from_start = [1, 2, 3, 4, 5]
-    epoch_1 = [1.0337975547181826, 1.2709904089171502, 1.2709904089171502, 1.2709904089171502, 1.2709904089171502]  # these are the prints from manager.schedule_week(1)
-    epoch_2 = [1.02621679129132, 1.177323309389699,1.2791288322353713,1.2791288322353713,1.2791288322353713]  # we have 5 epochs so 5 graphs
+    epoch_1 = [1.0337975547181826, 1.2709904089171502, 1.2709904089171502, 1.2709904089171502,
+               1.2709904089171502]  # these are the prints from manager.schedule_week(1)
+    epoch_2 = [1.02621679129132, 1.177323309389699, 1.2791288322353713, 1.2791288322353713,
+               1.2791288322353713]  # we have 5 epochs so 5 graphs
     epoch_3 = [1.010132703995185, 1.2310085056599, 1.2554289546793669, 1.2831073761876413, 1.2831073761876413]
     epoch_4 = [1.0293847189239755, 1.2073508783693905, 1.266572257766962, 1.266572257766962, 1.266572257766962]
     epoch_5 = [1.0259728736940579, 1.2315123741487253, 1.4135945953460378, 1.4728839840419385, 1.4728839840419385]
@@ -113,7 +125,6 @@ def create_graph_grad(manager):
     plt.xlabel("distance from start")
     plt.ylabel("score")
     plt.show()
-
 
 
 def test_task_assignments():
@@ -132,11 +143,11 @@ def test_task_assignments():
     assignment8 = Assignment(week=1, name="ex8", duration=Time(h=2), kind=kinds["TASK"])
     assignment9 = Assignment(week=1, name="ex9", duration=Time(h=3), kind=kinds["TASK"])
     assignment10 = Assignment(week=1, name="ex10", duration=Time(h=2), kind=kinds["TASK"])
-    mustbe1 = Assignment(week=1, name="mb1", duration=Time(m=30), kind=kinds["MUST_BE_IN"], time = Time(h=11), day=1)
-    mustbe2 = Assignment(week=1, name="mb2", duration=Time(h=1, m=15), kind=kinds["MUST_BE_IN"], time = Time(h=15), day=2)
-    mustbe3 = Assignment(week=1, name="mb3", duration=Time(h=2), kind=kinds["MUST_BE_IN"], time = Time(h=18), day=3)
-    mustbe4 = Assignment(week=1, name="mb4", duration=Time(h=3, m=15), kind=kinds["MUST_BE_IN"], time = Time(h=9), day=4)
-    mustbe5 = Assignment(week=1, name="mb5", duration=Time(m=15), kind=kinds["MUST_BE_IN"], time = Time(h=11), day=5)
+    mustbe1 = Assignment(week=1, name="mb1", duration=Time(m=30), kind=kinds["MUST_BE_IN"], time=Time(h=11), day=1)
+    mustbe2 = Assignment(week=1, name="mb2", duration=Time(h=1, m=15), kind=kinds["MUST_BE_IN"], time=Time(h=15), day=2)
+    mustbe3 = Assignment(week=1, name="mb3", duration=Time(h=2), kind=kinds["MUST_BE_IN"], time=Time(h=18), day=3)
+    mustbe4 = Assignment(week=1, name="mb4", duration=Time(h=3, m=15), kind=kinds["MUST_BE_IN"], time=Time(h=9), day=4)
+    mustbe5 = Assignment(week=1, name="mb5", duration=Time(m=15), kind=kinds["MUST_BE_IN"], time=Time(h=11), day=5)
 
     ass_list = [assignment1, assignment2, assignment3, assignment4, assignment5, assignment6, assignment7,
                 assignment8, assignment9, assignment10, mustbe1, mustbe2, mustbe3, mustbe4, mustbe5]
@@ -153,7 +164,7 @@ def test_task_assignments():
         x_list.append(i)
         for j in range(10):
             avg_score += u.schedule_week_with_optimal(1, n=i)
-        output_list.append(avg_score/10)
+        output_list.append(avg_score / 10)
 
         print(i)
 
@@ -165,8 +176,6 @@ def test_task_assignments():
     plt.xlabel("num of calls")
     plt.ylabel("avg max score")
     plt.show()
-    plt.save("avg max score")
-
 
 
 def test_running_times_grad(manager):
@@ -179,39 +188,71 @@ def test_running_times_grad(manager):
     for i in range(10):
         print(i, "----------")
         new = deepcopy(meeting)
-        new.set_name("m"+str(3+i))
+        new.set_name("m" + str(3 + i))
         manager.get_users()[0].add_assignment(new)
 
         start = time.time()
         manager.schedule_week(1)
         end = time.time()
-        times.append(end-start)
-    plt.plot(list(range(1,11)), times)
+        times.append(end - start)
+    plt.plot(list(range(1, 11)), times)
     plt.title("gradient ascent running times as function of meetings")
     plt.xlabel("meetings")
     plt.ylabel("running time [s]")
     plt.show()
 
+
 def test_running_times_gen(manager):
     times = []
     manager.set_type("genetic")
     manager.set_gradient_type("LOW_MEETINGS")
-    manager.set_epochs(3)
+    manager.set_epochs(2)
     ofir, matan = default_users2(manager)
     meeting = Assignment(week=1, name="m2", duration=Time(h=1), kind=kinds["MEETING"], participants=[ofir, matan])
     for i in range(10):
         print(i, "----------")
         new = deepcopy(meeting)
-        new.set_name("m"+str(3+i))
+        new.set_name("m" + str(3 + i))
         manager.get_users()[0].add_assignment(new)
 
         start = time.time()
         manager.schedule_week(1)
         end = time.time()
-        times.append(end-start)
-    plt.plot(list(range(1,11)), times)
-    plt.title("gradient ascent running times as function of meetings")
+        times.append(end - start)
+    plt.plot(list(range(1, 11)), times)
+    plt.title("genetic running times as function of meetings")
     plt.xlabel("meetings")
+    plt.ylabel("running time [s]")
+    plt.show()
+
+
+def test_running_times_start_points(manager):
+    times = []
+    manager.set_type("genetic")
+    manager.set_gradient_type("LOW_MEETINGS")
+    manager.set_epochs(2)
+    ofir, matan = default_users2(manager)
+    meeting = Assignment(week=1, name="m2", duration=Time(h=1), kind=kinds["MEETING"], participants=[ofir, matan])
+    new = deepcopy(meeting)
+    new.set_name("m" + str(3 + 1))
+    manager.get_users()[0].add_assignment(new)
+    new = deepcopy(meeting)
+    new.set_name("m" + str(3 + 2))
+    manager.get_users()[0].add_assignment(new)
+    new = deepcopy(meeting)
+    new.set_name("m" + str(3 + 3))
+    manager.get_users()[0].add_assignment(new)
+    for i in range(2, 30, 2):
+        print(i, "----------")
+        manager.set_genetic_start_point(i)
+
+        start = time.time()
+        manager.schedule_week(1)
+        end = time.time()
+        times.append(end - start)
+    plt.plot(list(range(2, 30, 2)), times)
+    plt.title("genetic running times as function of starting points")
+    plt.xlabel("starting point")
     plt.ylabel("running time [s]")
     plt.show()
 
@@ -229,7 +270,8 @@ def main():
     # create_score("gradient", "HIGH_MEETINGS", manager, 1, [i*10 for i in range(1,10)])
     # create_graph_grad(manager)
 
-    test_running_times_gen(manager)
+    # test_running_times_gen(manager)
+    test_running_times_start_points(manager)
 
 
 if __name__ == '__main__':

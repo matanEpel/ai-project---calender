@@ -65,6 +65,8 @@ class User:
         del self.__schedule[week]
 
     def get_assignments(self, week: int):
+        if week not in self.__assignments:
+            return []
         return self.__assignments[week]
 
     def get_all_assignments(self):
@@ -125,7 +127,7 @@ class User:
 
         self.__schedule[week].append(assignment)
 
-    def schedule_week_with_optimal(self, week: int, SHUFFLE=True, n=10):
+    def schedule_week_with_optimal(self, week: int, SHUFFLE=True, n=100):
         max_score = -np.inf
         schedule = self.__schedule
         for i in range(n):
@@ -169,6 +171,7 @@ class User:
 
         self.assignments_map = list(enumerate(duration_array))  # map between assignments
 
+        # document the following 6 lines in order to run our equality test:
         # add lunch times:
         n = len(self.assignments_map)
         for day in self.__constraints.get_hard_constraints()["working days"]:

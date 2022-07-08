@@ -47,7 +47,8 @@ class GeneticAlgorithm:
             print(_)
             solutions = []
             for i in range(len(time_pool)):
-                # print("\t", i)
+
+                print(_, i)
                 new_times_for_each_meeting = time_pool[i]
                 for j in range(len(new_times_for_each_meeting)):
                     self.__meetings[j]["object"].set_day(new_times_for_each_meeting[j][0])
@@ -61,6 +62,7 @@ class GeneticAlgorithm:
                 return max_users, best["score"]
             else:
                 remaining_solutions = sorted(solutions, key=lambda s: s["score"], reverse=True)
+                print(remaining_solutions[0]["score"])
                 remaining_solutions = remaining_solutions[:self.__amount_of_starting_points]
                 time_pool = []
                 for i in range(len(remaining_solutions)):
@@ -165,3 +167,6 @@ class GeneticAlgorithm:
             final.append(child_mutation)
 
         return final
+
+    def set_start_points(self, start_point):
+        self.__amount_of_starting_points = start_point

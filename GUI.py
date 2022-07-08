@@ -16,7 +16,38 @@ from time_ import Time
 
 
 def default_users(manager):
-    # for the csop graphical benchmark:
+    # default users in the GUI
+    c = Constraints()
+    c.set_soft_constraint("meetings are close together", 1000)
+    c.set_soft_constraint("breaks are continuous", 1000)
+    u = User("User1", c)
+    c1 = Constraints()
+    c1.set_soft_constraint("start the day late", 1000)
+    u2 = User("User2", c1)
+
+    assignment1 = Assignment(week=1, name="ex1", duration=Time(h=1, m=30), kind=kinds["TASK"])
+    assignment2 = Assignment(week=1, name="ex2", duration=Time(h=2), kind=kinds["TASK"])
+    assignment3 = Assignment(week=1, name="ex3", duration=Time(h=2), kind=kinds["TASK"])
+    assignment4 = Assignment(week=1, name="ex4", duration=Time(h=3), kind=kinds["TASK"])
+    assignment5 = Assignment(week=1, name="ex5", duration=Time(h=2), kind=kinds["TASK"])
+    mustbe1 = Assignment(week=1, name="mb1", duration=Time(m=30), kind=kinds["MUST_BE_IN"], time=Time(h=11), day=1)
+    mustbe2 = Assignment(week=1, name="mb2", duration=Time(h=1, m=15), kind=kinds["MUST_BE_IN"], time=Time(h=15), day=2)
+    mustbe3 = Assignment(week=1, name="mb3", duration=Time(h=2), kind=kinds["MUST_BE_IN"], time=Time(h=18), day=3)
+    m1 = Assignment(week=1, name="m1", duration=Time(h=1), kind=kinds["MEETING"], participants=[u, u2])
+    m2 = Assignment(week=1, name="m2", duration=Time(h=1), kind=kinds["MEETING"], participants=[u, u2])
+    m3 = Assignment(week=1, name="m3", duration=Time(h=1), kind=kinds["MEETING"], participants=[u, u2])
+    ass_list = [assignment1, assignment2, assignment3, assignment4, assignment5, mustbe1, mustbe2, mustbe3]
+    meeting_list = [m1, m2, m3]
+    for a in ass_list:
+        u.add_assignment(deepcopy(a))
+        u2.add_assignment(a)
+    for m in meeting_list:
+        u.add_assignment(m)
+        u2.add_assignment(m)
+    manager.add_user(u,1)
+    manager.add_user(u2,1)
+
+    # # for the csop graphical benchmark:
     # c = Constraints()
     # # c.set_soft_constraint("tasks are close together", 1000)
     # c.set_soft_constraint("start the day late", 1000)
@@ -45,29 +76,25 @@ def default_users(manager):
     #     u.add_assignment(a)
     # manager.add_user(u,1)
     # return
-    c = Constraints()
-    c2 = Constraints()
-    c.set_soft_constraint("start the day late", 1000)
-    c2.set_soft_constraint("breaks are continuous", 1000)
-    ofir = User("Ophir", c)
-    amit = User("Amit", c2)
-    m1 = Assignment(week=1, name="m1", duration=Time(h=1), kind=kinds["MEETING"], participants=[ofir, amit])
-    m2 = Assignment(week=1, name="m2", duration=Time(h=1), kind=kinds["MEETING"], participants=[ofir, amit])
-    m3 = Assignment(week=1, name="m3", duration=Time(h=1), kind=kinds["MEETING"], participants=[ofir, amit])
-    m4 = Assignment(week=1, name="m4", duration=Time(h=1), kind=kinds["MEETING"], participants=[ofir, amit])
-    m5 = Assignment(week=1, name="m5", duration=Time(h=1), kind=kinds["MEETING"], participants=[ofir, amit])
-    ofir.add_assignment(m1)
-    ofir.add_assignment(m2)
-    ofir.add_assignment(m3)
-    # ofir.add_assignment(m4)
-    # ofir.add_assignment(m5)
-    amit.add_assignment(m1)
-    amit.add_assignment(m2)
-    amit.add_assignment(m3)
-    # amit.add_assignment(m4)
-    # amit.add_assignment(m5)
-    manager.add_user(amit, 1)
-    manager.add_user(ofir, 1)
+
+    # # equal vs sum comparison:
+    # c = Constraints()
+    # c2 = Constraints()
+    # c.set_soft_constraint("start the day late", 1000)
+    # c2.set_soft_constraint("breaks are continuous", 1000)
+    # ofir = User("Ophir", c)
+    # amit = User("Amit", c2)
+    # m1 = Assignment(week=1, name="m1", duration=Time(h=1), kind=kinds["MEETING"], participants=[ofir, amit])
+    # m2 = Assignment(week=1, name="m2", duration=Time(h=1), kind=kinds["MEETING"], participants=[ofir, amit])
+    # m3 = Assignment(week=1, name="m3", duration=Time(h=1), kind=kinds["MEETING"], participants=[ofir, amit])
+    # ofir.add_assignment(m1)
+    # ofir.add_assignment(m2)
+    # ofir.add_assignment(m3)
+    # amit.add_assignment(m1)
+    # amit.add_assignment(m2)
+    # amit.add_assignment(m3)
+    # manager.add_user(amit, 1)
+    # manager.add_user(ofir, 1)
 
 
 def roundPolygon(canvas, x, y, sharpness, **kwargs):

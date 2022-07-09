@@ -1,0 +1,16 @@
+google_api_python_client==2.52.0
+google_auth_oauthlib==0.4.2
+joblib==1.0.1
+keras==2.9.0
+Keras_Preprocessing==1.1.2
+matplotlib==3.3.1
+names==0.3.0
+numpy==1.23.1
+pandas==1.2.3
+Pillow==9.2.0
+protobuf==4.21.2
+scikit_learn==1.1.1
+tensorflow==2.9.1
+tkmacosx==1.0.5
+tqdm==4.55.0
+xlsxwriter==3.0.3

@@ -4,7 +4,11 @@ from tkinter import *
 from tkinter import messagebox
 
 from PIL import ImageTk, Image
-import tkmacosx
+from sys import platform
+if platform == "darwin":
+    import tkmacosx
+else:
+    import tkinter as tkmacosx
 from assignment import Assignment, generate_kind
 from constraint import Constraints
 from consts import MIDDLE_OUT, MIDDLE_FIIL, DOWN_GUI, UP_GUI, TOP_FIIL, TOP_OUT, BUTTON_OUT, BUTTON_FILL, TITLE_COLOR, \

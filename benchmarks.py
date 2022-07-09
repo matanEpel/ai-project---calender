@@ -261,17 +261,23 @@ def main():
     # get out of documentation in order to run the needed benchmark
     # meetings benchmarks:
     manager = Manager()
-    # default_users(manager)
-    # create_score("genetic", "LOW_MEETINGS", manager, 1, [i for i in range(1,20)])
 
-    # create_score("genetic", "LOW_MEETINGS", manager, 1, [i for i in range(1,20)])
-    # create_score("gradient", "LOW_MEETINGS", manager, 1, [i for i in range(1,10)])
-
-    # create_score("gradient", "HIGH_MEETINGS", manager, 1, [i*10 for i in range(1,10)])
-    # create_graph_grad(manager)
-
-    # test_running_times_gen(manager)
-    test_running_times_start_points(manager)
+    n = input("which test you want to run?\n1. genetic algorithm score test\n2. gradient decent score test\n3. genetic running times - meetings"
+              "\n4. genetic running times - starting points\n5. gradient running times\n6. CSOP score")
+    if n == "1":
+        default_users(manager)
+        create_score("genetic", "LOW_MEETINGS", manager, 1, [i for i in range(1,20)])
+    if n == "2":
+        default_users(manager)
+        create_graph_grad(manager)
+    if n == "3":
+        test_running_times_gen(manager)
+    if n == "4":
+        test_running_times_start_points(manager)
+    if n == "5":
+        test_running_times_grad(manager)
+    if n == "6":
+        test_task_assignments()
 
 
 if __name__ == '__main__':

@@ -178,26 +178,27 @@ class App:
         for ele in root.winfo_children():
             ele.destroy()
         self.add_menu()
-        img = Image.open("resources/calender.png")
-        img = img.resize((100, 100), Image.ANTIALIAS)
+        canvas = Canvas(root, width=620, height=510, bg="black")
+        canvas.place(x=0 - 10, y=0)
+        img = Image.open("resources/home.png")
         img = ImageTk.PhotoImage(img)
-        panel = Label(root, image=img)
+        panel = Label(root, image=img, bg="black")
         panel.image = img
-        panel.place(x=250, y=100)
+        panel.place(x=0, y=-10)
 
-        img = Image.open("resources/title.png")
-        img = img.resize((482, 100), Image.ANTIALIAS)
-        img = ImageTk.PhotoImage(img)
-        panel = Label(root, image=img)
-        panel.image = img
-        panel.place(x=70, y=0)
-
-        img = Image.open("resources/description.png")
-        img = img.resize((600, 263), Image.ANTIALIAS)
-        img = ImageTk.PhotoImage(img)
-        panel = Label(root, image=img)
-        panel.image = img
-        panel.place(x=0, y=220)
+        # img = Image.open("resources/title.png")
+        # img = img.resize((482, 100), Image.ANTIALIAS)
+        # img = ImageTk.PhotoImage(img)
+        # panel = Label(root, image=img)
+        # panel.image = img
+        # panel.place(x=70, y=0)
+        #
+        # img = Image.open("resources/description.png")
+        # img = img.resize((600, 263), Image.ANTIALIAS)
+        # img = ImageTk.PhotoImage(img)
+        # panel = Label(root, image=img)
+        # panel.image = img
+        # panel.place(x=0, y=220)
 
     def all_users(self):
         for ele in root.winfo_children():

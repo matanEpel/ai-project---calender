@@ -11,6 +11,7 @@ requirements file using the command:
 
 `pip install -r requirements.txt`
 
+Note that downloading keras and tensorflow may take a while, but you don't need them for the first 2 runnable files.
 Then, you can run each file using the command:
 
 `python <file name>`

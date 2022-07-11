@@ -4,7 +4,11 @@ from tkinter import *
 from tkinter import messagebox
 
 from PIL import ImageTk, Image
-import tkmacosx
+from sys import platform
+if platform == "darwin":
+    import tkmacosx
+else:
+    import tkinter as tkmacosx
 from assignment import Assignment, generate_kind
 from constraint import Constraints
 from consts import MIDDLE_OUT, MIDDLE_FIIL, DOWN_GUI, UP_GUI, TOP_FIIL, TOP_OUT, BUTTON_OUT, BUTTON_FILL, TITLE_COLOR, \
@@ -16,75 +20,85 @@ from time_ import Time
 
 
 def default_users(manager):
+    # default users in the GUI
     c = Constraints()
     c.set_soft_constraint("meetings are close together", 1000)
-    c2 = Constraints()
-    # c2.set_soft_constraint("finish the day early", 100)
-    # c.set_soft_constraint("meetings are close together", 100)
-    # c.set_soft_constraint("start the day late", 200)
-    # c.set_soft_constraint("breaks are continuous", -100)
-    ofir = User("Ofir_fake", c)
-    matan = User("matan_fake", c2)
-    amit = User("amit_fake", c)
+    c.set_soft_constraint("breaks are continuous", 1000)
+    u = User("User1", c)
+    c1 = Constraints()
+    c1.set_soft_constraint("start the day late", 1000)
+    u2 = User("User2", c1)
 
-    a1 = Assignment(week=1, name="ex1", duration=Time(h=1), kind=kinds["TASK"], day=3,time=Time(h=10, m=30))
-    a2 = Assignment(week=1, name="ex2", duration=Time(h=1), kind=kinds["TASK"], day=3,time=Time(h=12, m=30))
-    a3 = Assignment(week=1, name="ex3", duration=Time(h=0,m=45), kind=kinds["TASK"], day=3,time=Time(h=16, m=30))
-    a4 = Assignment(week=1, name="ex4", duration=Time(h=1), kind=kinds["TASK"], day=3,time=Time(h=19, m=30))
-    a5 = Assignment(week=1, name="ex5", duration=Time(h=1), kind=kinds["TASK"], day=4,time=Time(h=10, m=30))
-    a6 = Assignment(week=1, name="ex6", duration=Time(h=2), kind=kinds["TASK"], day=4, time=Time(h=20, m=30))
-    a7 = Assignment(week=1, name="ex7", duration=Time(h=1), kind=kinds["TASK"], day=4, time=Time(h=22, m=30))
-    a8 = Assignment(week=1, name="ex8", duration=Time(h=2), kind=kinds["TASK"], day=4, time=Time(h=13, m=30))
-    b1 = Assignment(week=1, name="m1", duration=Time(h=2), kind=kinds["MEETING"], participants=[ofir], day=4,
-                    time=Time(h=19, m=15))
-    b2 = Assignment(week=1, name="m2", duration=Time(h=1), kind=kinds["MEETING"], participants=[ofir, matan], day=3,
-                    time=Time(h=21, m=0))
-    b3 = Assignment(week=1, name="m3", duration=Time(h=1), kind=kinds["MEETING"], participants=[ofir, matan], day=3,
-                    time=Time(h=15, m=0))
-    b4 = Assignment(week=1, name="m4", duration=Time(h=2), kind=kinds["MEETING"], participants=[ofir, matan], day=3,
-                    time=Time(h=17, m=0))
-    b5 = Assignment(week=1, name="m5", duration=Time(h=2), kind=kinds["MEETING"], participants=[ofir, matan], day=4,
-                    time=Time(h=15, m=0))
-    mb1 = Assignment(week=1, name="mb1", duration=Time(h=2, m=30), kind=kinds["MUST_BE_IN"], day=1,
-                     time=Time(h=9, m=30))
-    mb2 = Assignment(week=1, name="mb2", duration=Time(h=2), kind=kinds["MUST_BE_IN"], day=2, time=Time(h=17, m=0))
-    mb3 = Assignment(week=1, name="mb3", duration=Time(h=2), kind=kinds["MUST_BE_IN"], day=3, time=Time(h=19, m=0))
+    assignment1 = Assignment(week=1, name="ex1", duration=Time(h=1, m=30), kind=kinds["TASK"])
+    assignment2 = Assignment(week=1, name="ex2", duration=Time(h=2), kind=kinds["TASK"])
+    assignment3 = Assignment(week=1, name="ex3", duration=Time(h=2), kind=kinds["TASK"])
+    assignment4 = Assignment(week=1, name="ex4", duration=Time(h=3), kind=kinds["TASK"])
+    assignment5 = Assignment(week=1, name="ex5", duration=Time(h=2), kind=kinds["TASK"])
+    mustbe1 = Assignment(week=1, name="mb1", duration=Time(m=30), kind=kinds["MUST_BE_IN"], time=Time(h=11), day=1)
+    mustbe2 = Assignment(week=1, name="mb2", duration=Time(h=1, m=15), kind=kinds["MUST_BE_IN"], time=Time(h=15), day=2)
+    mustbe3 = Assignment(week=1, name="mb3", duration=Time(h=2), kind=kinds["MUST_BE_IN"], time=Time(h=18), day=3)
+    m1 = Assignment(week=1, name="m1", duration=Time(h=1), kind=kinds["MEETING"], participants=[u, u2])
+    m2 = Assignment(week=1, name="m2", duration=Time(h=1), kind=kinds["MEETING"], participants=[u, u2])
+    m3 = Assignment(week=1, name="m3", duration=Time(h=1), kind=kinds["MEETING"], participants=[u, u2])
+    ass_list = [assignment1, assignment2, assignment3, assignment4, assignment5, mustbe1, mustbe2, mustbe3]
+    meeting_list = [m1, m2, m3]
+    for a in ass_list:
+        u.add_assignment(deepcopy(a))
+        u2.add_assignment(a)
+    for m in meeting_list:
+        u.add_assignment(m)
+        u2.add_assignment(m)
+    manager.add_user(u,1)
+    manager.add_user(u2,1)
 
-    ofir.add_assignment(a1)
-    ofir.add_assignment(a2)
-    ofir.add_assignment(a3)
-    ofir.add_assignment(a4)
-    ofir.add_assignment(a5)
-    ofir.add_assignment(a6)
-    ofir.add_assignment(a7)
-    ofir.add_assignment(a8)
-    ofir.add_assignment(b1)
-    ofir.add_assignment(b2)
-    ofir.add_assignment(b3)
-    ofir.add_assignment(b4)
-    ofir.add_assignment(b5)
-    ofir.add_assignment(mb1)
-    ofir.add_assignment(mb2)
-    ofir.add_assignment(mb3)
+    # # for the csop graphical benchmark:
+    # c = Constraints()
+    # # c.set_soft_constraint("tasks are close together", 1000)
+    # c.set_soft_constraint("start the day late", 1000)
+    # u = User("User", c)
+    #
+    # assignment1 = Assignment(week=1, name="ex1", duration=Time(h=1, m=30), kind=kinds["TASK"])
+    # assignment2 = Assignment(week=1, name="ex2", duration=Time(h=2), kind=kinds["TASK"])
+    # assignment3 = Assignment(week=1, name="ex3", duration=Time(h=2), kind=kinds["TASK"])
+    # assignment4 = Assignment(week=1, name="ex4", duration=Time(h=3), kind=kinds["TASK"])
+    # assignment5 = Assignment(week=1, name="ex5", duration=Time(h=2), kind=kinds["TASK"])
+    # assignment6 = Assignment(week=1, name="ex6", duration=Time(h=1, m=30), kind=kinds["TASK"])
+    # assignment7 = Assignment(week=1, name="ex7", duration=Time(h=2), kind=kinds["TASK"])
+    # assignment8 = Assignment(week=1, name="ex8", duration=Time(h=2), kind=kinds["TASK"])
+    # assignment9 = Assignment(week=1, name="ex9", duration=Time(h=3), kind=kinds["TASK"])
+    # assignment10 = Assignment(week=1, name="ex10", duration=Time(h=2), kind=kinds["TASK"])
+    # mustbe1 = Assignment(week=1, name="mb1", duration=Time(m=30), kind=kinds["MUST_BE_IN"], time=Time(h=11), day=1)
+    # mustbe2 = Assignment(week=1, name="mb2", duration=Time(h=1, m=15), kind=kinds["MUST_BE_IN"], time=Time(h=15), day=2)
+    # mustbe3 = Assignment(week=1, name="mb3", duration=Time(h=2), kind=kinds["MUST_BE_IN"], time=Time(h=18), day=3)
+    # mustbe4 = Assignment(week=1, name="mb4", duration=Time(h=3, m=15), kind=kinds["MUST_BE_IN"], time=Time(h=9), day=4)
+    # mustbe5 = Assignment(week=1, name="mb5", duration=Time(m=15), kind=kinds["MUST_BE_IN"], time=Time(h=11), day=5)
+    #
+    # ass_list = [assignment1, assignment2, assignment3, assignment4, assignment5, assignment6, assignment7,
+    #             assignment8, assignment9, assignment10, mustbe1, mustbe2, mustbe3, mustbe4, mustbe5]
+    #
+    # for a in ass_list:
+    #     u.add_assignment(a)
+    # manager.add_user(u,1)
+    # return
 
-    matan.add_assignment(deepcopy(a1))
-    matan.add_assignment(deepcopy(a2))
-    matan.add_assignment(deepcopy(a3))
-    matan.add_assignment(deepcopy(a4))
-    matan.add_assignment(deepcopy(a5))
-    matan.add_assignment(deepcopy(a6))
-    matan.add_assignment(deepcopy(a7))
-    matan.add_assignment(deepcopy(a8))
-    matan.add_assignment(b1)
-    matan.add_assignment(b2)
-    matan.add_assignment(b3)
-    matan.add_assignment(b4)
-    matan.add_assignment(b5)
-    matan.add_assignment(mb1)
-    matan.add_assignment(mb2)
-    matan.add_assignment(mb3)
-    manager.add_user(ofir, 100)
-    manager.add_user(matan, 1)
+    # # equal vs sum comparison:
+    # c = Constraints()
+    # c2 = Constraints()
+    # c.set_soft_constraint("start the day late", 1000)
+    # c2.set_soft_constraint("breaks are continuous", 1000)
+    # ofir = User("Ophir", c)
+    # amit = User("Amit", c2)
+    # m1 = Assignment(week=1, name="m1", duration=Time(h=1), kind=kinds["MEETING"], participants=[ofir, amit])
+    # m2 = Assignment(week=1, name="m2", duration=Time(h=1), kind=kinds["MEETING"], participants=[ofir, amit])
+    # m3 = Assignment(week=1, name="m3", duration=Time(h=1), kind=kinds["MEETING"], participants=[ofir, amit])
+    # ofir.add_assignment(m1)
+    # ofir.add_assignment(m2)
+    # ofir.add_assignment(m3)
+    # amit.add_assignment(m1)
+    # amit.add_assignment(m2)
+    # amit.add_assignment(m3)
+    # manager.add_user(amit, 1)
+    # manager.add_user(ofir, 1)
 
 
 def roundPolygon(canvas, x, y, sharpness, **kwargs):
@@ -164,26 +178,27 @@ class App:
         for ele in root.winfo_children():
             ele.destroy()
         self.add_menu()
-        img = Image.open("resources/calender.png")
-        img = img.resize((100, 100), Image.ANTIALIAS)
+        canvas = Canvas(root, width=620, height=510, bg="black")
+        canvas.place(x=0 - 10, y=0)
+        img = Image.open("resources/home.png")
         img = ImageTk.PhotoImage(img)
-        panel = Label(root, image=img)
+        panel = Label(root, image=img, bg="black")
         panel.image = img
-        panel.place(x=250, y=100)
+        panel.place(x=0, y=-10)
 
-        img = Image.open("resources/title.png")
-        img = img.resize((482, 100), Image.ANTIALIAS)
-        img = ImageTk.PhotoImage(img)
-        panel = Label(root, image=img)
-        panel.image = img
-        panel.place(x=70, y=0)
-
-        img = Image.open("resources/description.png")
-        img = img.resize((600, 263), Image.ANTIALIAS)
-        img = ImageTk.PhotoImage(img)
-        panel = Label(root, image=img)
-        panel.image = img
-        panel.place(x=0, y=220)
+        # img = Image.open("resources/title.png")
+        # img = img.resize((482, 100), Image.ANTIALIAS)
+        # img = ImageTk.PhotoImage(img)
+        # panel = Label(root, image=img)
+        # panel.image = img
+        # panel.place(x=70, y=0)
+        #
+        # img = Image.open("resources/description.png")
+        # img = img.resize((600, 263), Image.ANTIALIAS)
+        # img = ImageTk.PhotoImage(img)
+        # panel = Label(root, image=img)
+        # panel.image = img
+        # panel.place(x=0, y=220)
 
     def all_users(self):
         for ele in root.winfo_children():

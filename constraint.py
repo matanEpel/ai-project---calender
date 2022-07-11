@@ -13,7 +13,7 @@ class Constraints:
         self.__hard_constraints = dict()
         self.__hard_constraints["overlap meeting task"] = False
         self.__hard_constraints["overlap must be task"] = False
-        self.__hard_constraints["lunch time"] = (Time(h=11),Time(h=16),Time(h=0,m=30)) # range for launch and time of launch
+        self.__hard_constraints["lunch time"] = (Time(h=12),Time(h=15, m=30),Time(h=0,m=30)) # range for launch and time of launch
         self.__hard_constraints["break before meeting"] = Time() # done
         self.__hard_constraints["break before task"] = Time() # done
         self.__hard_constraints["break before must be"] = Time() # done
@@ -63,10 +63,11 @@ class Constraints:
         for day in range(1,8):
             continuous_breaks_in_day = 0
             if len(week_schedule[day]) != 0:
-                start_late += week_schedule[day][0].get_time().get_hours()+week_schedule[day][0].get_time().get_minutes()/60
+                day_sorted = sorted(week_schedule[day], key=lambda a:a.get_time())
+                start_late += day_sorted[0].get_time().get_hours()+week_schedule[day][0].get_time().get_minutes()/60
                 start_late -= self.__hard_constraints["start of the day"].get_hours()
                 finish_early += self.__hard_constraints["end of the day"].get_hours()
-                finish_early -= (week_schedule[day][-1].get_time().get_hours() + week_schedule[day][-1].get_time().get_minutes()/60)
+                finish_early -= (day_sorted[-1].get_time().get_hours() + day_sorted[-1].get_time().get_minutes()/60)
             for i in range(len(week_schedule[day])-1):
                 if week_schedule[day][i].get_kind() == kinds["TASK"] and \
                    week_schedule[day][i+1].get_kind() == kinds["TASK"]:
@@ -80,14 +81,7 @@ class Constraints:
                                          (week_schedule[day][i].get_duration() + week_schedule[day][i].get_time())
                     continuous_breaks_in_day = np.max([time.get_hours() + time.get_minutes()/60, continuous_breaks_in_day])
             continuous_breaks += continuous_breaks_in_day
-        start_late_max = len(self.__hard_constraints["working days"])*(self.__hard_constraints["end of the day"]-self.__hard_constraints["start of the day"]).get_hours()
-        hours = 0
-        minutes = 0
-        for day in week_schedule:
-            for a in week_schedule[day]:
-                hours += a.get_duration().get_hours()
-                minutes += a.get_duration().get_minutes()
-        start_late_max -= hours + minutes//60
+        start_late_max = len(self.__hard_constraints["working days"])*(self.__hard_constraints["lunch time"][1]-self.__hard_constraints["start of the day"]).get_hours()
         end_early_max = start_late_max
         continuous_breaks_max = start_late_max
         close_meetings_max = (len([a for day in week_schedule for a in week_schedule[day] if a.get_kind() == kinds["MEETING"]])-1)

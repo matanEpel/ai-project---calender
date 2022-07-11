@@ -65,6 +65,8 @@ class User:
         del self.__schedule[week]
 
     def get_assignments(self, week: int):
+        if week not in self.__assignments:
+            return []
         return self.__assignments[week]
 
     def get_all_assignments(self):
@@ -129,11 +131,13 @@ class User:
         max_score = -np.inf
         schedule = self.__schedule
         for i in range(n):
+            # print(i)
             new_score = self.schedule_week(week=week, SHUFFLE=SHUFFLE)
-            if new_score == -np.inf:
-                return max_score
+            # if new_score == -np.inf:
+            #     return max_score
             self.__schedule = schedule
             if  new_score > max_score:
+                # print(new_score)
                 max_score = new_score
                 schedule = deepcopy(self.__schedule)
 
@@ -167,6 +171,7 @@ class User:
 
         self.assignments_map = list(enumerate(duration_array))  # map between assignments
 
+        # document the following 6 lines in order to run our equality test:
         # add lunch times:
         n = len(self.assignments_map)
         for day in self.__constraints.get_hard_constraints()["working days"]:

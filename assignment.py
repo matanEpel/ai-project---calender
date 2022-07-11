@@ -84,7 +84,7 @@ class Assignment:
     def set_duration(self, duration):
         self.__duration = duration
 
-    def set_name(self, name: int):
+    def set_name(self, name):
         self.__name = name
 
     def set_kind(self, kind: int):

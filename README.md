@@ -16,6 +16,7 @@ Then, you can run each file using the command:
 
 `python <file name>`
 
+##the runnable files
 There are 3 files that includes code you can run:
 1. GUI.py
 2. benchmarks.py
@@ -31,3 +32,8 @@ you have the option to add users and to give them assignments, to create meeting
 was changed a bit for the final product (for the GUI to run smoothly) so the results may be a bit different.
 3. classify.py - since the classification of event type used tensoflow and keras which caused problems on our macs (classification part was written on windows but the GUI on mac) - the classification parts was
 not incorporated into the GUI. So, in order to check it simply run the classify.py file and the result is self explainable.
+
+##IMPORTANT NOTE:
+We did not include any input checking in the GUI, so - adding users and assignments must be with perferct parameters (
+aka - meetings only with existing users, adding assignment to existing user, etc...). So - if you add users - please make
+sure the inputs are valid or the scheduling algorithms won't work. We suggest that for testing purposes - use the default users: User1, User2 and just edit their preferences.

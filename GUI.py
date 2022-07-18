@@ -316,7 +316,7 @@ class App:
                             font=('calibre', 15), bg="black", fg="white")
         c1.place(x=20, y=420)
 
-        c1 = tk.Checkbutton(root, text='gradient decent solution', variable=gen, onvalue=0, offvalue=1,
+        c1 = tk.Checkbutton(root, text='hill climbing solution', variable=gen, onvalue=0, offvalue=1,
                             font=('calibre', 15), bg="black", fg="white")
         c1.place(x=20, y=450)
 

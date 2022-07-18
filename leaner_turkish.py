@@ -131,45 +131,18 @@ val_ds = val_ds.shuffle(buffer_size=buffer_size)\
                    .cache()
 
 
-############## MODEL ##################
+#
+# ############## MODEL ##################
 inputs_tokens = layers.Input(shape=(sequence_length,), dtype=tf.int32)
 embedding_layer = layers.Embedding(max_features, 256)
 x = embedding_layer(inputs_tokens)
 x = layers.Flatten()(x)
-outputs = layers.Dense(3)(x)
+outputs = layers.Dense(3, activation="softmax")(x)
 model = keras.Model(inputs=inputs_tokens, outputs=outputs)
 
-loss_fn = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
-metric_fn = tf.keras.metrics.SparseCategoricalAccuracy()
-model.compile(optimizer="adam", loss=loss_fn, metrics=metric_fn)
-
-
-# # A integer input for vocab indices.
-# inputs = tf.keras.Input(shape=(None,), dtype="int64")
-#
-# # Next, we add a layer to map those vocab indices into a space of dimensionality
-# # 'embedding_dim'.
-# x = layers.Embedding(max_features, embedding_dim)(inputs)
-# x = layers.Dropout(0.5)(x)
-#
-# # Conv1D + global max pooling
-# x = layers.Conv1D(128, 7, padding="valid", activation="relu", strides=3)(x)
-# x = layers.Conv1D(128, 7, padding="valid", activation="relu", strides=3)(x)
-# x = layers.GlobalMaxPooling1D()(x)
-#
-# # We add a vanilla hidden layer:
-# x = layers.Dense(128, activation="relu")(x)
-# x = layers.Dropout(0.5)(x)
-#
-# # We project onto a single unit output layer, and squash it with a sigmoid:
-# predictions = layers.Dense(1, name="predictions")(x)
-
-# model = tf.keras.Model(inputs, predictions)
-#
-# # Compile the model with binary crossentropy loss and an adam optimizer.
-# model.compile(loss="binary_crossentropy", optimizer="adam", metrics=["accuracy"])
-# model.summary()
-
+loss_fn = tf.keras.losses.CategoricalCrossentropy(from_logits=True)
+metric_fn = tf.keras.metrics.CategoricalAccuracy()
+model.compile(loss=loss_fn, optimizer="adam", metrics=[metric_fn])
 epochs = 3
 
 # Fit the model using the train and test datasets.
@@ -177,4 +150,35 @@ model.fit(train_ds, validation_data=val_ds, epochs=epochs, verbose=1)
 
 model.evaluate(test_ds)
 
-model.save("fitted_model")
+#model.save("fitted_model")
+
+
+
+
+
+
+
+
+
+
+
+# loaded_model = keras.models.load_model("fitted_model")
+#
+# loaded_model.evaluate(test_ds)
+#
+# end_to_end_model = keras.Sequential([
+#   keras.Input(shape=(1,), dtype="string"),
+#   vectorize_layer,
+#   loaded_model,
+#   keras.layers.Activation('softmax')
+# ])
+#
+# end_to_end_model.compile(
+#     loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=False), optimizer="adam", metrics=['accuracy']
+# )
+#
+# while True:
+#     raw_data = "Meeting with Matan"
+#     predictions=end_to_end_model.predict([raw_data])
+#     print(np.argmax(predictions[0]))
+#     raw_data = input("Input assignment")

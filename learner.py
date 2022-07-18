@@ -106,6 +106,3 @@ end_to_end_model.compile(
 end_to_end_model.summary()
 
 
-predictions=loaded_end_to_end_model.predict(['Meeting with Ophir'])
-print(np.argmax(predictions[0]))
-print(np.argmax(predictions[1]))

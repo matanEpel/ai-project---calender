@@ -5,7 +5,7 @@ import joblib
 import numpy as np
 import pandas as pd
 from keras import utils, Input, Model
-from keras.layers import Dense, Activation, Dropout, Conv1D, GlobalMaxPooling1D, Embedding
+from keras.layers import Dense, Activation, Dropout, Conv1D, Embedding
 from keras.models import Sequential, load_model
 from keras.preprocessing import text
 from keras_preprocessing.sequence import pad_sequences
@@ -17,6 +17,7 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.linear_model import LogisticRegression
 
 DATASET = 'generated_data2.xlsx'
+TESTSET = 'test_data.xlsx'
 LOGREG_MODEL = 'models/logreg_model.pkl'
 NN_MODEL = 'models/nn_model'
 NN_TOKENIZER = "tokenizers_and_encoders/nn_tokenize.pickle"
@@ -66,8 +67,25 @@ class LogReg(LearningModel):
         self.model = logreg
         joblib.dump(self.model, LOGREG_MODEL)
 
-        print('accuracy %s' % accuracy_score(y_pred, y_test))
+        print('accuracy %s' % np.round(accuracy_score(y_pred, y_test), 2))
         print(classification_report(y_test, y_pred, target_names=my_tags))
+
+        self.evaluate_test()
+
+    def evaluate_test(self):
+        self.test = pd.read_excel(TESTSET)
+        self.test.drop(columns=['LABEL'])
+        self.test = self.test[pd.notnull(self.test['TITLE'])]
+        my_tags = ['TASK', 'MEETING', 'MUST_BE_IN']
+
+        X_test = self.test['TITLE']
+        y_test = self.test['TYPE']
+
+        y_pred = self.model.predict(X_test)
+        print("\nTest accuracy for non-generated test data:\n")
+        print('accuracy %s' % np.round(accuracy_score(y_pred, y_test), 2))
+        print(classification_report(y_test, y_pred, target_names=my_tags))
+
 
     def classify(self, str):
         p = self.model.predict([str])
@@ -137,7 +155,7 @@ class NN(LearningModel):
         y_test = utils.np_utils.to_categorical(y_test, self.num_classes)
 
         self.build_model()
-        batch_size = 32
+        batch_size = 50
         epochs = 2
         history = self.model.fit(x_train, y_train,
                                  batch_size=batch_size,
@@ -145,6 +163,7 @@ class NN(LearningModel):
                                  verbose=1,
                                  validation_split=0.1)
         self.model.save(NN_MODEL)
+
         with open(NN_TOKENIZER, 'wb') as handle:
             pickle.dump(self.tokenize, handle, protocol=pickle.HIGHEST_PROTOCOL)
         with open(NN_ENCODER, 'wb') as handle:
@@ -152,7 +171,26 @@ class NN(LearningModel):
 
         score = self.model.evaluate(x_test, y_test,
                                     batch_size=batch_size, verbose=1)
-        print('Test accuracy:', score[1])
+        print('Test accuracy:', np.round(score[1], 2))
+
+        self.evaluate_test()
+
+    def evaluate_test(self):
+        batch_size = 25
+        self.test = pd.read_excel(TESTSET)
+        self.test.drop(columns=['LABEL'])
+        self.test = self.test[pd.notnull(self.test['TITLE'])]
+
+        X_test = self.test['TITLE']
+        y_test = self.test['TYPE']
+
+        x_test = self.tokenize.texts_to_matrix(X_test)
+        y_test = self.encoder.transform(y_test)
+        y_test = utils.np_utils.to_categorical(y_test, self.num_classes)
+
+        score = self.model.evaluate(x_test, y_test,
+                                    batch_size=batch_size, verbose=1)
+        print('Test accuracy for non-generated test data:', np.round(score[1], 3))
 
     def classify(self, str):
         x_pred = self.tokenize.texts_to_matrix([str])
@@ -238,7 +276,25 @@ class CNN(LearningModel):
 
         score = self.model.evaluate(x_test, y_test,
                                     batch_size=batch_size, verbose=1)
-        print('Test accuracy:', score[1])
+        print('Test accuracy:', np.round(score[1], 2))
+
+        self.evaluate_test()
+
+    def evaluate_test(self):
+        batch_size = 100
+        self.test = pd.read_excel(TESTSET)
+        self.test = self.test[pd.notnull(self.test['TITLE'])]
+
+        X_test = self.test['TITLE']
+        y_test = self.test['LABEL'].astype(float)
+
+        x_test = self.tokenize.texts_to_matrix(X_test)
+        x_test = pad_sequences(self.tokenize.texts_to_sequences(X_test), maxlen=self.max_tokens, padding="post",
+                               truncating="post", value=0.)
+
+        score = self.model.evaluate(x_test, y_test,
+                                    batch_size=batch_size, verbose=1)
+        print('Test accuracy for non-generated test data:', np.round(score[1], 2))
 
     def test_on_fresh_set(self):
         self.df = pd.read_excel("test_data.xlsx")
@@ -255,7 +311,7 @@ class CNN(LearningModel):
         batch_size = 100
         score = self.model.evaluate(x_test, y_test,
                                     batch_size=batch_size, verbose=1)
-        print('Test accuracy:', score[1])
+        print('Test accuracy:', np.round(score[1], 2))
 
     def classify(self, str):
         x_pred = pad_sequences(self.tokenize.texts_to_sequences([str]), maxlen=self.max_tokens, padding="post",
@@ -263,6 +319,7 @@ class CNN(LearningModel):
         preds = self.model.predict(x_pred)
         classification = np.argmax(preds)
         return classification
+
 
 def classify_assignments_continuous(cls):
     learning_model = cls()
@@ -272,7 +329,13 @@ def classify_assignments_continuous(cls):
         inp = input("Assignment:\n")
         if inp == 'quit':
             break
-        print(learning_model.classify(inp))
+        classification = learning_model.classify(inp)
+        if classification == 0:
+            print("TASK")
+        if classification == 1:
+            print("MEETING")
+        if classification == 2:
+            print("MUST_BE_IN")
         print()
 
 
@@ -282,10 +345,11 @@ def classify_assignments(cls, name):
         model.train_and_evaluate()
     return model.classify(name)
 
+
 def test_cls(cls):
     model = cls()
     if not model.has_model():
         model.train_and_evaluate()
-    return model.test_on_fresh_set()
+
 
 test_cls(NN)

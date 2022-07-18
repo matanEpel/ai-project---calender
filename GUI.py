@@ -493,6 +493,7 @@ class App:
                         for part in partici:
                             if part != user:
                                 part.add_assignment(assignment)
+
                         user.add_assignment(assignment)
                 else:
                     messagebox.showinfo("ERROR", "you have entered a wrong user name!")

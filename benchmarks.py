@@ -263,7 +263,7 @@ def main():
     manager = Manager()
 
     n = input("which test you want to run?\n1. genetic algorithm score test\n2. gradient decent score test\n3. genetic running times - meetings"
-              "\n4. genetic running times - starting points\n5. gradient running times\n6. CSOP score")
+              "\n4. genetic running times - starting points\n5. gradient running times\n6. CSOP score\n")
     if n == "1":
         default_users(manager)
         create_score("genetic", "LOW_MEETINGS", manager, 1, [i for i in range(1,20)])

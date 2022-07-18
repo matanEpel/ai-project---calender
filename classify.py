@@ -1,4 +1,4 @@
-from classify_assigments import  NN
+from classify_assigments import NN
 
 learning_model = NN()
 if not learning_model.has_model():
